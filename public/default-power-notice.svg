@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750" role="img" aria-labelledby="title desc">
+  <title id="title">Obavijest o električnoj energiji</title>
+  <desc id="desc">Ilustracija dalekovoda i munje za servisne obavijesti o prekidu isporuke električne energije.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#651313"/>
+      <stop offset=".56" stop-color="#9f1d1d"/>
+      <stop offset="1" stop-color="#ea6a11"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff3c4"/>
+      <stop offset="1" stop-color="#f7b733"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"/>
+  <circle cx="975" cy="150" r="88" fill="url(#sun)" opacity=".9"/>
+  <path d="M0 520 C185 450 298 530 470 480 C630 432 743 455 900 505 C1045 552 1130 512 1200 482 L1200 750 L0 750 Z" fill="#240d0d" opacity=".48"/>
+  <path d="M150 598 L290 220 L430 598 M218 418 H362 M184 508 H396" fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity=".86"/>
+  <path d="M770 598 L890 280 L1010 598 M820 460 H960 M790 532 H990" fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity=".72"/>
+  <path d="M290 220 C430 260 600 255 890 280" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".55"/>
+  <path d="M150 598 C355 575 565 570 770 598" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".28"/>
+  <path d="M610 168 L500 405 H620 L560 588 L730 322 H604 Z" fill="#fff" opacity=".96"/>
+  <rect x="72" y="72" width="318" height="58" rx="8" fill="#fff" opacity=".94"/>
+  <text x="96" y="109" fill="#9f1d1d" font-family="Arial, sans-serif" font-size="28" font-weight="800">OBAVIJEST</text>
+</svg>

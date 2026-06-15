@@ -1,0 +1,75 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name milosevac.com www.milosevac.com;
+
+    root /var/www/milosevac.com/httpdocs/dist;
+    index index.html;
+
+    client_max_body_size 16m;
+    error_page 418 = @social_laravel;
+
+    location ^~ /storage/ {
+        alias /var/www/milosevac.com/backend/storage/app/public/;
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location ^~ /build/ {
+        alias /var/www/milosevac.com/backend/public/build/;
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location ~* \.(?:avif|css|gif|ico|jpe?g|js|png|svg|webp|woff2?)$ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location ~ ^/(api|admin|author)(/|$) {
+        try_files "" @laravel;
+    }
+
+    location ~ ^/(login|logout|up)$ {
+        try_files "" @laravel;
+    }
+
+    location ~ ^/(sitemap(?:-[a-z-]+)?\.xml|robots\.txt|feed\.xml)$ {
+        try_files "" @laravel;
+    }
+
+    location @laravel {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/milosevac.com/backend/public/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param HTTP_AUTHORIZATION $http_authorization;
+        fastcgi_pass unix:/run/php/php8.2-fpm-milosevac.sock;
+    }
+
+    location @social_laravel {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/milosevac.com/backend/public/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param HTTP_AUTHORIZATION $http_authorization;
+        fastcgi_param HTTP_X_SOCIAL_PREVIEW 1;
+        fastcgi_pass unix:/run/php/php8.2-fpm-milosevac.sock;
+    }
+
+    location / {
+        if ($http_user_agent ~* "(facebookexternalhit|Facebot|Twitterbot|WhatsApp|Viber|TelegramBot|LinkedInBot|Slackbot|Discordbot|Pinterestbot)") {
+            return 418;
+        }
+        try_files $uri $uri/ /index.html;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    location ~* \.(?:env|log|sql|sqlite|xml|bak|tar|gz)$ {
+        deny all;
+    }
+}

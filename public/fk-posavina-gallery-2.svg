@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-label="FK Posavina slavlje nakon gola">
+  <rect width="960" height="720" fill="#f8fafc"/>
+  <rect y="330" width="960" height="390" fill="#168044"/>
+  <path d="M0 470h960M0 610h960" stroke="#fff" stroke-width="6" opacity=".35"/>
+  <rect x="40" y="70" width="880" height="210" rx="20" fill="#111827"/>
+  <circle cx="148" cy="142" r="42" fill="#b31217"/>
+  <circle cx="245" cy="142" r="42" fill="#b31217"/>
+  <circle cx="342" cy="142" r="42" fill="#b31217"/>
+  <text x="470" y="145" fill="#fff" font-family="Arial, sans-serif" font-size="42" font-weight="900">GOOOL!</text>
+  <text x="470" y="196" fill="#f59f00" font-family="Arial, sans-serif" font-size="28" font-weight="800">FK Posavina 3:0</text>
+  <g transform="translate(270 390)">
+    <circle cx="50" cy="26" r="26" fill="#f2c08d"/>
+    <path d="M18 65h64l34 120H-16z" fill="#b31217"/>
+    <path d="M0 82l-78-42M102 82l84-46" stroke="#b31217" stroke-width="22" stroke-linecap="round"/>
+    <path d="M6 185h48l-16 105H-8zM68 185h46l16 105H84z" fill="#111827"/>
+  </g>
+  <g transform="translate(520 405)">
+    <circle cx="48" cy="26" r="26" fill="#f2c08d"/>
+    <path d="M16 65h64l30 112H-12z" fill="#b31217"/>
+    <path d="M2 84l-64-26M96 84l66-30" stroke="#b31217" stroke-width="20" stroke-linecap="round"/>
+    <path d="M8 177h44L38 282H-2zM64 177h46l20 105H84z" fill="#111827"/>
+  </g>
+</svg>

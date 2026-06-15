@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-label="FK Posavina utakmica - napad po krilu">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#dff4ff"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0" x2="1">
+      <stop offset="0" stop-color="#126b3a"/>
+      <stop offset="1" stop-color="#2bb45f"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="720" fill="url(#sky)"/>
+  <rect y="300" width="960" height="420" fill="url(#grass)"/>
+  <g opacity=".3" stroke="#fff" stroke-width="6">
+    <path d="M0 520h960M480 300v420M250 300v420M710 300v420"/>
+    <circle cx="480" cy="520" r="94" fill="none"/>
+  </g>
+  <rect x="0" y="260" width="960" height="56" fill="#111827" opacity=".9"/>
+  <text x="56" y="297" fill="#fff" font-family="Arial, sans-serif" font-size="30" font-weight="800">FK POSAVINA - SLOGA</text>
+  <g transform="translate(180 370)">
+    <circle cx="42" cy="28" r="28" fill="#f2c08d"/>
+    <path d="M18 72h48l28 118H-10z" fill="#b31217"/>
+    <path d="M32 76h20v110H32z" fill="#fff" opacity=".9"/>
+    <path d="M-10 190h48l-12 95H-18zM56 190h44l20 95H76z" fill="#111827"/>
+  </g>
+  <g transform="translate(450 350)">
+    <circle cx="42" cy="28" r="28" fill="#f2c08d"/>
+    <path d="M18 72h48l30 125H-12z" fill="#0f7a43"/>
+    <path d="M-12 197h48l-8 95H-22zM58 197h44l16 95H78z" fill="#111827"/>
+  </g>
+  <circle cx="690" cy="520" r="28" fill="#fff"/>
+  <path d="M675 512l18-12 18 12-7 20h-22z" fill="#111827"/>
+</svg>
