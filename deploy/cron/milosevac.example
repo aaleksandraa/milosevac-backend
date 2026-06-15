@@ -1,2 +1,2 @@
-* * * * * milosevac cd /var/www/milosevac.com/backend && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
-15 2 * * * milosevac /var/www/milosevac.com/backup.sh daily >> /var/www/milosevac.com/backend/storage/logs/backup.log 2>&1
+* * * * * milosevac cd /var/www/milosevac.com && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
+15 2 * * * milosevac /var/www/milosevac.com/backup.sh daily >> /var/www/milosevac.com/storage/logs/backup.log 2>&1

@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 APP_ROOT="${APP_ROOT:-/var/www/milosevac.com}"
-BACKEND_DIR="${BACKEND_DIR:-$APP_ROOT/backend}"
+BACKEND_DIR="${BACKEND_DIR:-$APP_ROOT}"
 REF="${1:-main}"
 PHP_BIN="${PHP_BIN:-php}"
 COMPOSER_BIN="${COMPOSER_BIN:-composer}"

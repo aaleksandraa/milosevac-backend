@@ -26,7 +26,7 @@ mysqldump --defaults-extra-file="$MYSQL_CNF" \
   --single-transaction --quick --routines --triggers --events \
   "$MYSQL_DATABASE" | gzip -1 > "$DESTINATION/database-$STAMP.sql.gz"
 
-tar -C "$APP_ROOT/backend" -cf - storage/app/public | gzip -1 > "$DESTINATION/storage-$STAMP.tar.gz"
+tar -C "$APP_ROOT" -cf - storage/app/public | gzip -1 > "$DESTINATION/storage-$STAMP.tar.gz"
 
 if [[ "$MODE" == "daily" && "$(date -u +%u)" == "7" ]]; then
   ln "$DESTINATION/database-$STAMP.sql.gz" "$BACKUP_ROOT/weekly/database-$STAMP.sql.gz"

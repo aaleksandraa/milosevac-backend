@@ -29,6 +29,7 @@ zavisnosti od frontend repozitorija.
 
 ## Produkcija
 
-Repozitorij se klonira u `/var/www/milosevac.com/backend`. Produkcijski `.env`
-i storage ostaju u tom direktoriju, ali su isključeni iz Gita. Kompletno
-uputstvo je u [`deploy/README.md`](deploy/README.md).
+Repozitorij se klonira direktno u `/var/www/milosevac.com`. Frontend repo se
+klonira u njegov ignorisani `frontend/` folder. Produkcijski `.env` i storage
+ostaju u rootu domena, ali su isključeni iz Gita. Kompletno uputstvo je u
+[`deploy/README.md`](deploy/README.md).

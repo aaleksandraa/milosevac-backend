@@ -3,21 +3,21 @@ server {
     listen [::]:80;
     server_name milosevac.com www.milosevac.com;
 
-    root /var/www/milosevac.com/httpdocs/dist;
+    root /var/www/milosevac.com/frontend/dist;
     index index.html;
 
     client_max_body_size 16m;
     error_page 418 = @social_laravel;
 
     location ^~ /storage/ {
-        alias /var/www/milosevac.com/backend/storage/app/public/;
+        alias /var/www/milosevac.com/storage/app/public/;
         try_files $uri =404;
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 
     location ^~ /build/ {
-        alias /var/www/milosevac.com/backend/public/build/;
+        alias /var/www/milosevac.com/public/build/;
         try_files $uri =404;
         expires 1y;
         add_header Cache-Control "public, immutable";
@@ -43,7 +43,7 @@ server {
 
     location @laravel {
         include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME /var/www/milosevac.com/backend/public/index.php;
+        fastcgi_param SCRIPT_FILENAME /var/www/milosevac.com/public/index.php;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param HTTP_AUTHORIZATION $http_authorization;
         fastcgi_pass unix:/run/php/php8.2-fpm-milosevac.sock;
@@ -51,7 +51,7 @@ server {
 
     location @social_laravel {
         include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME /var/www/milosevac.com/backend/public/index.php;
+        fastcgi_param SCRIPT_FILENAME /var/www/milosevac.com/public/index.php;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param HTTP_AUTHORIZATION $http_authorization;
         fastcgi_param HTTP_X_SOCIAL_PREVIEW 1;

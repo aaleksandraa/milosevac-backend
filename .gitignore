@@ -13,6 +13,14 @@
 /.zed
 /auth.json
 /node_modules
+/frontend
+/shared
+/backup.sh
+/deploy-backend.sh
+/deploy-frontend.sh
+/backup.lock
+/deploy-backend.lock
+/deploy-frontend.lock
 /database/*.sqlite*
 /database/imports/*
 /bootstrap/cache/*.php

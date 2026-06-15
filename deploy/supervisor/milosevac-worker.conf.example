@@ -1,7 +1,7 @@
 [program:milosevac-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=/usr/bin/php /var/www/milosevac.com/backend/artisan queue:work database --sleep=3 --tries=3 --timeout=120
-directory=/var/www/milosevac.com/backend
+command=/usr/bin/php /var/www/milosevac.com/artisan queue:work database --sleep=3 --tries=3 --timeout=120
+directory=/var/www/milosevac.com
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -9,5 +9,5 @@ killasgroup=true
 user=milosevac
 numprocs=1
 redirect_stderr=true
-stdout_logfile=/var/www/milosevac.com/backend/storage/logs/worker.log
+stdout_logfile=/var/www/milosevac.com/storage/logs/worker.log
 stopwaitsecs=3600
