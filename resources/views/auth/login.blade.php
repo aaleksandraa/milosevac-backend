@@ -1,16 +1,29 @@
-@extends('layouts.portal')
+@extends('layouts.auth')
 @section('content')
-<section class="section">
-    <div class="container-news" style="max-width:460px;">
-        <h1>Prijava u CMS</h1>
+    <div class="auth-card">
+        <div class="auth-brand">
+            <a href="{{ route('home') }}">Milosevac</a>
+            <h1>Prijava u CMS</h1>
+            <p>Administratorski pristup za urednistvo portala.</p>
+        </div>
+
         @if($errors->any())<div class="flash">{{ $errors->first() }}</div>@endif
-        <form method="post" action="{{ route('login') }}" class="panel">@csrf
-            <div class="field"><label>Email</label><input type="email" name="email" required autocomplete="email"></div>
-            <div class="field"><label>Password</label><input type="password" name="password" required autocomplete="current-password"></div>
-            <label><input type="checkbox" name="remember" value="1"> Zapamti me</label>
-            <div style="margin-top:16px"><button class="btn" type="submit">Prijava</button></div>
-            <p class="meta">Demo: admin@milosevac.test / password</p>
+
+        <form method="post" action="{{ route('login') }}">
+            @csrf
+            <div class="field">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+            </div>
+            <div class="field">
+                <label for="password">Lozinka</label>
+                <input id="password" type="password" name="password" required autocomplete="current-password">
+            </div>
+            <div class="auth-actions">
+                <label class="remember-field"><input type="checkbox" name="remember" value="1"> Zapamti me</label>
+                <button class="btn" type="submit">Prijava</button>
+            </div>
+            <p class="meta" style="margin-top:16px;">Za pristup koristite nalog koji je dodijeljen urednistvu.</p>
         </form>
     </div>
-</section>
 @endsection
