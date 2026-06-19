@@ -35,6 +35,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::middleware('auth')->group(function () {
+    Route::get('/account/password', [AuthController::class, 'passwordForm'])->name('account.password.edit');
+    Route::put('/account/password', [AuthController::class, 'updatePassword'])->name('account.password.update');
+});
 
 Route::middleware(['auth', 'role:super_admin,admin,editor'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');

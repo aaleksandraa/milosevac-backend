@@ -18,6 +18,7 @@
         <a href="{{ route('admin.tags.index') }}">Tagovi</a>
         <a href="{{ route('admin.users.index') }}">Korisnici</a>
         <a href="{{ route('author.dashboard') }}">Autorski panel</a>
+        <a href="{{ route('account.password.edit') }}">Promjena lozinke</a>
         <a href="{{ route('home') }}">Portal</a>
         <form method="post" action="{{ route('logout') }}">@csrf<button class="btn secondary" type="submit">Odjava</button></form>
     </aside>
