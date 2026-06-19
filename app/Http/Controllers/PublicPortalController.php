@@ -542,15 +542,23 @@ class PublicPortalController extends Controller
 
     public function robots()
     {
+        $frontend = rtrim(config('services.frontend.url'), '/');
         $robots = implode("\n", [
             'User-agent: *',
             'Allow: /',
+            'Allow: /sitemap.xml',
+            'Allow: /sitemap-pages.xml',
+            'Allow: /sitemap-posts.xml',
+            'Allow: /sitemap-news.xml',
+            'Allow: /sitemap-matches.xml',
+            'Allow: /sitemap-taxonomies.xml',
+            'Disallow: /api/',
             'Disallow: /admin',
             'Disallow: /author',
             'Disallow: /login',
             'Disallow: /pretraga',
             '',
-            'Sitemap: '.route('sitemap'),
+            'Sitemap: '.$frontend.'/sitemap.xml',
             '',
         ]);
 

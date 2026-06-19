@@ -106,6 +106,29 @@ class FrontendRedirectTest extends TestCase
                 && str_contains($html, 'youtube-nocookie.com/embed/y4o7u5J1QBc'));
     }
 
+    public function test_sitemap_uses_frontend_canonical_urls(): void
+    {
+        config(['services.frontend.url' => 'https://milosevac.com']);
+
+        $this->seed();
+        $post = $this->createPublishedPost();
+
+        $this->get('/sitemap-posts.xml')
+            ->assertOk()
+            ->assertSee('<loc>https://milosevac.com/clanak/'.$post->slug.'</loc>', false)
+            ->assertDontSee('https://api.milosevac.com/clanak', false);
+    }
+
+    public function test_api_robots_points_to_frontend_sitemap(): void
+    {
+        config(['services.frontend.url' => 'https://milosevac.com']);
+
+        $this->get('/robots.txt')
+            ->assertOk()
+            ->assertSee('Disallow: /api/', false)
+            ->assertSee('Sitemap: https://milosevac.com/sitemap.xml', false);
+    }
+
     private function createPublishedPost(): Post
     {
         return Post::create([

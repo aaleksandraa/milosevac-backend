@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+@php($frontend = rtrim(config('services.frontend.url'), '/'))
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     @foreach($matches as $match)
         <url>
-            <loc>{{ route('matches.show', $match->slug) }}</loc>
+            <loc>{{ $frontend }}/fk-posavina/utakmica/{{ $match->slug }}</loc>
             <lastmod>{{ $match->updated_at->toAtomString() }}</lastmod>
             <changefreq>weekly</changefreq>
             <priority>0.7</priority>

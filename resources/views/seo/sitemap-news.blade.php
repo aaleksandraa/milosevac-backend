@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+@php($frontend = rtrim(config('services.frontend.url'), '/'))
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     @foreach($posts as $post)
         <url>
-            <loc>{{ route('posts.show', $post->slug) }}</loc>
+            <loc>{{ $frontend }}/clanak/{{ $post->slug }}</loc>
             <news:news>
                 <news:publication>
                     <news:name>Miloševac</news:name>
