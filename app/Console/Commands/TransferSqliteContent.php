@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use RuntimeException;
@@ -12,7 +13,7 @@ use Throwable;
 class TransferSqliteContent extends Command
 {
     protected $signature = 'content:transfer-sqlite
-        {source : Absolute path to the source SQLite database}
+        {source : Absolute path, or Laravel-root-relative path, to the source SQLite database}
         {--target= : Destination Laravel database connection; defaults to DB_CONNECTION}
         {--truncate : Empty destination content tables before transfer}
         {--dry-run : Compare source and destination without writing}
@@ -41,9 +42,15 @@ class TransferSqliteContent extends Command
 
     public function handle(): int
     {
-        $sourcePath = realpath((string) $this->argument('source'));
-        if (! $sourcePath || ! is_file($sourcePath)) {
+        [$sourcePath, $checkedPaths] = $this->resolveSourcePath((string) $this->argument('source'));
+        if (! $sourcePath) {
             $this->error('Source SQLite database does not exist.');
+            $this->line('Current working directory: '.getcwd());
+            $this->line('Laravel base path: '.base_path());
+            $this->line('Checked paths:');
+            foreach ($checkedPaths as $path) {
+                $this->line(' - '.$path);
+            }
 
             return self::FAILURE;
         }
@@ -138,9 +145,43 @@ class TransferSqliteContent extends Command
             }
         }
 
+        Cache::increment('api.content.version');
+
         $this->info('SQLite content transfer completed and row counts match.');
 
         return self::SUCCESS;
+    }
+
+    /** @return array{0: string|null, 1: array<int, string>} */
+    private function resolveSourcePath(string $source): array
+    {
+        $source = trim($source);
+        $candidates = [$source];
+
+        if (! $this->isAbsolutePath($source)) {
+            $candidates[] = base_path($source);
+            $candidates[] = storage_path($source);
+            $candidates[] = database_path($source);
+        }
+
+        $checked = [];
+        foreach (array_unique($candidates) as $candidate) {
+            $realPath = realpath($candidate);
+            $checked[] = $candidate.($realPath ? " ({$realPath})" : '');
+
+            if ($realPath && is_file($realPath) && is_readable($realPath)) {
+                return [$realPath, $checked];
+            }
+        }
+
+        return [null, $checked];
+    }
+
+    private function isAbsolutePath(string $path): bool
+    {
+        return str_starts_with($path, '/')
+            || str_starts_with($path, '\\')
+            || (bool) preg_match('/^[A-Za-z]:[\/\\\\]/', $path);
     }
 
     /** @return array<string, string> */
