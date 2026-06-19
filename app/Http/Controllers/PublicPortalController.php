@@ -450,7 +450,7 @@ class PublicPortalController extends Controller
             'image' => $post->featured_image ? '/storage/'.ltrim($post->featured_image, '/') : null,
             'imageSrcSet' => $this->existingImageSrcSet($post->featured_image_responsive),
             'imageAlt' => $post->featured_image_alt ?: $post->title,
-            'contentHtml' => $includeContent ? ArticleContent::withYoutubeEmbeds($post->content) : null,
+            'contentHtml' => $includeContent ? ArticleContent::prepare($post->content) : null,
             'body' => [],
         ];
     }
