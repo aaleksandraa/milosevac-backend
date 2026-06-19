@@ -24,7 +24,7 @@ class AdSlotTest extends TestCase
             'value' => [
                 'google' => ['enabled' => false, 'client_id' => ''],
                 'slots' => [
-                    'top_banner' => ['enabled' => true, 'type' => 'google', 'google_slot' => ''],
+                    'top_banner' => ['enabled' => true],
                 ],
             ],
         ]);
@@ -39,7 +39,7 @@ class AdSlotTest extends TestCase
             'value' => [
                 'google' => ['enabled' => true, 'client_id' => 'ca-pub-123456789012'],
                 'slots' => [
-                    'top_banner' => ['enabled' => true, 'type' => 'google', 'google_slot' => '1234567890'],
+                    'top_banner' => ['enabled' => true],
                 ],
             ],
         ]);
@@ -47,6 +47,30 @@ class AdSlotTest extends TestCase
         $html = Blade::render('<x-ad-slot position="top_banner" />');
 
         $this->assertStringContainsString('class="adsbygoogle"', $html);
-        $this->assertStringContainsString('data-ad-slot="1234567890"', $html);
+        $this->assertStringContainsString('data-ad-client="ca-pub-123456789012"', $html);
+        $this->assertStringContainsString('data-ad-position="top_banner"', $html);
+    }
+
+    public function test_ads_api_exposes_only_enabled_flags_for_frontend_slots(): void
+    {
+        Setting::create([
+            'key' => 'ad_settings',
+            'value' => [
+                'google' => ['enabled' => true, 'client_id' => 'ca-pub-123456789012'],
+                'slots' => [
+                    'top_banner' => ['enabled' => true, 'type' => 'image', 'title' => 'Old data'],
+                    'footer_banner' => ['enabled' => false],
+                ],
+            ],
+        ]);
+
+        $this->getJson('/api/ads')
+            ->assertOk()
+            ->assertJsonPath('enabled', true)
+            ->assertJsonPath('clientId', 'ca-pub-123456789012')
+            ->assertJsonPath('slots.top_banner.enabled', true)
+            ->assertJsonPath('slots.footer_banner.enabled', false)
+            ->assertJsonMissingPath('slots.top_banner.type')
+            ->assertJsonMissingPath('slots.top_banner.title');
     }
 }

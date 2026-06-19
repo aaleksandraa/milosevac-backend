@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\FootballMatch;
 use App\Models\Post;
 use App\Models\PostView;
+use App\Models\Setting;
 use App\Models\Tag;
 use App\Models\User;
 use App\Support\ArticleContent;
@@ -386,6 +387,23 @@ class PublicPortalController extends Controller
         ]);
     }
 
+    public function apiAds()
+    {
+        $settings = cache()->remember('settings.ads.public', 600, fn () => Setting::where('key', 'ad_settings')->first()?->value ?? []);
+        $google = data_get($settings, 'google', []);
+        $clientId = data_get($google, 'client_id') ?: 'ca-pub-1407310093643341';
+        $slots = collect($this->adPositions())->mapWithKeys(fn ($label, $key) => [$key => [
+            'label' => $label,
+            'enabled' => (bool) data_get($settings, "slots.$key.enabled"),
+        ]]);
+
+        return response()->json([
+            'enabled' => (bool) data_get($google, 'enabled'),
+            'clientId' => $clientId,
+            'slots' => $slots,
+        ]);
+    }
+
     public function sitemap()
     {
         return response()->view('seo.sitemap-index')->header('Content-Type', 'application/xml');
@@ -546,6 +564,26 @@ class PublicPortalController extends Controller
     private function popularPosts()
     {
         return cache()->remember('posts.popular', 600, fn () => Post::published()->with(['category', 'author'])->orderByDesc('views_count')->take(5)->get());
+    }
+
+    private function adPositions(): array
+    {
+        return [
+            'top_banner' => 'Top banner ispod navigacije',
+            'home_after_featured' => 'Naslovna poslije izdvojenih vijesti',
+            'home_mid_feed' => 'Naslovna izmedju liste vijesti',
+            'archive_top' => 'Arhive/kategorije ispod zaglavlja',
+            'archive_mid_feed' => 'Arhive/kategorije izmedju vijesti',
+            'sidebar_primary' => 'Sidebar 300x250',
+            'sidebar_secondary' => 'Sidebar manji/native oglas',
+            'article_inline' => 'Unutar clanka / utakmice',
+            'article_top' => 'Clanak ispod uvoda',
+            'article_mid' => 'Sredina clanka',
+            'club_after_results' => 'FK Posavina poslije rezultata',
+            'match_gallery_top' => 'Utakmica iznad galerije',
+            'match_mid' => 'Sredina izvjestaja utakmice',
+            'footer_banner' => 'Banner iznad footera',
+        ];
     }
 
     private function categories()

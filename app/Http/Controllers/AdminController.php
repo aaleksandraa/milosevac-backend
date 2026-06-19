@@ -133,21 +133,12 @@ class AdminController extends Controller
             'google.client_id' => ['nullable', 'string', 'max:120', 'regex:/^ca-pub-\d{12,24}$/'],
             'slots' => ['array'],
             'slots.*.enabled' => ['nullable', 'boolean'],
-            'slots.*.type' => ['required', Rule::in(['google', 'image', 'text'])],
-            'slots.*.display' => ['nullable', Rule::in(['standard', 'compact', 'inline'])],
-            'slots.*.google_slot' => ['nullable', 'string', 'max:120'],
-            'slots.*.title' => ['nullable', 'string', 'max:160'],
-            'slots.*.text' => ['nullable', 'string', 'max:500'],
-            'slots.*.link_url' => ['nullable', 'url'],
-            'slots.*.link_label' => ['nullable', 'string', 'max:80'],
-            'slots.*.image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
-        $current = Setting::where('key', 'ad_settings')->first()?->value ?? $this->defaultAdSettings();
         $settings = [
             'google' => [
                 'enabled' => $request->boolean('google.enabled'),
-                'client_id' => trim((string) $request->input('google.client_id')),
+                'client_id' => trim((string) $request->input('google.client_id', 'ca-pub-1407310093643341')),
             ],
             'slots' => [],
         ];
@@ -157,23 +148,12 @@ class AdminController extends Controller
             $settings['slots'][$key] = [
                 'label' => $label,
                 'enabled' => (bool) ($slot['enabled'] ?? false),
-                'type' => $slot['type'] ?? 'text',
-                'display' => $slot['display'] ?? 'standard',
-                'google_slot' => trim((string) ($slot['google_slot'] ?? '')),
-                'title' => trim((string) ($slot['title'] ?? '')),
-                'text' => trim((string) ($slot['text'] ?? '')),
-                'link_url' => trim((string) ($slot['link_url'] ?? '')),
-                'link_label' => trim((string) ($slot['link_label'] ?? '')),
-                'image_path' => $current['slots'][$key]['image_path'] ?? null,
             ];
-
-            if ($request->hasFile("slots.{$key}.image")) {
-                $settings['slots'][$key]['image_path'] = $request->file("slots.{$key}.image")->store('ads', 'public');
-            }
         }
 
         Setting::updateOrCreate(['key' => 'ad_settings'], ['value' => $settings]);
         cache()->forget('settings.ads');
+        cache()->forget('settings.ads.public');
         cache()->forget('settings.ads.bootstrap');
 
         return back()->with('status', 'Oglasne postavke su sačuvane.');
@@ -288,18 +268,10 @@ class AdminController extends Controller
     private function defaultAdSettings(): array
     {
         return [
-            'google' => ['enabled' => false, 'client_id' => ''],
+            'google' => ['enabled' => false, 'client_id' => 'ca-pub-1407310093643341'],
             'slots' => collect($this->adPositions())->mapWithKeys(fn ($label, $key) => [$key => [
                 'label' => $label,
                 'enabled' => false,
-                'type' => 'text',
-                'display' => 'standard',
-                'google_slot' => '',
-                'title' => '',
-                'text' => '',
-                'link_url' => '',
-                'link_label' => '',
-                'image_path' => null,
             ]])->all(),
         ];
     }
