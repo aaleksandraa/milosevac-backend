@@ -338,6 +338,7 @@ class PublicPortalController extends Controller
                 ->select([
                     'id', 'author_id', 'category_id', 'slug', 'title', 'excerpt',
                     'published_at', 'reading_time', 'is_breaking', 'label',
+                    'service_type', 'notice_starts_at', 'notice_ends_at',
                     'views_count', 'featured_image', 'featured_image_alt',
                     'featured_image_responsive',
                 ])
@@ -361,7 +362,7 @@ class PublicPortalController extends Controller
             ];
         });
 
-        return response()->json($payload)->header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+        return response()->json($payload)->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
     public function apiShowPost(Request $request, Post $post)
@@ -463,6 +464,8 @@ class PublicPortalController extends Controller
             'date' => optional($post->published_at)->toIso8601String(),
             'readingTime' => $post->reading_time,
             'urgent' => $post->is_breaking || $post->label === 'hitno',
+            'notice' => $post->hasActiveNoticePriority(),
+            'label' => $post->service_type ?: $post->label,
             'tags' => $includeTags ? $post->tags->pluck('slug')->values() : [],
             'views' => $post->views_count,
             'image' => $post->featured_image ? '/storage/'.ltrim($post->featured_image, '/') : null,

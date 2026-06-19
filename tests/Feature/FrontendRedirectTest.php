@@ -63,6 +63,26 @@ class FrontendRedirectTest extends TestCase
             ->assertJsonStructure(['articles' => [['slug', 'title', 'category', 'contentHtml']]]);
     }
 
+    public function test_content_api_marks_active_notices_for_the_react_frontend(): void
+    {
+        $this->seed();
+        $post = $this->createPublishedPost();
+        $post->update([
+            'label' => 'obavijest',
+            'notice_starts_at' => now()->subMinute(),
+            'notice_ends_at' => now()->addDay(),
+        ]);
+
+        $response = $this->get('/api/content')
+            ->assertOk()
+            ->assertJsonPath('articles.0.slug', $post->slug)
+            ->assertJsonPath('articles.0.notice', true)
+            ->assertJsonPath('articles.0.label', 'obavijest');
+
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('max-age=0', $response->headers->get('Cache-Control'));
+    }
+
     public function test_content_api_exposes_a_single_published_article_by_slug(): void
     {
         $this->seed();
