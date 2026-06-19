@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Support\ArticleContent;
 use App\Support\Seo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PublicPortalController extends Controller
 {
@@ -447,13 +448,21 @@ class PublicPortalController extends Controller
             'tags' => $includeTags ? $post->tags->pluck('slug')->values() : [],
             'views' => $post->views_count,
             'image' => $post->featured_image ? '/storage/'.ltrim($post->featured_image, '/') : null,
-            'imageSrcSet' => collect($post->featured_image_responsive['variants'] ?? [])
-                ->map(fn (array $variant) => '/storage/'.ltrim($variant['path'], '/').' '.$variant['width'].'w')
-                ->implode(', ') ?: null,
+            'imageSrcSet' => $this->existingImageSrcSet($post->featured_image_responsive),
             'imageAlt' => $post->featured_image_alt ?: $post->title,
             'contentHtml' => $includeContent ? ArticleContent::withYoutubeEmbeds($post->content) : null,
             'body' => [],
         ];
+    }
+
+    private function existingImageSrcSet(?array $responsive): ?string
+    {
+        $srcSet = collect($responsive['variants'] ?? [])
+            ->filter(fn (array $variant) => ! empty($variant['path']) && Storage::disk('public')->exists($variant['path']))
+            ->map(fn (array $variant) => '/storage/'.ltrim($variant['path'], '/').' '.$variant['width'].'w')
+            ->implode(', ');
+
+        return $srcSet !== '' ? $srcSet : null;
     }
 
     private function storageUrl(Request $request, ?string $path): ?string
