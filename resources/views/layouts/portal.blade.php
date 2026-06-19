@@ -73,7 +73,7 @@
         };
         window.milosevacAds = @json($adsBootstrap);
     </script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.vite-assets')
 </head>
 <body>
 <a class="skip-link" href="#content">Preskoči na sadržaj</a>
