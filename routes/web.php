@@ -37,6 +37,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/account/password', [AuthController::class, 'passwordForm'])->name('account.password.edit');
+    Route::put('/account/profile', [AuthController::class, 'updateProfile'])->name('account.profile.update');
     Route::put('/account/password', [AuthController::class, 'updatePassword'])->name('account.password.update');
 });
 

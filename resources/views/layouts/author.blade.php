@@ -14,7 +14,7 @@
         <a href="{{ route('author.posts.create') }}">Novi članak</a>
         <a href="{{ route('author.matches.create') }}">Nova utakmica</a>
         @if(auth()->user()->hasRole('super_admin','admin','editor'))<a href="{{ route('admin.dashboard') }}">Admin</a>@endif
-        <a href="{{ route('account.password.edit') }}">Promjena lozinke</a>
+        <a href="{{ route('account.password.edit') }}">Moj nalog</a>
         <a href="{{ route('home') }}">Portal</a>
         <form method="post" action="{{ route('logout') }}">@csrf<button class="btn secondary" type="submit">Odjava</button></form>
     </aside>
