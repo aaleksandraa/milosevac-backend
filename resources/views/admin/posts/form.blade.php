@@ -64,8 +64,22 @@
                 @endforeach
             </select></div>
             <div class="field"><label>Autor</label><select name="author_id">@foreach($authors as $author)<option value="{{ $author->id }}" @selected(old('author_id', $post->author_id) == $author->id)>{{ $author->name }}</option>@endforeach</select></div>
-            @php($selectedCategories = collect(old('categories', $post->categories->pluck('id')->all() ?: ($post->category_id ? [$post->category_id] : []))))
-            <div class="field"><label>Kategorije</label><select name="categories[]" multiple size="8">@foreach($categories as $category)<option value="{{ $category->id }}" @selected($selectedCategories->contains($category->id))>{{ $category->name }}</option>@endforeach</select><small>Drzite Ctrl/Cmd za vise kategorija. Prva izabrana kategorija ostaje primarna.</small></div>
+            @php($selectedCategories = collect(old('categories', $post->categories->pluck('id')->all() ?: ($post->category_id ? [$post->category_id] : [])))->map(fn ($id) => (int) $id))
+            <div class="field">
+                <label>Kategorije</label>
+                <div class="category-check-grid">
+                    @foreach($categories as $category)
+                        <label class="category-check">
+                            <input type="checkbox" name="categories[]" value="{{ $category->id }}" @checked($selectedCategories->contains((int) $category->id))>
+                            <span>
+                                <strong>{{ $category->name }}</strong>
+                                @if($category->parent)<small>{{ $category->parent->name }}</small>@endif
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+                <small>Izaberite jednu ili vise kategorija. Prva oznacena po redoslijedu liste ostaje primarna.</small>
+            </div>
             <div class="field"><label>Tagovi</label><textarea name="tags_text" rows="4" placeholder="npr. milosevac, sport, najava">{{ old('tags_text', $post->tags->pluck('name')->implode(', ')) }}</textarea><small>Upisite tagove odvojene zarezom ili novim redom.</small></div>
             <div class="field" data-news-fields><label>Oznaka vijesti</label><select name="label">
                 <option value="">Bez posebne oznake</option>

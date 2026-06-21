@@ -161,13 +161,25 @@ if (richEditors.length > 0) {
         richEditors.forEach((textarea) => {
             ClassicEditor.create(textarea, {
                 toolbar: [
+                    'undo', 'redo', '|',
                     'heading', '|',
-                    'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|',
-                    'insertTable', 'undo', 'redo',
+                    'bold', 'italic', 'link', '|',
+                    'bulletedList', 'numberedList', 'blockQuote', '|',
+                    'insertTable', 'mediaEmbed',
                 ],
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: 'Paragraf', class: 'ck-heading_paragraph' },
+                        { model: 'heading2', view: 'h2', title: 'Podnaslov', class: 'ck-heading_heading2' },
+                        { model: 'heading3', view: 'h3', title: 'Manji podnaslov', class: 'ck-heading_heading3' },
+                    ],
+                },
                 link: {
                     addTargetToExternalLinks: true,
                     defaultProtocol: 'https://',
+                },
+                mediaEmbed: {
+                    previewsInData: true,
                 },
                 table: {
                     contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
