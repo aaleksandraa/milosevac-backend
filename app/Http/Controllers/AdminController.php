@@ -14,6 +14,7 @@ use App\Support\HtmlSanitizer;
 use App\Support\ImagePipeline;
 use App\Support\DateFormat;
 use App\Support\PostMediaManager;
+use App\Support\PostTaxonomyManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -42,7 +43,7 @@ class AdminController extends Controller
 
     public function createPost()
     {
-        return view('admin.posts.form', $this->postFormData(new Post(['status' => 'draft'])));
+        return view('admin.posts.form', $this->postFormData(new Post(['status' => 'published'])));
     }
 
     public function storePost(Request $request)
@@ -286,16 +287,13 @@ class AdminController extends Controller
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('posts', 'slug')->ignore($post)],
             'excerpt' => ['nullable', 'string'],
             'content' => ['required', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
+            'categories' => ['required', 'array', 'min:1'],
+            'categories.*' => ['integer', 'exists:categories,id'],
             'author_id' => ['required', 'exists:users,id'],
             'status' => ['required', Rule::in(['draft', 'pending_review', 'published', 'scheduled', 'archived'])],
             'published_at' => ['nullable', 'date'],
             'scheduled_at' => ['nullable', 'date'],
             'label' => ['nullable', Rule::in(['hitno', 'obavijest', 'info', 'najava'])],
-            'service_type' => ['nullable', Rule::in(['power_outage'])],
-            'notice_starts_at' => ['nullable', 'date'],
-            'notice_ends_at' => [Rule::requiredIf($request->input('service_type') === 'power_outage'), 'nullable', 'date', 'after_or_equal:notice_starts_at'],
-            'notice_schedule' => [Rule::requiredIf($request->input('service_type') === 'power_outage'), 'nullable', 'string'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string'],
             'canonical_url' => ['nullable', 'url'],
@@ -312,12 +310,14 @@ class AdminController extends Controller
             'delete_gallery.*' => ['integer', 'exists:media,id'],
             'gallery_images' => ['array'],
             'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:12288'],
-            'tags' => ['array'],
-            'tags.*' => ['exists:tags,id'],
+            'tags_text' => ['nullable', 'string'],
         ]);
 
         $data['content'] = app(HtmlSanitizer::class)->clean($data['content']);
-        unset($data['content_images'], $data['gallery_order'], $data['gallery_captions'], $data['delete_gallery'], $data['gallery_images']);
+        $categoryIds = $data['categories'];
+        $tagsText = $data['tags_text'] ?? '';
+        $data['category_id'] = (int) $categoryIds[0];
+        unset($data['categories'], $data['tags_text'], $data['content_images'], $data['gallery_order'], $data['gallery_captions'], $data['delete_gallery'], $data['gallery_images']);
 
         $processedImagePaths = [];
         $imagePipeline = app(ImagePipeline::class);
@@ -341,15 +341,10 @@ class AdminController extends Controller
         }
 
         $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
-        $data['service_type'] = $data['service_type'] ?: null;
-        if ($data['service_type'] === 'power_outage') {
-            $data['label'] = 'obavijest';
-            $data['featured_image_alt'] = $data['featured_image_alt'] ?: 'Planirani prekid isporuke električne energije';
-        } else {
-            $data['notice_starts_at'] = null;
-            $data['notice_ends_at'] = null;
-            $data['notice_schedule'] = null;
-        }
+        $data['service_type'] = null;
+        $data['notice_starts_at'] = null;
+        $data['notice_ends_at'] = null;
+        $data['notice_schedule'] = null;
         $data['is_featured'] = $request->boolean('is_featured');
         $data['is_breaking'] = $request->boolean('is_breaking');
         $data['published_at'] = $data['status'] === 'published' ? ($data['published_at'] ?: now()) : $data['published_at'];
@@ -358,7 +353,8 @@ class AdminController extends Controller
         Media::whereIn('path', $processedImagePaths)->update(['post_id' => $post->id]);
         app(PostMediaManager::class)->appendContentImages($request, $post);
         app(PostMediaManager::class)->syncGallery($request, $post);
-        $post->tags()->sync($data['tags'] ?? []);
+        app(PostTaxonomyManager::class)->syncCategories($post, $categoryIds);
+        app(PostTaxonomyManager::class)->syncTagsFromText($post, $tagsText);
         cache()->forget('posts.popular');
     }
 

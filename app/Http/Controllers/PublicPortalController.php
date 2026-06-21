@@ -89,14 +89,14 @@ class PublicPortalController extends Controller
             ? $category->children()->pluck('id')->push($category->id)
             : collect([$category->id]);
 
-        $tagOptions = Tag::whereHas('posts', fn ($query) => $query->whereIn('category_id', $categoryIds)->published())
+        $tagOptions = Tag::whereHas('posts', fn ($query) => $this->postsInCategoryIds($query, $categoryIds)->published())
             ->orderBy('name')
             ->get();
 
         $query = Post::query()
             ->published()
             ->with(['author', 'category', 'tags'])
-            ->whereIn('category_id', $categoryIds)
+            ->where(fn ($postQuery) => $this->postsInCategoryIds($postQuery, $categoryIds))
             ->when($activeTags->isNotEmpty(), fn ($postQuery) => $postQuery->whereHas('tags', fn ($tagQuery) => $tagQuery->whereIn('tags.slug', $activeTags)));
 
         $posts = $this->applyArchiveSort($query, $sort)->paginate(12)->withQueryString();
@@ -197,10 +197,9 @@ class PublicPortalController extends Controller
     {
         $sportPosts = Post::published()
             ->with(['category', 'author', 'tags'])
-            ->whereHas('category', function ($query) {
-                $query->where('slug', 'sport')
-                    ->orWhere('slug', 'like', 'sport-%')
-                    ->orWhere('name', 'like', '%Posavina%');
+            ->where(function ($query) {
+                $query->whereHas('category', fn ($categoryQuery) => $this->sportCategoryFilter($categoryQuery))
+                    ->orWhereHas('categories', fn ($categoryQuery) => $this->sportCategoryFilter($categoryQuery));
             })
             ->latest('published_at')
             ->take(6)
@@ -347,12 +346,10 @@ class PublicPortalController extends Controller
                     'category:id,parent_id,slug',
                     'category.parent:id,slug',
                 ])
-                ->when($category, fn ($query) => $query->whereHas(
-                    'category',
-                    fn ($categoryQuery) => $categoryQuery
-                        ->where('slug', $category)
-                        ->orWhereHas('parent', fn ($parentQuery) => $parentQuery->where('slug', $category))
-                ))
+                ->when($category, fn ($query) => $query->where(function ($inner) use ($category) {
+                    $inner->whereHas('category', fn ($categoryQuery) => $this->categorySlugFilter($categoryQuery, $category))
+                        ->orWhereHas('categories', fn ($categoryQuery) => $this->categorySlugFilter($categoryQuery, $category));
+                }))
                 ->portalOrder()
                 ->limit($limit)
                 ->get();
@@ -641,5 +638,27 @@ class PublicPortalController extends Controller
             'reading' => $query->orderByDesc('reading_time')->latest('published_at'),
             default => $query->latest('published_at'),
         };
+    }
+
+    private function postsInCategoryIds($query, $categoryIds)
+    {
+        return $query
+            ->whereIn('category_id', $categoryIds)
+            ->orWhereHas('categories', fn ($categoryQuery) => $categoryQuery->whereIn('categories.id', $categoryIds));
+    }
+
+    private function categorySlugFilter($query, string $category)
+    {
+        return $query
+            ->where('slug', $category)
+            ->orWhereHas('parent', fn ($parentQuery) => $parentQuery->where('slug', $category));
+    }
+
+    private function sportCategoryFilter($query)
+    {
+        return $query
+            ->where('slug', 'sport')
+            ->orWhere('slug', 'like', 'sport-%')
+            ->orWhere('name', 'like', '%Posavina%');
     }
 }

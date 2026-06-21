@@ -30,6 +30,7 @@ class TransferSqliteContent extends Command
         'categories' => 'id',
         'tags' => 'id',
         'posts' => 'id',
+        'category_post' => 'post_id',
         'post_tag' => 'post_id',
         'media' => 'id',
         'post_views' => 'id',
@@ -120,6 +121,10 @@ class TransferSqliteContent extends Command
             Schema::connection($targetName)->disableForeignKeyConstraints();
             $target->transaction(function () use ($source, $target, $tables): void {
                 if ($this->option('truncate')) {
+                    if ($target->getSchemaBuilder()->hasTable('category_post')) {
+                        $target->table('category_post')->delete();
+                    }
+
                     foreach (array_reverse(array_keys($tables)) as $table) {
                         $target->table($table)->delete();
                     }
@@ -127,6 +132,10 @@ class TransferSqliteContent extends Command
 
                 foreach ($tables as $table => $orderBy) {
                     $this->transferTable($source, $target, $table, $orderBy);
+                }
+
+                if (! array_key_exists('category_post', $tables) && $target->getSchemaBuilder()->hasTable('category_post')) {
+                    $this->backfillCategoryPost($target);
                 }
             });
         } catch (Throwable $exception) {
@@ -209,6 +218,24 @@ class TransferSqliteContent extends Command
             });
 
         $this->line("Transferred {$table}: ".$source->table($table)->count());
+    }
+
+    private function backfillCategoryPost(ConnectionInterface $target): void
+    {
+        $target->table('posts')
+            ->whereNotNull('category_id')
+            ->orderBy('id')
+            ->select(['id', 'category_id'])
+            ->chunk(100, function ($posts) use ($target): void {
+                $payload = $posts->map(fn ($post) => [
+                    'post_id' => $post->id,
+                    'category_id' => $post->category_id,
+                ])->all();
+
+                if ($payload !== []) {
+                    $target->table('category_post')->insertOrIgnore($payload);
+                }
+            });
     }
 
     private function sameSqliteDatabase(string $sourcePath, string $targetName): bool

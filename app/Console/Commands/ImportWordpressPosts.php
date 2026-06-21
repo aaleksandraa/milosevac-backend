@@ -182,6 +182,7 @@ class ImportWordpressPosts extends Command
         ]);
 
         $post->save();
+        $post->categories()->sync($categoryIds ?: [$post->category_id]);
         $post->tags()->sync($tagIds);
 
         Media::query()

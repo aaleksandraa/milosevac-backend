@@ -92,6 +92,12 @@ return new class extends Migration
             $table->primary(['post_id', 'tag_id']);
         });
 
+        Schema::create('category_post', function (Blueprint $table) {
+            $table->foreignId('post_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->primary(['post_id', 'category_id']);
+        });
+
         Schema::create('media', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
@@ -154,6 +160,7 @@ return new class extends Migration
         Schema::dropIfExists('settings');
         Schema::dropIfExists('post_views');
         Schema::dropIfExists('media');
+        Schema::dropIfExists('category_post');
         Schema::dropIfExists('post_tag');
         Schema::dropIfExists('posts');
         Schema::dropIfExists('tags');

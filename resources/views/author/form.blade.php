@@ -58,25 +58,19 @@
                     <option value="scheduled" @selected(old('status', $post->status) === 'scheduled')>scheduled</option>
                 @endif
             </select></div>
-            <div class="field"><label>Kategorija</label><select name="category_id">@foreach($categories as $category)<option value="{{ $category->id }}" @selected(old('category_id', $post->category_id) == $category->id)>{{ $category->name }}</option>@endforeach</select></div>
-            <div class="field"><label>Tagovi</label><select name="tags[]" multiple size="8">@foreach($tags as $tag)<option value="{{ $tag->id }}" @selected(collect(old('tags', $post->tags->pluck('id')->all()))->contains($tag->id))>{{ $tag->name }}</option>@endforeach</select></div>
+            @php($selectedCategories = collect(old('categories', $post->categories->pluck('id')->all() ?: ($post->category_id ? [$post->category_id] : []))))
+            <div class="field"><label>Kategorije</label><select name="categories[]" multiple size="8">@foreach($categories as $category)<option value="{{ $category->id }}" @selected($selectedCategories->contains($category->id))>{{ $category->name }}</option>@endforeach</select><small>Drzite Ctrl/Cmd za vise kategorija. Prva izabrana kategorija ostaje primarna.</small></div>
+            <div class="field"><label>Tagovi</label><textarea name="tags_text" rows="4" placeholder="npr. milosevac, sport, najava">{{ old('tags_text', $post->tags->pluck('name')->implode(', ')) }}</textarea><small>Upisite tagove odvojene zarezom ili novim redom.</small></div>
             <div class="field" data-news-fields><label>Oznaka vijesti</label><select name="label">
                 <option value="">Bez posebne oznake</option>
                 @foreach(['hitno' => 'Hitno', 'obavijest' => 'Obavijest', 'info' => 'Info', 'najava' => 'Najava'] as $value => $label)
                     <option value="{{ $value }}" @selected(old('label', $post->label) === $value)>{{ $label }}</option>
                 @endforeach
             </select></div>
-            <div class="field"><label>Tip članka</label><select name="service_type" data-content-type>
-                <option value="">Vijest</option>
-                <option value="power_outage" @selected(old('service_type', $post->service_type) === 'power_outage')>Prekid isporuke električne energije</option>
-            </select></div>
             @if(auth()->user()->canPublishDirectly())
                 <div class="field"><label>Objavljeno</label><input name="published_at" data-date-picker inputmode="numeric" placeholder="24.02.2026. 07:00" value="{{ \App\Support\DateFormat::input(old('published_at', $post->published_at)) }}"></div>
                 <div class="field"><label>Zakazano</label><input name="scheduled_at" data-date-picker inputmode="numeric" placeholder="24.02.2026. 07:00" value="{{ \App\Support\DateFormat::input(old('scheduled_at', $post->scheduled_at)) }}"></div>
             @endif
-            <div class="field" data-power-outage-fields><label>Obavijest aktivna od</label><input name="notice_starts_at" data-date-picker inputmode="numeric" placeholder="24.02.2026. 07:00" value="{{ \App\Support\DateFormat::input(old('notice_starts_at', $post->notice_starts_at)) }}"></div>
-            <div class="field" data-power-outage-fields><label>Obavijest aktivna do</label><input name="notice_ends_at" data-date-picker inputmode="numeric" placeholder="24.02.2026. 09:05" value="{{ \App\Support\DateFormat::input(old('notice_ends_at', $post->notice_ends_at)) }}"></div>
-            <div class="field" data-power-outage-fields><label>Termini prekida / dodatni tekst</label><textarea name="notice_schedule" rows="5" placeholder="Utorak, 24.02.2026. godine, od 07:00 do 09:05 - planirani radovi na elektroenergetskim objektima TJ Modriča.">{{ old('notice_schedule', $post->notice_schedule) }}</textarea></div>
             <div class="field"><label>Naslovna slika</label><input type="file" name="featured_image" accept="image/png,image/jpeg,image/webp"></div>
             <div class="field"><label>Alt tekst</label><input name="featured_image_alt" value="{{ old('featured_image_alt', $post->featured_image_alt) }}"></div>
             <button class="btn" type="submit">Sačuvaj</button>
