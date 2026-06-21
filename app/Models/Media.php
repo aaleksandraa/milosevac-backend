@@ -8,7 +8,7 @@ class Media extends Model
 {
     protected $fillable = [
         'user_id', 'post_id', 'disk', 'path', 'source_url', 'filename', 'mime_type',
-        'size', 'alt_text', 'responsive_paths',
+        'media_type', 'size', 'alt_text', 'caption', 'sort_order', 'responsive_paths',
     ];
 
     protected $casts = ['responsive_paths' => 'array'];

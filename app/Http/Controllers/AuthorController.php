@@ -10,6 +10,7 @@ use App\Models\Tag;
 use App\Support\HtmlSanitizer;
 use App\Support\ImagePipeline;
 use App\Support\DateFormat;
+use App\Support\PostMediaManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -43,7 +44,7 @@ class AuthorController extends Controller
     {
         abort_unless($post->author_id === $request->user()->id, 403);
 
-        return view('author.form', $this->formData($post));
+        return view('author.form', $this->formData($post->load('galleryMedia')));
     }
 
     public function update(Request $request, Post $post)
@@ -125,11 +126,22 @@ class AuthorController extends Controller
             'meta_description' => ['nullable', 'string'],
             'featured_image_alt' => ['nullable', 'string', 'max:255'],
             'featured_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
+            'content_images' => ['array'],
+            'content_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:12288'],
+            'gallery_order' => ['array'],
+            'gallery_order.*' => ['integer', 'exists:media,id'],
+            'gallery_captions' => ['array'],
+            'gallery_captions.*' => ['nullable', 'string', 'max:255'],
+            'delete_gallery' => ['array'],
+            'delete_gallery.*' => ['integer', 'exists:media,id'],
+            'gallery_images' => ['array'],
+            'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:12288'],
             'tags' => ['array'],
             'tags.*' => ['exists:tags,id'],
         ]);
 
         $data['content'] = app(HtmlSanitizer::class)->clean($data['content']);
+        unset($data['content_images'], $data['gallery_order'], $data['gallery_captions'], $data['delete_gallery'], $data['gallery_images']);
 
         $processedImagePaths = [];
         if ($request->hasFile('featured_image')) {
@@ -155,6 +167,8 @@ class AuthorController extends Controller
         $data['published_at'] = $data['status'] === 'published' ? ($data['published_at'] ?: now()) : ($data['published_at'] ?? $post->published_at);
         $post->fill($data)->save();
         Media::whereIn('path', $processedImagePaths)->update(['post_id' => $post->id]);
+        app(PostMediaManager::class)->appendContentImages($request, $post);
+        app(PostMediaManager::class)->syncGallery($request, $post);
         $post->tags()->sync($data['tags'] ?? []);
     }
 

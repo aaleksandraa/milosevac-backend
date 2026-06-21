@@ -144,4 +144,17 @@ class Post extends Model
     {
         return $this->hasMany(PostView::class);
     }
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(Media::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function galleryMedia(): HasMany
+    {
+        return $this->hasMany(Media::class)
+            ->where('media_type', 'post_gallery')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
 }

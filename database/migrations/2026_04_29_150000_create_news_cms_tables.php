@@ -100,8 +100,11 @@ return new class extends Migration
             $table->string('path');
             $table->string('filename');
             $table->string('mime_type', 100);
+            $table->string('media_type', 40)->default('image');
             $table->unsignedBigInteger('size')->default(0);
             $table->string('alt_text')->nullable();
+            $table->string('caption')->nullable();
+            $table->unsignedInteger('sort_order')->default(0);
             $table->json('responsive_paths')->nullable();
             $table->timestamps();
         });

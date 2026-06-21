@@ -13,6 +13,40 @@
                 <label>Sadržaj</label>
                 <textarea name="content" rows="18" data-rich-editor required>{{ old('content', $post->content) }}</textarea>
             </div>
+            <div class="field">
+                <label>Slike u sadrzaju</label>
+                <input type="file" name="content_images[]" accept="image/png,image/jpeg,image/webp" multiple>
+                <small>Nove slike se optimizuju u WebP i dodaju na kraj teksta, pa ih nakon snimanja mozete premjestiti u editoru.</small>
+            </div>
+            <h2>Galerija clanka</h2>
+            <div class="field">
+                <label>Dodaj slike u galeriju</label>
+                <input type="file" name="gallery_images[]" accept="image/png,image/jpeg,image/webp" multiple>
+                <small>Galerijske slike se automatski smanjuju i cuvaju kao WebP varijante.</small>
+            </div>
+            @if($post->exists && $post->galleryMedia->isNotEmpty())
+                <div class="admin-gallery-preview is-sortable" data-gallery-sortable>
+                    @foreach($post->galleryMedia as $media)
+                        <figure class="admin-gallery-item" draggable="true" data-gallery-item>
+                            <input type="hidden" name="gallery_order[]" value="{{ $media->id }}" data-gallery-order>
+                            <img src="{{ asset('storage/'.$media->path) }}" alt="{{ $media->alt_text }}">
+                            <figcaption>
+                                <label class="gallery-caption-field">
+                                    Opis
+                                    <input name="gallery_captions[{{ $media->id }}]" value="{{ old('gallery_captions.'.$media->id, $media->caption) }}" placeholder="Opis fotografije">
+                                </label>
+                                <span class="gallery-item-actions">
+                                    <button class="gallery-drag-handle" type="button" data-gallery-handle aria-label="Pomjeri sliku">Pomjeri</button>
+                                    <label class="gallery-delete-control">
+                                        <input type="checkbox" name="delete_gallery[]" value="{{ $media->id }}" data-gallery-delete>
+                                        Obrisi
+                                    </label>
+                                </span>
+                            </figcaption>
+                        </figure>
+                    @endforeach
+                </div>
+            @endif
             <h2>SEO preview</h2>
             <div class="panel">
                 <strong>{{ old('meta_title', $post->meta_title ?: $post->title ?: 'SEO naslov') }}</strong>

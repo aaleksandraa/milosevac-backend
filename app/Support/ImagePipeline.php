@@ -34,9 +34,6 @@ class ImagePipeline
             $responsive[] = ['width' => $width, 'path' => $path, 'mime' => 'image/webp'];
         }
 
-        $originalPath = "{$relativeDirectory}/{$baseName}-source.".$file->extension();
-        $file->storeAs($relativeDirectory, "{$baseName}-source.".$file->extension(), 'public');
-
         $primary = collect($responsive)->firstWhere('width', 1200) ?? end($responsive);
 
         Media::create([
@@ -49,7 +46,7 @@ class ImagePipeline
             'size' => filesize(storage_path('app/public/'.$primary['path'])) ?: 0,
             'alt_text' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
             'responsive_paths' => [
-                'original' => $originalPath,
+                'original' => $primary['path'],
                 'variants' => $responsive,
             ],
         ]);
@@ -57,7 +54,7 @@ class ImagePipeline
         return [
             'path' => $primary['path'],
             'responsive' => [
-                'original' => $originalPath,
+                'original' => $primary['path'],
                 'variants' => $responsive,
             ],
         ];

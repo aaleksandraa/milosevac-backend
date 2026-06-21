@@ -375,7 +375,7 @@ class PublicPortalController extends Controller
         );
 
         return response()->json([
-            'article' => $this->postApiPayload($post->load(['author', 'category.parent', 'tags'])),
+            'article' => $this->postApiPayload($post->load(['author', 'category.parent', 'tags', 'galleryMedia'])),
         ]);
     }
 
@@ -454,6 +454,22 @@ class PublicPortalController extends Controller
     private function postApiPayload(Post $post, bool $includeContent = true, bool $includeTags = true): array
     {
         $category = $post->category?->parent ?: $post->category;
+        $gallery = $includeContent && $post->relationLoaded('galleryMedia')
+            ? $post->galleryMedia->map(function ($media) use ($post) {
+                $variants = collect($media->responsive_paths['variants'] ?? []);
+                $thumb = $variants->firstWhere('width', 480) ?: $variants->first() ?: ['path' => $media->path];
+                $full = $variants->sortByDesc('width')->first() ?: ['path' => $media->path];
+                $caption = $media->caption ?: $media->alt_text ?: $post->title;
+
+                return [
+                    'id' => (string) $media->id,
+                    'src' => '/storage/'.ltrim($thumb['path'] ?? $media->path, '/'),
+                    'fullSrc' => '/storage/'.ltrim($full['path'] ?? $media->path, '/'),
+                    'alt' => $caption,
+                    'caption' => $media->caption,
+                ];
+            })->values()
+            : collect();
 
         return [
             'slug' => $post->slug,
@@ -472,6 +488,8 @@ class PublicPortalController extends Controller
             'imageSrcSet' => $this->existingImageSrcSet($post->featured_image_responsive),
             'imageAlt' => $post->featured_image_alt ?: $post->title,
             'contentHtml' => $includeContent ? ArticleContent::prepare($post->content) : null,
+            'gallery' => $gallery,
+            'galleryCount' => $gallery->count(),
             'body' => [],
         ];
     }

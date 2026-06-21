@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Support\HtmlSanitizer;
 use App\Support\ImagePipeline;
 use App\Support\DateFormat;
+use App\Support\PostMediaManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -54,7 +55,7 @@ class AdminController extends Controller
 
     public function editPost(Post $post)
     {
-        return view('admin.posts.form', $this->postFormData($post));
+        return view('admin.posts.form', $this->postFormData($post->load('galleryMedia')));
     }
 
     public function updatePost(Request $request, Post $post)
@@ -301,11 +302,22 @@ class AdminController extends Controller
             'featured_image_alt' => ['nullable', 'string', 'max:255'],
             'featured_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
             'og_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
+            'content_images' => ['array'],
+            'content_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:12288'],
+            'gallery_order' => ['array'],
+            'gallery_order.*' => ['integer', 'exists:media,id'],
+            'gallery_captions' => ['array'],
+            'gallery_captions.*' => ['nullable', 'string', 'max:255'],
+            'delete_gallery' => ['array'],
+            'delete_gallery.*' => ['integer', 'exists:media,id'],
+            'gallery_images' => ['array'],
+            'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:12288'],
             'tags' => ['array'],
             'tags.*' => ['exists:tags,id'],
         ]);
 
         $data['content'] = app(HtmlSanitizer::class)->clean($data['content']);
+        unset($data['content_images'], $data['gallery_order'], $data['gallery_captions'], $data['delete_gallery'], $data['gallery_images']);
 
         $processedImagePaths = [];
         $imagePipeline = app(ImagePipeline::class);
@@ -344,6 +356,8 @@ class AdminController extends Controller
 
         $post->fill($data)->save();
         Media::whereIn('path', $processedImagePaths)->update(['post_id' => $post->id]);
+        app(PostMediaManager::class)->appendContentImages($request, $post);
+        app(PostMediaManager::class)->syncGallery($request, $post);
         $post->tags()->sync($data['tags'] ?? []);
         cache()->forget('posts.popular');
     }
