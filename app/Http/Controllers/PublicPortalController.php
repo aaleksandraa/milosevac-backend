@@ -223,7 +223,9 @@ class PublicPortalController extends Controller
             'views' => $post->views_count,
             'image' => $post->featured_image
                 ? '/storage/'.ltrim($post->featured_image, '/')
-                : ($post->service_type === 'power_outage' ? '/default-power-notice.svg' : null),
+                : (Post::powerOutageDefaultImagePath() && $post->service_type === 'power_outage'
+                    ? '/storage/'.Post::powerOutageDefaultImagePath()
+                    : null),
             'imageSrcSet' => $this->existingImageSrcSet($post->featured_image_responsive),
             'imageAlt' => $post->featured_image_alt ?: $post->title,
             'contentHtml' => $includeContent ? ArticleContent::prepare($post->content) : null,

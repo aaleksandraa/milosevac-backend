@@ -144,7 +144,20 @@ class Post extends Model
 
     public function defaultImageUrl(): ?string
     {
-        return $this->service_type === 'power_outage' ? asset('default-power-notice.svg') : null;
+        if ($this->service_type !== 'power_outage') {
+            return null;
+        }
+
+        $path = self::powerOutageDefaultImagePath();
+
+        return $path ? asset('storage/'.$path) : asset('default-power-notice.svg');
+    }
+
+    public static function powerOutageDefaultImagePath(): ?string
+    {
+        $path = trim((string) config('outages.default_image', ''), '/');
+
+        return $path !== '' ? $path : null;
     }
 
     public function author(): BelongsTo
