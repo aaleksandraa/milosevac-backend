@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
                 'role_id' => $roles['super_admin']->id,
                 'name' => 'Glavni urednik',
                 'slug' => 'glavni-urednik',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('Q!CL7d*Zr3p.UxgQ!CL'),
                 'bio' => 'Uredništvo portala Miloševac.',
             ]
         );
@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
                 'role_id' => $roles['author']->id,
                 'name' => $item[0],
                 'slug' => $item[2],
-                'password' => Hash::make('password'),
+                'password' => Hash::make('Q!CL7d*Zr3p.UxgQ!CL'),
                 'bio' => 'Autor lokalnih vijesti, reportaža i servisnih informacija.',
             ]
         ));
@@ -121,5 +121,7 @@ class DatabaseSeeder extends Seeder
         if (! app()->environment('testing')) {
             $this->call(WordpressContentSeeder::class);
         }
+
+        $this->call(PlaceSeeder::class);
     }
 }

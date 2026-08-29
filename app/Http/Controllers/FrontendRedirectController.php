@@ -112,6 +112,15 @@ class FrontendRedirectController extends Controller
         ));
     }
 
+    public function powerOutages(Request $request): RedirectResponse|Response
+    {
+        return $this->respond($request, '/prekidi-struje', Seo::page(
+            'Prekidi struje',
+            'Planirani prekidi električne energije u Miloševcu i okolini.',
+            route('power-outages.show')
+        ));
+    }
+
     public function contact(Request $request): RedirectResponse|Response
     {
         return $this->respond($request, '/kontakt', Seo::page(

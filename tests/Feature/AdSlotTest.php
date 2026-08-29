@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Blade;
 use Tests\TestCase;
 
 class AdSlotTest extends TestCase
@@ -17,38 +16,20 @@ class AdSlotTest extends TestCase
             ->assertRedirect('http://localhost:8080/');
     }
 
-    public function test_it_does_not_render_an_unconfigured_ad_slot(): void
+    public function test_ads_api_falls_back_to_the_default_client_id(): void
     {
         Setting::create([
             'key' => 'ad_settings',
             'value' => [
                 'google' => ['enabled' => false, 'client_id' => ''],
-                'slots' => [
-                    'top_banner' => ['enabled' => true],
-                ],
+                'slots' => ['top_banner' => ['enabled' => true]],
             ],
         ]);
 
-        $this->assertSame('', trim(Blade::render('<x-ad-slot position="top_banner" />')));
-    }
-
-    public function test_it_renders_a_configured_google_ad_slot(): void
-    {
-        Setting::create([
-            'key' => 'ad_settings',
-            'value' => [
-                'google' => ['enabled' => true, 'client_id' => 'ca-pub-123456789012'],
-                'slots' => [
-                    'top_banner' => ['enabled' => true],
-                ],
-            ],
-        ]);
-
-        $html = Blade::render('<x-ad-slot position="top_banner" />');
-
-        $this->assertStringContainsString('class="adsbygoogle"', $html);
-        $this->assertStringContainsString('data-ad-client="ca-pub-123456789012"', $html);
-        $this->assertStringContainsString('data-ad-position="top_banner"', $html);
+        $this->getJson('/api/ads')
+            ->assertOk()
+            ->assertJsonPath('enabled', false)
+            ->assertJsonPath('clientId', 'ca-pub-1407310093643341');
     }
 
     public function test_ads_api_exposes_only_enabled_flags_for_frontend_slots(): void

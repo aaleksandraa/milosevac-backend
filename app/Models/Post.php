@@ -76,13 +76,35 @@ class Post extends Model
 
     public function scopePortalOrder(Builder $query): Builder
     {
-        $now = now()->toDateTimeString();
+        $now = now('Europe/Sarajevo')->toDateTimeString();
 
         return $query
             ->orderByRaw(
-                'CASE WHEN (label = ? OR service_type = ?) AND (notice_starts_at IS NULL OR notice_starts_at <= ?) AND (notice_ends_at IS NULL OR notice_ends_at >= ?) THEN 1 ELSE 0 END DESC',
-                ['obavijest', 'power_outage', $now, $now]
+                'CASE
+                    WHEN service_type = ? AND notice_starts_at <= ? AND notice_ends_at >= ? AND EXISTS (
+                        SELECT 1 FROM place_post
+                        INNER JOIN places ON places.id = place_post.place_id
+                        WHERE place_post.post_id = posts.id AND places.is_primary = 1
+                    ) THEN 4
+                    WHEN service_type = ? AND notice_starts_at > ? AND EXISTS (
+                        SELECT 1 FROM place_post
+                        INNER JOIN places ON places.id = place_post.place_id
+                        WHERE place_post.post_id = posts.id AND places.is_primary = 1
+                    ) THEN 3
+                    WHEN service_type = ? AND notice_starts_at <= ? AND notice_ends_at >= ? THEN 2
+                    WHEN service_type = ? AND notice_starts_at > ? THEN 1
+                    WHEN (label = ? OR service_type = ?) AND (notice_starts_at IS NULL OR notice_starts_at <= ?) AND (notice_ends_at IS NULL OR notice_ends_at >= ?) THEN 1
+                    ELSE 0
+                END DESC',
+                [
+                    'power_outage', $now, $now,
+                    'power_outage', $now,
+                    'power_outage', $now, $now,
+                    'power_outage', $now,
+                    'obavijest', 'power_outage', $now, $now,
+                ]
             )
+            ->orderBy('notice_starts_at')
             ->latest('published_at');
     }
 
@@ -143,6 +165,45 @@ class Post extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function places(): BelongsToMany
+    {
+        return $this->belongsToMany(Place::class);
+    }
+
+    public function isMilosevacOutage(): bool
+    {
+        if ($this->relationLoaded('places')) {
+            return $this->places->contains(fn (Place $place) => $place->is_primary);
+        }
+
+        return $this->places()->where('is_primary', true)->exists();
+    }
+
+    public function outageStatus(?\Carbon\Carbon $now = null): ?string
+    {
+        if ($this->service_type !== 'power_outage') {
+            return null;
+        }
+
+        $now ??= now('Europe/Sarajevo');
+        $starts = $this->notice_starts_at;
+        $ends = $this->notice_ends_at;
+
+        if (! $starts || ! $ends) {
+            return null;
+        }
+
+        if ($now->lt($starts)) {
+            return 'upcoming';
+        }
+
+        if ($now->lt($ends)) {
+            return 'active';
+        }
+
+        return 'past';
     }
 
     public function views(): HasMany

@@ -88,4 +88,38 @@ U Google Search Console prijaviti samo `/sitemap.xml`; iz njega se automatski č
 - Image pipeline generiše WebP varijante 480w, 768w, 1200w i 1600w, čuva originalni source fajl i puni `srcset` na javnom portalu.
 - Za produkciju preporuka je uključiti S3-compatible disk/CDN i periodičan backup `storage/app/public`.
 
+## Automatski prekidi struje (Elektro Doboj)
+
+Ingest pipeline čita obavijesti iz inboxa, parsira ih deterministički i objavljuje kao `power_outage` članke.
+
+Env varijable (vidi `.env.example`):
+
+- `OUTAGE_IMAP_*` — IMAP pristup inboxu
+- `OUTAGE_IMAP_FROM` — adresa pošiljaoca Elektro Doboja
+- `OUTAGE_SUBJECT` — subject filter (default: `planiranim prekidima`)
+- `OUTAGE_AUTO_PUBLISH=true` — automatska objava (isključiti dok testirate)
+
+Komande:
+
+```bash
+# Dry-run na lokalnom fixtureu
+php artisan outages:ingest --dry-run --fixture=tests/fixtures/power-outage-dobrinja.txt --message-id=test-15175
+
+# Dry-run na pravom inboxu (IMAP mora biti podešen)
+php artisan outages:ingest --dry-run
+
+# Produkcijska objava
+php artisan outages:ingest
+```
+
+Scheduler: svaki sat 07–16h (`Europe/Sarajevo`), vidi `bootstrap/app.php`.
+
+Javni API:
+
+- `GET /api/outages`
+- `GET /api/outages?place=milosevac`
+- `GET /api/outages?status=upcoming|active|past`
+
+Frontend stranica: `/prekidi-struje`.
+
 Za produkciju uključiti `APP_ENV=production`, `APP_DEBUG=false`, HTTPS, queue worker, cron za scheduler, `php artisan optimize`, CDN/S3 za slike, dnevni backup baze i storage fajlova, te Redis cache ako je dostupan.

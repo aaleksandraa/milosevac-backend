@@ -2,311 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\FootballMatch;
 use App\Models\Post;
-use App\Models\PostView;
 use App\Models\Setting;
-use App\Models\Tag;
-use App\Models\User;
+use App\Support\AdPositions;
 use App\Support\ArticleContent;
-use App\Support\Seo;
+use App\Support\PowerOutage\OutageQueryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * JSON API consumed by the React frontend. Public pages themselves are rendered
+ * by the SPA; Laravel only serves data, sitemaps and social previews.
+ */
 class PublicPortalController extends Controller
 {
-    public function home()
-    {
-        $posts = Post::published()->with(['category', 'author', 'tags'])->portalOrder()->paginate(12);
-        $activeNotices = Post::published()->with(['category', 'author', 'tags'])->activeNotices()->latest('notice_ends_at')->take(3)->get();
-        $featured = $activeNotices
-            ->concat(Post::published()->with(['category', 'author'])->where('is_featured', true)->latest('published_at')->take(6)->get())
-            ->unique('id')
-            ->take(4);
-        $popular = $this->popularPosts();
-        $breaking = Post::published()->where('is_breaking', true)->latest('published_at')->take(6)->get();
-        $categories = $this->categories();
-
-        return view('portal.home', [
-            'seo' => Seo::paginated(Seo::page('Najnovije vijesti', 'Lokalne vijesti, servisne informacije i magazinske priče iz Miloševca.'), $posts),
-            'posts' => $posts,
-            'featured' => $featured,
-            'popular' => $popular,
-            'breaking' => $breaking,
-            'activeNotices' => $activeNotices,
-            'categories' => $categories,
-        ]);
-    }
-
-    public function aboutMilosevac()
-    {
-        return view('portal.about-milosevac', [
-            'seo' => Seo::page(
-                'O Miloševcu',
-                'O Miloševcu: istorija, život, ljudi, fotografije i lokalne priče iz Miloševca, Modriča, Republika Srpska.',
-                route('about-milosevac')
-            ),
-        ]);
-    }
-
-    public function showPost(Request $request, string $slug)
-    {
-        $post = Post::published()->with(['category', 'author', 'tags'])->where('slug', $slug)->firstOrFail();
-
-        $fingerprint = [
-            'post_id' => $post->id,
-            'ip_hash' => hash('sha256', (string) $request->ip()),
-            'user_agent_hash' => hash('sha256', (string) $request->userAgent()),
-            'viewed_at' => now(),
-        ];
-        PostView::create($fingerprint);
-        $post->increment('views_count');
-
-        $related = Post::published()
-            ->with(['category', 'author'])
-            ->where('id', '!=', $post->id)
-            ->where(function ($query) use ($post) {
-                $query->where('category_id', $post->category_id)
-                    ->orWhereHas('tags', fn ($tagQuery) => $tagQuery->whereIn('tags.id', $post->tags->pluck('id')));
-            })
-            ->latest('published_at')
-            ->take(4)
-            ->get();
-
-        return view('portal.post', [
-            'seo' => Seo::post($post),
-            'post' => $post,
-            'related' => $related,
-            'popular' => $this->popularPosts(),
-        ]);
-    }
-
-    public function category(Request $request, Category $category)
-    {
-        [$sort, $activeTags] = $this->archiveFilters($request);
-        $categoryIds = $category->children()->exists()
-            ? $category->children()->pluck('id')->push($category->id)
-            : collect([$category->id]);
-
-        $tagOptions = Tag::whereHas('posts', fn ($query) => $this->postsInCategoryIds($query, $categoryIds)->published())
-            ->orderBy('name')
-            ->get();
-
-        $query = Post::query()
-            ->published()
-            ->with(['author', 'category', 'tags'])
-            ->where(fn ($postQuery) => $this->postsInCategoryIds($postQuery, $categoryIds))
-            ->when($activeTags->isNotEmpty(), fn ($postQuery) => $postQuery->whereHas('tags', fn ($tagQuery) => $tagQuery->whereIn('tags.slug', $activeTags)));
-
-        $posts = $this->applyArchiveSort($query, $sort)->paginate(12)->withQueryString();
-        $seo = Seo::paginated(Seo::category($category), $posts);
-        if ($activeTags->isNotEmpty() || $sort !== 'new') {
-            $seo = Seo::noindex($seo);
-        }
-
-        return view('portal.archive', [
-            'seo' => $seo,
-            'title' => $category->name,
-            'description' => $category->description,
-            'posts' => $posts,
-            'popular' => $this->popularPosts(),
-            'archiveType' => 'category',
-            'sort' => $sort,
-            'activeTags' => $activeTags,
-            'tagOptions' => $tagOptions,
-        ]);
-    }
-
-    public function tag(Request $request, Tag $tag)
-    {
-        [$sort] = $this->archiveFilters($request);
-        $posts = $this->applyArchiveSort($tag->posts()->published()->with(['author', 'category', 'tags']), $sort)
-            ->paginate(12)
-            ->withQueryString();
-        $seo = Seo::paginated(Seo::tag($tag), $posts);
-        if ($sort !== 'new') {
-            $seo = Seo::noindex($seo);
-        }
-
-        return view('portal.archive', [
-            'seo' => $seo,
-            'title' => '#'.$tag->name,
-            'description' => $tag->description,
-            'posts' => $posts,
-            'popular' => $this->popularPosts(),
-            'archiveType' => 'tag',
-            'sort' => $sort,
-            'activeTags' => collect(),
-            'tagOptions' => collect(),
-        ]);
-    }
-
-    public function author(Request $request, User $author)
-    {
-        [$sort] = $this->archiveFilters($request);
-        $posts = $this->applyArchiveSort($author->posts()->published()->with(['author', 'category', 'tags']), $sort)
-            ->paginate(12)
-            ->withQueryString();
-        $seo = Seo::paginated(Seo::author($author), $posts);
-        if ($sort !== 'new') {
-            $seo = Seo::noindex($seo);
-        }
-
-        return view('portal.archive', [
-            'seo' => $seo,
-            'title' => $author->name,
-            'description' => $author->bio,
-            'posts' => $posts,
-            'popular' => $this->popularPosts(),
-            'archiveType' => 'author',
-            'sort' => $sort,
-            'activeTags' => collect(),
-            'tagOptions' => collect(),
-        ]);
-    }
-
-    public function search(Request $request)
-    {
-        $q = trim((string) $request->query('q'));
-        $posts = Post::published()
-            ->with(['author', 'category', 'tags'])
-            ->when($q, fn ($query) => $query->where(function ($inner) use ($q) {
-                $inner->where('title', 'like', "%{$q}%")
-                    ->orWhere('excerpt', 'like', "%{$q}%")
-                    ->orWhere('content', 'like', "%{$q}%");
-            }))
-            ->latest('published_at')
-            ->paginate(12)
-            ->withQueryString();
-
-        return view('portal.archive', [
-            'seo' => Seo::noindex(Seo::paginated(Seo::page('Pretraga', $q ? "Rezultati pretrage za {$q}" : 'Pretražite vijesti i članke.', route('search')), $posts)),
-            'title' => $q ? "Pretraga: {$q}" : 'Pretraga',
-            'description' => 'Brza pretraga portala.',
-            'posts' => $posts,
-            'popular' => $this->popularPosts(),
-            'archiveType' => 'search',
-            'sort' => 'new',
-            'activeTags' => collect(),
-            'tagOptions' => collect(),
-        ]);
-    }
-
-    public function fkPosavina()
-    {
-        $sportPosts = Post::published()
-            ->with(['category', 'author', 'tags'])
-            ->where(function ($query) {
-                $query->whereHas('category', fn ($categoryQuery) => $this->sportCategoryFilter($categoryQuery))
-                    ->orWhereHas('categories', fn ($categoryQuery) => $this->sportCategoryFilter($categoryQuery));
-            })
-            ->latest('published_at')
-            ->take(6)
-            ->get();
-        $matches = FootballMatch::published()
-            ->with(['author', 'media'])
-            ->latest('played_at')
-            ->take(6)
-            ->get();
-        $galleryMatches = FootballMatch::published()
-            ->with(['author', 'media'])
-            ->whereHas('media')
-            ->latest('played_at')
-            ->take(9)
-            ->get();
-
-        $description = 'Rezultati, raspored utakmica, vijesti i galerije FK Posavina Miloševac na jednom mjestu.';
-        $seo = Seo::page(
-            'FK Posavina rezultati, raspored i galerije',
-            $description,
-            route('fk-posavina'),
-            null,
-            [
-                '@context' => 'https://schema.org',
-                '@type' => 'CollectionPage',
-                'name' => 'FK Posavina',
-                'description' => $description,
-                'url' => route('fk-posavina'),
-                'isPartOf' => [
-                    '@type' => 'WebSite',
-                    'name' => Seo::site()['name'],
-                    'url' => route('home'),
-                ],
-                'about' => [
-                    '@type' => 'SportsTeam',
-                    'name' => 'FK Posavina',
-                    'sport' => 'Football',
-                    'url' => route('fk-posavina'),
-                    'memberOf' => [
-                        '@type' => 'SportsOrganization',
-                        'name' => 'Područna liga Republike Srpske - Modriča - Šamac, grupa B',
-                    ],
-                ],
-            ]
-        );
-
-        $seo['schemas'][] = Seo::breadcrumb([
-            ['name' => 'Naslovna', 'url' => route('home')],
-            ['name' => 'FK Posavina', 'url' => route('fk-posavina')],
-        ]);
-
-        $seoItems = $matches->map(fn (FootballMatch $match) => [
-            'url' => route('matches.show', $match->slug),
-            'name' => $match->title,
-        ])->concat($sportPosts->map(fn (Post $post) => [
-            'url' => route('posts.show', $post->slug),
-            'name' => $post->title,
-        ]))->take(10)->values();
-
-        if ($seoItems->isNotEmpty()) {
-            $seo['schemas'][] = [
-                '@context' => 'https://schema.org',
-                '@type' => 'ItemList',
-                'name' => 'FK Posavina utakmice, galerije i vijesti',
-                'itemListElement' => $seoItems->map(fn (array $item, int $index) => [
-                    '@type' => 'ListItem',
-                    'position' => $index + 1,
-                    'url' => $item['url'],
-                    'name' => $item['name'],
-                ])->all(),
-            ];
-        }
-
-        return view('portal.fk-posavina', [
-            'seo' => $seo,
-            'sportPosts' => $sportPosts,
-            'matches' => $matches,
-            'galleryMatches' => $galleryMatches,
-            'popular' => $this->popularPosts(),
-        ]);
-    }
-
-    public function showMatch(FootballMatch $match)
-    {
-        abort_unless($match->status === 'published' && $match->published_at, 404);
-        $match->load(['author', 'media']);
-
-        return view('portal.match', [
-            'seo' => Seo::page(
-                $match->meta_title ?: $match->title,
-                $match->meta_description ?: $match->excerpt,
-                route('matches.show', $match->slug),
-                Seo::storageImage($match->cover_image),
-                [
-                    '@context' => 'https://schema.org',
-                    '@type' => 'SportsEvent',
-                    'name' => $match->title,
-                    'startDate' => optional($match->played_at)->toIso8601String(),
-                    'location' => $match->venue ? ['@type' => 'Place', 'name' => $match->venue] : null,
-                    'url' => route('matches.show', $match->slug),
-                ]
-            ),
-            'match' => $match,
-            'popular' => $this->popularPosts(),
-        ]);
-    }
-
     public function apiFkPosavina(Request $request)
     {
         $matches = FootballMatch::published()
@@ -339,12 +49,13 @@ class PublicPortalController extends Controller
                     'published_at', 'reading_time', 'is_breaking', 'label',
                     'service_type', 'notice_starts_at', 'notice_ends_at',
                     'views_count', 'featured_image', 'featured_image_alt',
-                    'featured_image_responsive',
+                    'featured_image_responsive', 'canonical_url', 'seo_metadata',
                 ])
                 ->with([
                     'author:id,name',
                     'category:id,parent_id,slug',
                     'category.parent:id,slug',
+                    'places:id,slug,name,locative,is_primary',
                 ])
                 ->when($category, fn ($query) => $query->where(function ($inner) use ($category) {
                     $inner->whereHas('category', fn ($categoryQuery) => $this->categorySlugFilter($categoryQuery, $category))
@@ -372,8 +83,26 @@ class PublicPortalController extends Controller
         );
 
         return response()->json([
-            'article' => $this->postApiPayload($post->load(['author', 'category.parent', 'tags', 'galleryMedia'])),
+            'article' => $this->postApiPayload($post->load(['author', 'category.parent', 'tags', 'galleryMedia', 'places'])),
         ]);
+    }
+
+    public function apiOutages(Request $request, OutageQueryService $outages)
+    {
+        $place = trim((string) $request->query('place')) ?: null;
+        $status = trim((string) $request->query('status')) ?: null;
+        $limit = min(max((int) $request->integer('limit', 100), 1), 500);
+
+        if ($status && ! in_array($status, ['upcoming', 'active', 'past'], true)) {
+            abort(422, 'Nepoznat status filter.');
+        }
+
+        $posts = $outages->fetch($place, $status, $limit);
+
+        return response()->json([
+            'places' => $outages->listPlaces(),
+            'outages' => $posts->map(fn (Post $post) => $this->outageApiPayload($post))->values(),
+        ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
     public function apiShowMatch(Request $request, FootballMatch $match)
@@ -390,7 +119,7 @@ class PublicPortalController extends Controller
         $settings = cache()->remember('settings.ads.public', 600, fn () => Setting::where('key', 'ad_settings')->first()?->value ?? []);
         $google = data_get($settings, 'google', []);
         $clientId = data_get($google, 'client_id') ?: 'ca-pub-1407310093643341';
-        $slots = collect($this->adPositions())->mapWithKeys(fn ($label, $key) => [$key => [
+        $slots = collect(AdPositions::all())->mapWithKeys(fn ($label, $key) => [$key => [
             'label' => $label,
             'enabled' => (bool) data_get($settings, "slots.$key.enabled"),
         ]]);
@@ -400,11 +129,6 @@ class PublicPortalController extends Controller
             'clientId' => $clientId,
             'slots' => $slots,
         ]);
-    }
-
-    public function sitemap()
-    {
-        return response()->view('seo.sitemap-index')->header('Content-Type', 'application/xml');
     }
 
     private function matchApiPayload(FootballMatch $match, Request $request, bool $includePhotos = false): array
@@ -479,15 +203,41 @@ class PublicPortalController extends Controller
             'urgent' => $post->is_breaking || $post->label === 'hitno',
             'notice' => $post->hasActiveNoticePriority(),
             'label' => $post->service_type ?: $post->label,
+            'serviceType' => $post->service_type,
+            'noticeStartsAt' => optional($post->notice_starts_at)->toIso8601String(),
+            'noticeEndsAt' => optional($post->notice_ends_at)->toIso8601String(),
+            'outageStatus' => $post->outageStatus(),
+            'locationsRaw' => data_get($post->seo_metadata, 'outage.locationsRaw'),
+            'transformerArea' => data_get($post->seo_metadata, 'outage.transformerArea'),
+            'fieldUnit' => data_get($post->seo_metadata, 'outage.fieldUnit'),
+            'sourceUrl' => data_get($post->seo_metadata, 'outage.sourceUrl') ?: $post->canonical_url,
+            'places' => $post->relationLoaded('places')
+                ? $post->places->map(fn ($place) => [
+                    'slug' => $place->slug,
+                    'name' => $place->name,
+                    'locative' => $place->locative,
+                    'isPrimary' => (bool) $place->is_primary,
+                ])->values()
+                : [],
             'tags' => $includeTags ? $post->tags->pluck('slug')->values() : [],
             'views' => $post->views_count,
-            'image' => $post->featured_image ? '/storage/'.ltrim($post->featured_image, '/') : null,
+            'image' => $post->featured_image
+                ? '/storage/'.ltrim($post->featured_image, '/')
+                : ($post->service_type === 'power_outage' ? '/default-power-notice.svg' : null),
             'imageSrcSet' => $this->existingImageSrcSet($post->featured_image_responsive),
             'imageAlt' => $post->featured_image_alt ?: $post->title,
             'contentHtml' => $includeContent ? ArticleContent::prepare($post->content) : null,
             'gallery' => $gallery,
             'galleryCount' => $gallery->count(),
-            'body' => [],
+        ];
+    }
+
+    private function outageApiPayload(Post $post): array
+    {
+        return [
+            ...$this->postApiPayload($post, false, true),
+            'noticeSchedule' => $post->notice_schedule,
+            'externalId' => data_get($post->seo_metadata, 'outage.externalId'),
         ];
     }
 
@@ -510,155 +260,10 @@ class PublicPortalController extends Controller
         return $request->getSchemeAndHttpHost().'/storage/'.ltrim($path, '/');
     }
 
-    public function sitemapPages()
-    {
-        $lastmod = collect([
-            Post::published()->max('updated_at'),
-            FootballMatch::published()->max('updated_at'),
-        ])->filter()->max() ?: now();
-
-        return response()->view('seo.sitemap-pages', compact('lastmod'))->header('Content-Type', 'application/xml');
-    }
-
-    public function sitemapPosts()
-    {
-        $posts = Post::published()->with(['category', 'author', 'tags'])->latest('updated_at')->get();
-
-        return response()->view('seo.sitemap-posts', compact('posts'))->header('Content-Type', 'application/xml');
-    }
-
-    public function sitemapMatches()
-    {
-        $matches = FootballMatch::published()->with('media')->latest('updated_at')->get();
-
-        return response()->view('seo.sitemap-matches', compact('matches'))->header('Content-Type', 'application/xml');
-    }
-
-    public function sitemapNews()
-    {
-        $posts = Post::published()
-            ->with(['category', 'tags'])
-            ->where('published_at', '>=', now()->subDays(2))
-            ->latest('published_at')
-            ->limit(1000)
-            ->get();
-
-        return response()->view('seo.sitemap-news', compact('posts'))->header('Content-Type', 'application/xml');
-    }
-
-    public function sitemapTaxonomies()
-    {
-        $categories = Category::where('is_active', true)->get();
-        $tags = Tag::all();
-        $authors = User::whereHas('posts', fn ($query) => $query->published())->get();
-
-        return response()->view('seo.sitemap-taxonomies', compact('categories', 'tags', 'authors'))->header('Content-Type', 'application/xml');
-    }
-
-    public function robots()
-    {
-        $frontend = rtrim(config('services.frontend.url'), '/');
-        $robots = implode("\n", [
-            'User-agent: *',
-            'Allow: /',
-            'Allow: /sitemap.xml',
-            'Allow: /sitemap-pages.xml',
-            'Allow: /sitemap-posts.xml',
-            'Allow: /sitemap-news.xml',
-            'Allow: /sitemap-matches.xml',
-            'Allow: /sitemap-taxonomies.xml',
-            'Disallow: /api/',
-            'Disallow: /admin',
-            'Disallow: /author',
-            'Disallow: /login',
-            'Disallow: /pretraga',
-            '',
-            'Sitemap: '.$frontend.'/sitemap.xml',
-            '',
-        ]);
-
-        return response($robots, 200)->header('Content-Type', 'text/plain');
-    }
-
-    public function feed()
-    {
-        $posts = Post::published()->with(['category', 'author'])->latest('published_at')->take(30)->get();
-
-        return response()->view('seo.feed', compact('posts'))->header('Content-Type', 'application/rss+xml');
-    }
-
-    private function popularPosts()
-    {
-        return cache()->remember('posts.popular', 600, fn () => Post::published()->with(['category', 'author'])->orderByDesc('views_count')->take(5)->get());
-    }
-
-    private function adPositions(): array
-    {
-        return [
-            'top_banner' => 'Top banner ispod navigacije',
-            'home_after_featured' => 'Naslovna poslije izdvojenih vijesti',
-            'home_mid_feed' => 'Naslovna izmedju liste vijesti',
-            'archive_top' => 'Arhive/kategorije ispod zaglavlja',
-            'archive_mid_feed' => 'Arhive/kategorije izmedju vijesti',
-            'sidebar_primary' => 'Sidebar 300x250',
-            'sidebar_secondary' => 'Sidebar manji/native oglas',
-            'article_inline' => 'Unutar clanka / utakmice',
-            'article_top' => 'Clanak ispod uvoda',
-            'article_mid' => 'Sredina clanka',
-            'club_after_results' => 'FK Posavina poslije rezultata',
-            'match_gallery_top' => 'Utakmica iznad galerije',
-            'match_mid' => 'Sredina izvjestaja utakmice',
-            'footer_banner' => 'Banner iznad footera',
-        ];
-    }
-
-    private function categories()
-    {
-        return cache()->remember('categories.menu', 3600, fn () => Category::where('is_active', true)->whereNull('parent_id')->with('children')->orderBy('sort_order')->get());
-    }
-
-    private function archiveFilters(Request $request): array
-    {
-        $sort = in_array($request->query('sort'), ['new', 'old', 'popular', 'reading'], true) ? $request->query('sort') : 'new';
-        $rawTags = $request->query('tags', $request->query('tag', []));
-        $tags = collect(is_array($rawTags) ? $rawTags : explode(',', (string) $rawTags))
-            ->map(fn ($tag) => trim((string) $tag))
-            ->filter()
-            ->unique()
-            ->values();
-
-        return [$sort, $tags];
-    }
-
-    private function applyArchiveSort($query, string $sort)
-    {
-        return match ($sort) {
-            'old' => $query->orderBy('published_at'),
-            'popular' => $query->orderByDesc('views_count')->latest('published_at'),
-            'reading' => $query->orderByDesc('reading_time')->latest('published_at'),
-            default => $query->latest('published_at'),
-        };
-    }
-
-    private function postsInCategoryIds($query, $categoryIds)
-    {
-        return $query
-            ->whereIn('category_id', $categoryIds)
-            ->orWhereHas('categories', fn ($categoryQuery) => $categoryQuery->whereIn('categories.id', $categoryIds));
-    }
-
     private function categorySlugFilter($query, string $category)
     {
         return $query
             ->where('slug', $category)
             ->orWhereHas('parent', fn ($parentQuery) => $parentQuery->where('slug', $category));
-    }
-
-    private function sportCategoryFilter($query)
-    {
-        return $query
-            ->where('slug', 'sport')
-            ->orWhere('slug', 'like', 'sport-%')
-            ->orWhere('name', 'like', '%Posavina%');
     }
 }

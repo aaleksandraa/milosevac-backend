@@ -7,14 +7,13 @@ use App\Models\FootballMatch;
 use App\Models\Media;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Support\DateFormat;
 use App\Support\HtmlSanitizer;
 use App\Support\ImagePipeline;
-use App\Support\DateFormat;
+use App\Support\MatchMediaManager;
 use App\Support\PostMediaManager;
 use App\Support\PostTaxonomyManager;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -156,10 +155,7 @@ class AuthorController extends Controller
         }
 
         $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
-        $data['service_type'] = null;
-        $data['notice_starts_at'] = null;
-        $data['notice_ends_at'] = null;
-        $data['notice_schedule'] = null;
+        // Preserve service_type / notice window set by outage ingest.
         $data['author_id'] = $post->author_id ?: $request->user()->id;
         $data['published_at'] = $data['status'] === 'published' ? ($data['published_at'] ?: now()) : ($data['published_at'] ?? $post->published_at);
         $post->fill($data)->save();
@@ -191,15 +187,7 @@ class AuthorController extends Controller
             'content' => ['nullable', 'string'],
             'status' => ['required', Rule::in($allowedStatus)],
             'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
-            'gallery_order' => ['array'],
-            'gallery_order.*' => ['integer', 'exists:media,id'],
-            'gallery_captions' => ['array'],
-            'gallery_captions.*' => ['nullable', 'string', 'max:255'],
-            'delete_gallery' => ['array'],
-            'delete_gallery.*' => ['integer', 'exists:media,id'],
-            'gallery_images' => ['array'],
-            'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
-        ]);
+        ] + MatchMediaManager::validationRules());
 
         $data['content'] = app(HtmlSanitizer::class)->clean((string) ($data['content'] ?? ''));
         $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
@@ -216,80 +204,6 @@ class AuthorController extends Controller
         }
 
         $match->fill($data)->save();
-        $this->syncMatchGallery($request, $match);
-    }
-
-    private function syncMatchGallery(Request $request, FootballMatch $match): void
-    {
-        $deleteIds = collect($request->input('delete_gallery', []))
-            ->map(fn ($id) => (int) $id)
-            ->filter()
-            ->unique()
-            ->values();
-
-        if ($deleteIds->isNotEmpty()) {
-            $mediaToDelete = $match->media()
-                ->whereIn('media.id', $deleteIds)
-                ->get();
-
-            $match->media()->detach($mediaToDelete->pluck('id'));
-            $mediaToDelete->each(fn (Media $media) => $this->deleteMediaIfUnused($media));
-        }
-
-        $attachedIds = $match->media()
-            ->pluck('media.id')
-            ->map(fn ($id) => (int) $id)
-            ->all();
-
-        $orderedIds = collect($request->input('gallery_order', []))
-            ->map(fn ($id) => (int) $id)
-            ->filter(fn ($id) => in_array($id, $attachedIds, true))
-            ->unique()
-            ->values();
-
-        $sort = 0;
-        foreach ($orderedIds as $mediaId) {
-            $match->media()->updateExistingPivot($mediaId, ['sort_order' => ++$sort]);
-        }
-
-        foreach (collect($attachedIds)->diff($orderedIds) as $mediaId) {
-            $match->media()->updateExistingPivot($mediaId, ['sort_order' => ++$sort]);
-        }
-
-        foreach ($request->input('gallery_captions', []) as $mediaId => $caption) {
-            $mediaId = (int) $mediaId;
-            if (in_array($mediaId, $attachedIds, true)) {
-                $match->media()->updateExistingPivot($mediaId, [
-                    'caption' => trim((string) $caption) ?: null,
-                ]);
-            }
-        }
-
-        foreach ($request->file('gallery_images', []) as $image) {
-            $processed = app(ImagePipeline::class)->process($image, $request->user()->id, null, 'matches/galleries', true);
-            $media = Media::where('path', $processed['path'])->latest('id')->first();
-            if ($media) {
-                $match->media()->attach($media->id, ['sort_order' => ++$sort]);
-            }
-        }
-    }
-
-    private function deleteMediaIfUnused(Media $media): void
-    {
-        $isUsedByMatch = DB::table('match_media')->where('media_id', $media->id)->exists();
-        if ($isUsedByMatch || $media->post_id) {
-            return;
-        }
-
-        $paths = collect($media->responsive_paths['variants'] ?? [])
-            ->pluck('path')
-            ->push($media->responsive_paths['original'] ?? null)
-            ->push($media->path)
-            ->filter()
-            ->unique()
-            ->all();
-
-        Storage::disk($media->disk ?: 'public')->delete($paths);
-        $media->delete();
+        app(MatchMediaManager::class)->syncGallery($request, $match);
     }
 }

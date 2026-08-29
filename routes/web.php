@@ -4,7 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\FrontendRedirectController;
-use App\Http\Controllers\PublicPortalController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontendRedirectController::class, 'home'])->name('home');
@@ -17,18 +17,19 @@ Route::get('/pretraga', [FrontendRedirectController::class, 'search'])->name('se
 Route::get('/fk-posavina', [FrontendRedirectController::class, 'fkPosavina'])->name('fk-posavina');
 Route::get('/fk-posavina/utakmica/{match}', [FrontendRedirectController::class, 'match'])->name('matches.show');
 Route::get('/vrijeme', [FrontendRedirectController::class, 'weather'])->name('weather.show');
+Route::get('/prekidi-struje', [FrontendRedirectController::class, 'powerOutages'])->name('power-outages.show');
 Route::get('/kontakt', [FrontendRedirectController::class, 'contact'])->name('contact');
 Route::get('/politika-privatnosti', [FrontendRedirectController::class, 'privacy'])->name('privacy');
 Route::get('/politika-kolacica', [FrontendRedirectController::class, 'cookies'])->name('cookies');
 Route::get('/uslovi-koristenja', [FrontendRedirectController::class, 'terms'])->name('terms');
-Route::get('/sitemap.xml', [PublicPortalController::class, 'sitemap'])->name('sitemap');
-Route::get('/sitemap-pages.xml', [PublicPortalController::class, 'sitemapPages'])->name('sitemap.pages');
-Route::get('/sitemap-posts.xml', [PublicPortalController::class, 'sitemapPosts'])->name('sitemap.posts');
-Route::get('/sitemap-matches.xml', [PublicPortalController::class, 'sitemapMatches'])->name('sitemap.matches');
-Route::get('/sitemap-news.xml', [PublicPortalController::class, 'sitemapNews'])->name('sitemap.news');
-Route::get('/sitemap-taxonomies.xml', [PublicPortalController::class, 'sitemapTaxonomies'])->name('sitemap.taxonomies');
-Route::get('/robots.txt', [PublicPortalController::class, 'robots'])->name('robots');
-Route::get('/feed.xml', [PublicPortalController::class, 'feed'])->name('feed');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
+Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts'])->name('sitemap.posts');
+Route::get('/sitemap-matches.xml', [SitemapController::class, 'matches'])->name('sitemap.matches');
+Route::get('/sitemap-news.xml', [SitemapController::class, 'news'])->name('sitemap.news');
+Route::get('/sitemap-taxonomies.xml', [SitemapController::class, 'taxonomies'])->name('sitemap.taxonomies');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+Route::get('/feed.xml', [SitemapController::class, 'feed'])->name('feed');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
