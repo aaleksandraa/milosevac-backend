@@ -19,6 +19,34 @@ class PlaceMatcher
             $notice->fieldUnit,
         ]);
 
+        return $this->matchHaystack($haystack, $places);
+    }
+
+    /** Prefer the settlement named in the email over the broader field unit (e.g. Vranjak over Modriča). */
+    public function primaryForTitle(PowerOutageNotice $notice, array $places, ?Collection $dictionary = null): ?MatchedPlace
+    {
+        if ($places === []) {
+            return null;
+        }
+
+        $dictionary ??= Place::query()->orderByDesc('is_primary')->orderBy('sort_order')->get();
+        $bySlug = collect($places)->keyBy('slug');
+
+        foreach ([$notice->locationsRaw, $notice->transformerArea, $notice->fieldUnit] as $segment) {
+            foreach ($this->matchHaystack($segment, $dictionary) as $match) {
+                $place = $bySlug->get($match->slug);
+                if ($place !== null && filled($place->locative)) {
+                    return $place;
+                }
+            }
+        }
+
+        return collect($places)->first(fn (MatchedPlace $place) => filled($place->locative));
+    }
+
+    /** @return list<MatchedPlace> */
+    private function matchHaystack(string $haystack, Collection $places): array
+    {
         $haystackKey = $this->normalizer->key($haystack);
         $matched = [];
 

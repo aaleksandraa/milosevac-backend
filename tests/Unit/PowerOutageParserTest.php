@@ -60,6 +60,24 @@ class PowerOutageParserTest extends TestCase
         $this->assertSame('modrica', $places[0]->slug);
     }
 
+    public function test_parses_vranjak_fixture_and_prefers_settlement_in_title(): void
+    {
+        $body = file_get_contents(base_path('tests/fixtures/power-outage-vranjak.txt'));
+        $notice = (new NoticeParser())->parse($body);
+
+        $this->assertSame('15169', $notice->externalId);
+        $this->assertStringContainsString('Vranjak', $notice->locationsRaw);
+        $this->assertSame('Modriča', $notice->fieldUnit);
+
+        $places = (new PlaceMatcher())->match($notice);
+        $slugs = collect($places)->pluck('slug')->all();
+        $this->assertContains('vranjak', $slugs);
+        $this->assertContains('modrica', $slugs);
+
+        $title = (new ArticleWriter())->title($notice, $places);
+        $this->assertSame('Planirani prekid struje u Vranjku 28. avgusta', $title);
+    }
+
     public function test_place_normalizer_matches_mixed_scripts(): void
     {
         $normalizer = new PlaceNormalizer(new CyrillicLatin());

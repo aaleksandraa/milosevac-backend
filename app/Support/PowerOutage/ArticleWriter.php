@@ -4,12 +4,14 @@ namespace App\Support\PowerOutage;
 
 class ArticleWriter
 {
+    public function __construct(private PlaceMatcher $matcher = new PlaceMatcher()) {}
+
     /** @param list<MatchedPlace> $places */
     public function title(PowerOutageNotice $notice, array $places): string
     {
         $dateLabel = $this->dateLabel($notice);
 
-        $primaryPlace = collect($places)->first(fn (MatchedPlace $place) => filled($place->locative));
+        $primaryPlace = $this->matcher->primaryForTitle($notice, $places);
         if ($primaryPlace?->locative) {
             return sprintf(
                 'Planirani prekid struje u %s %s',
