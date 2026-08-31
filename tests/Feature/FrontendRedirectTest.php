@@ -38,8 +38,30 @@ class FrontendRedirectTest extends TestCase
             ->assertSee('<meta property="og:title" content="Testni objavljeni članak | Miloševac">', false)
             ->assertSee('<meta property="og:description" content="Testni sažetak.">', false)
             ->assertSee('<meta property="og:image" content="http://localhost/storage/wordpress/test-thumbnail.webp">', false)
-            ->assertSee('<link rel="canonical" href="http://localhost/clanak/testni-objavljeni-clanak">', false)
+            ->assertSee('<link rel="canonical" href="http://localhost:8080/clanak/testni-objavljeni-clanak">', false)
             ->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
+    }
+
+    public function test_facebook_user_agent_receives_social_preview_without_custom_header(): void
+    {
+        $this->seed();
+        $post = $this->createPublishedPost();
+
+        $this->withHeader('User-Agent', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)')
+            ->get("/clanak/{$post->slug}")
+            ->assertOk()
+            ->assertSee('<meta property="og:title" content="Testni objavljeni članak | Miloševac">', false);
+    }
+
+    public function test_viber_user_agent_receives_social_preview_without_custom_header(): void
+    {
+        $this->seed();
+        $post = $this->createPublishedPost();
+
+        $this->withHeader('User-Agent', 'Viber')
+            ->get("/clanak/{$post->slug}")
+            ->assertOk()
+            ->assertSee('<meta property="og:title" content="Testni objavljeni članak | Miloševac">', false);
     }
 
     public function test_social_crawler_receives_metadata_for_static_frontend_pages(): void
@@ -49,7 +71,7 @@ class FrontendRedirectTest extends TestCase
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Kontakt | Miloševac">', false)
             ->assertSee('Pošaljite vijest, fotografiju, obavještenje ili prijedlog', false)
-            ->assertSee('<meta property="og:image" content="http://localhost/logo.webp">', false);
+            ->assertSee('<meta property="og:image" content="http://localhost:8080/logo.webp">', false);
     }
 
     public function test_content_api_exposes_published_cms_articles(): void

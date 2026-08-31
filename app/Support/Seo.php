@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Setting;
 use App\Models\Tag;
 use App\Models\User;
+use App\Support\PowerOutage\PowerOutageFeaturedImage;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
@@ -30,7 +31,7 @@ class Seo
         $canonical = self::absoluteUrl($canonical ?: URL::current());
         $title = Str::of($title)->contains($site['name']) ? (string) $title : "{$title} | {$site['name']}";
         $description = Str::limit(trim(html_entity_decode(strip_tags((string) ($description ?: $site['description'])))), 160, '');
-        $image = self::absoluteUrl($image ?: asset('logo.webp'));
+        $image = self::absoluteUrl($image ?: self::frontendUrl('logo.webp'));
         $imageType = match (strtolower(pathinfo(parse_url($image, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION))) {
             'jpg', 'jpeg' => 'image/jpeg',
             'png' => 'image/png',
@@ -62,7 +63,7 @@ class Seo
                 '@type' => 'Organization',
                 'name' => self::site()['name'],
             ],
-            'mainEntityOfPage' => route('posts.show', $post->slug),
+            'mainEntityOfPage' => self::frontendUrl('clanak/'.$post->slug),
             'articleSection' => $post->category->name,
             'keywords' => $post->tags->pluck('name')->implode(', '),
             'wordCount' => str_word_count(strip_tags($post->content)),
@@ -71,16 +72,18 @@ class Seo
         $seo = self::page(
             $post->meta_title ?: $post->title,
             $post->meta_description ?: $post->excerpt,
-            $post->canonical_url ?: route('posts.show', $post->slug),
-            self::storageImage($post->og_image ?: $post->featured_image),
+            $post->canonical_url ?: self::frontendUrl('clanak/'.$post->slug),
+            self::postShareImage($post),
             $schema,
             'article'
         );
 
+        $seo['image_alt'] = $post->featured_image_alt ?: $post->title;
+
         $seo['schemas'][] = self::breadcrumb([
-            ['name' => 'Početna', 'url' => route('home')],
-            ['name' => $post->category->name, 'url' => route('categories.show', $post->category->slug)],
-            ['name' => $post->title, 'url' => route('posts.show', $post->slug)],
+            ['name' => 'Početna', 'url' => self::frontendUrl('/')],
+            ['name' => $post->category->name, 'url' => self::frontendUrl('kategorija/'.$post->category->slug)],
+            ['name' => $post->title, 'url' => self::frontendUrl('clanak/'.$post->slug)],
         ]);
         $seo['published_at'] = optional($post->published_at)->toIso8601String();
         $seo['modified_at'] = $post->updated_at->toIso8601String();
@@ -113,19 +116,46 @@ class Seo
         return asset('storage/'.$selected);
     }
 
+    public static function frontendUrl(string $path = ''): string
+    {
+        $base = rtrim((string) config('services.frontend.url'), '/');
+        $path = ltrim($path, '/');
+
+        return $path === '' ? $base.'/' : $base.'/'.$path;
+    }
+
+    private static function postShareImage(Post $post): ?string
+    {
+        if ($post->service_type === 'power_outage') {
+            $bundle = app(PowerOutageFeaturedImage::class)->bundle($post->featured_image, $post->featured_image_responsive);
+
+            return self::storageImage($bundle['og_image'] ?: $bundle['path']);
+        }
+
+        return self::storageImage($post->og_image ?: $post->featured_image);
+    }
+
     public static function category(Category $category): array
     {
-        return self::archive($category->meta_title ?: $category->name, $category->meta_description ?: $category->description, route('categories.show', $category->slug));
+        return self::archive(
+            $category->meta_title ?: $category->name,
+            $category->meta_description ?: $category->description,
+            self::frontendUrl('kategorija/'.$category->slug),
+        );
     }
 
     public static function tag(Tag $tag): array
     {
-        return self::archive($tag->meta_title ?: '#'.$tag->name, $tag->meta_description ?: $tag->description, route('tags.show', $tag->slug));
+        return self::archive(
+            $tag->meta_title ?: '#'.$tag->name,
+            $tag->meta_description ?: $tag->description,
+            self::frontendUrl('kategorija/vijesti?tag='.$tag->slug),
+        );
     }
 
     public static function author(User $author): array
     {
-        return self::archive($author->name, $author->bio, route('authors.show', $author->slug));
+        return self::archive($author->name, $author->bio, self::frontendUrl('autor/'.$author->slug));
     }
 
     public static function archive(string $title, ?string $description, string $canonical): array
@@ -139,12 +169,12 @@ class Seo
             'isPartOf' => [
                 '@type' => 'WebSite',
                 'name' => self::site()['name'],
-                'url' => route('home'),
+                'url' => self::frontendUrl('/'),
             ],
         ]);
 
         $seo['schemas'][] = self::breadcrumb([
-            ['name' => 'Početna', 'url' => route('home')],
+            ['name' => 'Početna', 'url' => self::frontendUrl('/')],
             ['name' => $title, 'url' => $canonical],
         ]);
 

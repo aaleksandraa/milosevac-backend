@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use App\Support\Seo;
+use App\Support\SocialPreviewDetector;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -18,7 +19,8 @@ class FrontendRedirectController extends Controller
     {
         return $this->respond($request, '/', Seo::page(
             'Najnovije vijesti',
-            'Lokalne vijesti, servisne informacije i priče iz Miloševca.'
+            'Lokalne vijesti, servisne informacije i priče iz Miloševca.',
+            Seo::frontendUrl('/'),
         ));
     }
 
@@ -27,7 +29,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/omilosevcu', Seo::page(
             'O Miloševcu',
             'Istorija, život, ljudi, fotografije i lokalne priče iz Miloševca.',
-            route('about-milosevac')
+            Seo::frontendUrl('omilosevcu'),
         ));
     }
 
@@ -74,7 +76,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/', Seo::noindex(Seo::page(
             'Pretraga',
             'Pretražite vijesti i članke portala Miloševac.',
-            route('search')
+            Seo::frontendUrl('/'),
         )));
     }
 
@@ -83,7 +85,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/fk-posavina', Seo::page(
             'FK Posavina',
             'Rezultati, raspored utakmica, vijesti i galerije FK Posavina Miloševac.',
-            route('fk-posavina')
+            Seo::frontendUrl('fk-posavina'),
         ));
     }
 
@@ -98,7 +100,7 @@ class FrontendRedirectController extends Controller
         return $this->preview(Seo::page(
             $footballMatch->meta_title ?: $footballMatch->title,
             $footballMatch->meta_description ?: $footballMatch->excerpt,
-            route('matches.show', $footballMatch->slug),
+            Seo::frontendUrl('fk-posavina/utakmica/'.$footballMatch->slug),
             Seo::storageImage($footballMatch->cover_image)
         ));
     }
@@ -108,7 +110,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/vrijeme', Seo::page(
             'Vrijeme u Miloševcu',
             'Trenutno vrijeme i vremenska prognoza za Miloševac.',
-            route('weather.show')
+            Seo::frontendUrl('vrijeme'),
         ));
     }
 
@@ -117,7 +119,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/prekidi-struje', Seo::page(
             'Prekidi struje',
             'Planirani prekidi električne energije u Miloševcu i okolini.',
-            route('power-outages.show')
+            Seo::frontendUrl('prekidi-struje'),
         ));
     }
 
@@ -126,7 +128,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/kontakt', Seo::page(
             'Kontakt',
             'Pošaljite vijest, fotografiju, obavještenje ili prijedlog redakciji portala Miloševac.',
-            route('contact')
+            Seo::frontendUrl('kontakt'),
         ));
     }
 
@@ -135,7 +137,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/politika-privatnosti', Seo::page(
             'Politika privatnosti',
             'Kako portal Miloševac prikuplja, koristi i štiti podatke posjetilaca.',
-            route('privacy')
+            Seo::frontendUrl('politika-privatnosti'),
         ));
     }
 
@@ -144,7 +146,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/politika-kolacica', Seo::page(
             'Politika kolačića',
             'Informacije o kolačićima i postavkama privatnosti na portalu Miloševac.',
-            route('cookies')
+            Seo::frontendUrl('politika-kolacica'),
         ));
     }
 
@@ -153,7 +155,7 @@ class FrontendRedirectController extends Controller
         return $this->respond($request, '/uslovi-koristenja', Seo::page(
             'Uslovi korištenja',
             'Pravila korištenja sadržaja i usluga portala Miloševac.',
-            route('terms')
+            Seo::frontendUrl('uslovi-koristenja'),
         ));
     }
 
@@ -171,7 +173,7 @@ class FrontendRedirectController extends Controller
 
     private function wantsSocialPreview(Request $request): bool
     {
-        return $request->header('X-Social-Preview') === '1';
+        return SocialPreviewDetector::isSocialCrawler($request);
     }
 
     private function to(string $path, ?Request $request = null, array $query = []): RedirectResponse
