@@ -15,8 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('outages:ingest --retry-pending')
-            ->everyThirtyMinutes()
-            ->between('07:00', '20:00')
+            ->hourly()
+            ->between('08:00', '15:00')
             ->timezone('Europe/Sarajevo')
             ->withoutOverlapping();
     })
