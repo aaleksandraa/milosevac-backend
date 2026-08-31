@@ -72,7 +72,7 @@ class Seo
         $seo = self::page(
             $post->meta_title ?: $post->title,
             $post->meta_description ?: $post->excerpt,
-            $post->canonical_url ?: self::frontendUrl('clanak/'.$post->slug),
+            self::postShareUrl($post),
             self::postShareImage($post),
             $schema,
             'article'
@@ -133,6 +133,18 @@ class Seo
         }
 
         return self::storageImage($post->og_image ?: $post->featured_image);
+    }
+
+    private static function postShareUrl(Post $post): string
+    {
+        $frontend = self::frontendUrl('clanak/'.$post->slug);
+        $canonical = trim((string) $post->canonical_url);
+
+        if ($canonical !== '' && str_contains($canonical, 'milosevac.com')) {
+            return $canonical;
+        }
+
+        return $frontend;
     }
 
     public static function category(Category $category): array

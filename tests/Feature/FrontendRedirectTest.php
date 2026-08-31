@@ -39,7 +39,23 @@ class FrontendRedirectTest extends TestCase
             ->assertSee('<meta property="og:description" content="Testni sažetak.">', false)
             ->assertSee('<meta property="og:image" content="http://localhost/storage/wordpress/test-thumbnail.webp">', false)
             ->assertSee('<link rel="canonical" href="http://localhost:8080/clanak/testni-objavljeni-clanak">', false)
+            ->assertSee('<meta property="og:url" content="http://localhost:8080/clanak/testni-objavljeni-clanak">', false)
             ->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
+    }
+
+    public function test_social_preview_ignores_external_canonical_url(): void
+    {
+        $this->seed();
+        $post = $this->createPublishedPost();
+        $post->update([
+            'canonical_url' => 'http://elektrodoboj.net/UsluzniCentar/PrekidNapajanja?id=999',
+        ]);
+
+        $this->withHeader('User-Agent', 'facebookexternalhit/1.1')
+            ->get("/clanak/{$post->slug}")
+            ->assertOk()
+            ->assertSee('<meta property="og:url" content="http://localhost:8080/clanak/testni-objavljeni-clanak">', false)
+            ->assertDontSee('elektrodoboj.net', false);
     }
 
     public function test_facebook_user_agent_receives_social_preview_without_custom_header(): void

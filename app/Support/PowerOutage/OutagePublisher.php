@@ -50,7 +50,6 @@ class OutagePublisher
             'notice_starts_at' => $notice->noticeStartsAt(),
             'notice_ends_at' => $notice->noticeEndsAt(),
             'notice_schedule' => $notice->startsAt.'–'.$notice->endsAt,
-            'canonical_url' => $notice->sourceUrl,
             'is_breaking' => $isMilosevac,
             'seo_metadata' => [
                 'outage' => [
