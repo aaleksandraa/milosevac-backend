@@ -27,7 +27,9 @@ class OutagePublisher
         $category = Category::query()->where('slug', 'vijesti')->first()
             ?? Category::query()->firstOrFail();
 
-        $defaultImage = Post::powerOutageDefaultImagePath();
+        $featuredImage = app(PowerOutageFeaturedImage::class)->bundle();
+        $defaultImage = $featuredImage['path'];
+        $defaultAlt = $featuredImage['alt'];
 
         $post = Post::query()->create([
             'author_id' => $author->id,
@@ -37,7 +39,10 @@ class OutagePublisher
             'excerpt' => $excerpt,
             'content' => $content,
             'featured_image' => $defaultImage,
-            'featured_image_alt' => config('outages.default_image_alt', 'Planirani prekid struje'),
+            'featured_image_alt' => $defaultAlt,
+            'featured_image_responsive' => $featuredImage['responsive'],
+            'og_image' => $featuredImage['og_image'],
+            'og_image_responsive' => $featuredImage['og_image_responsive'],
             'status' => 'published',
             'published_at' => now(),
             'label' => 'obavijest',

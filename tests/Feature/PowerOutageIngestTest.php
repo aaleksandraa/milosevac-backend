@@ -49,6 +49,8 @@ class PowerOutageIngestTest extends TestCase
         $this->assertNotNull($post);
         $this->assertSame('power_outage', $post->service_type);
         $this->assertNotNull($post->notice_starts_at);
+        $this->assertNotNull($post->featured_image);
+        $this->assertSame('Planirani prekid struje', $post->featured_image_alt);
         $this->assertStringContainsString('Dobrinji', $post->title);
     }
 
@@ -104,6 +106,7 @@ class PowerOutageIngestTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('outages.0.serviceType', 'power_outage')
+            ->assertJsonPath('outages.0.imageAlt', 'Planirani prekid struje')
             ->assertJsonStructure([
                 'places',
                 'outages' => [

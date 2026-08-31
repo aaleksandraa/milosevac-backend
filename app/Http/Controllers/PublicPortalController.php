@@ -8,8 +8,8 @@ use App\Models\Setting;
 use App\Support\AdPositions;
 use App\Support\ArticleContent;
 use App\Support\PowerOutage\OutageQueryService;
+use App\Support\PowerOutage\PowerOutageFeaturedImage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * JSON API consumed by the React frontend. Public pages themselves are rendered
@@ -221,13 +221,7 @@ class PublicPortalController extends Controller
                 : [],
             'tags' => $includeTags ? $post->tags->pluck('slug')->values() : [],
             'views' => $post->views_count,
-            'image' => $post->featured_image
-                ? '/storage/'.ltrim($post->featured_image, '/')
-                : (Post::powerOutageDefaultImagePath() && $post->service_type === 'power_outage'
-                    ? '/storage/'.Post::powerOutageDefaultImagePath()
-                    : null),
-            'imageSrcSet' => $this->existingImageSrcSet($post->featured_image_responsive),
-            'imageAlt' => $post->featured_image_alt ?: $post->title,
+            ...app(PowerOutageFeaturedImage::class)->apiPayload($post),
             'contentHtml' => $includeContent ? ArticleContent::prepare($post->content) : null,
             'gallery' => $gallery,
             'galleryCount' => $gallery->count(),
@@ -241,16 +235,6 @@ class PublicPortalController extends Controller
             'noticeSchedule' => $post->notice_schedule,
             'externalId' => data_get($post->seo_metadata, 'outage.externalId'),
         ];
-    }
-
-    private function existingImageSrcSet(?array $responsive): ?string
-    {
-        $srcSet = collect($responsive['variants'] ?? [])
-            ->filter(fn (array $variant) => ! empty($variant['path']) && Storage::disk('public')->exists($variant['path']))
-            ->map(fn (array $variant) => '/storage/'.ltrim($variant['path'], '/').' '.$variant['width'].'w')
-            ->implode(', ');
-
-        return $srcSet !== '' ? $srcSet : null;
     }
 
     private function storageUrl(Request $request, ?string $path): ?string

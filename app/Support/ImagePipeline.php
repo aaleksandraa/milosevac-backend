@@ -105,4 +105,48 @@ class ImagePipeline
 
         return $targetPath;
     }
+
+    /** @return array{original: string, variants: list<array{width: int, path: string, mime: string}>}|null */
+    public function discoverResponsiveVariants(string $path): ?array
+    {
+        $path = ltrim($path, '/');
+        if ($path === '') {
+            return null;
+        }
+
+        $variants = [];
+        foreach (self::WIDTHS as $width) {
+            $candidate = preg_replace('/-\d+\.(webp|jpe?g|png)$/i', '-'.$width.'.webp', $path) ?? $path;
+            if ($candidate === $path && ! str_contains($path, '-'.$width.'.webp')) {
+                $candidate = preg_replace('/(\.[^.]+)$/', '-'.$width.'$1', $path) ?? $path;
+            }
+
+            if (File::exists(storage_path('app/public/'.$candidate))) {
+                $variants[] = [
+                    'width' => $width,
+                    'path' => $candidate,
+                    'mime' => str_ends_with(strtolower($candidate), '.png') ? 'image/png' : 'image/webp',
+                ];
+            }
+        }
+
+        if ($variants === [] && File::exists(storage_path('app/public/'.$path))) {
+            $variants[] = [
+                'width' => 1200,
+                'path' => $path,
+                'mime' => str_ends_with(strtolower($path), '.png') ? 'image/png' : 'image/webp',
+            ];
+        }
+
+        if ($variants === []) {
+            return null;
+        }
+
+        $original = collect($variants)->firstWhere('width', 1200) ?? $variants[array_key_last($variants)];
+
+        return [
+            'original' => $original['path'],
+            'variants' => $variants,
+        ];
+    }
 }
