@@ -35,6 +35,21 @@ final readonly class PowerOutageNotice
         );
     }
 
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            externalId: (string) $data['externalId'],
+            sourceUrl: filled($data['sourceUrl'] ?? null) ? (string) $data['sourceUrl'] : null,
+            date: Carbon::parse((string) $data['date'], 'Europe/Sarajevo')->startOfDay(),
+            startsAt: (string) $data['startsAt'],
+            endsAt: (string) $data['endsAt'],
+            fieldUnit: (string) $data['fieldUnit'],
+            locationsRaw: (string) $data['locationsRaw'],
+            transformerArea: (string) $data['transformerArea'],
+        );
+    }
+
     public function toArray(): array
     {
         return [

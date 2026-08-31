@@ -19,8 +19,8 @@ class OutageIngestService
         private OutagePublisher $publisher = new OutagePublisher(),
     ) {}
 
-    /** @return list<array<string, mixed>> */
-    public function ingestFromMailbox(bool $dryRun = false): array
+    /** @return array{results: list<array<string, mixed>>, scanned: int, matched: int} */
+    public function ingestFromMailbox(bool $dryRun = false, bool $retryPending = false): array
     {
         $client = (new ClientManager())->make([
             'host' => config('outages.imap.host'),
@@ -37,6 +37,7 @@ class OutageIngestService
         $since = now()->subDays(config('outages.lookback_days', 30))->format('d-M-Y');
         $messages = $folder->messages()->since($since)->get();
         $results = [];
+        $matched = 0;
 
         foreach ($messages as $message) {
             /** @var Message $message */
@@ -49,10 +50,30 @@ class OutageIngestService
                 continue;
             }
 
-            $results[] = $this->processMessage($messageId, $subject, $from, $body, $dryRun);
+            $matched++;
+            $results[] = $this->processMessage($messageId, $subject, $from, $body, $dryRun, $retryPending);
         }
 
-        return $results;
+        if ($retryPending && ! $dryRun) {
+            foreach ($this->pendingIngestions()->get() as $ingestion) {
+                $results[] = $this->publishFromIngestion($ingestion);
+            }
+        }
+
+        Log::info('Outage mailbox ingest finished', [
+            'scanned' => $messages->count(),
+            'matched_filter' => $matched,
+            'processed' => count($results),
+            'dry_run' => $dryRun,
+            'retry_pending' => $retryPending,
+            'auto_publish' => (bool) config('outages.auto_publish', true),
+        ]);
+
+        return [
+            'results' => $results,
+            'scanned' => $messages->count(),
+            'matched' => $matched,
+        ];
     }
 
     /** @return array<string, mixed> */
@@ -62,13 +83,20 @@ class OutageIngestService
         string $from,
         string $body,
         bool $dryRun = false,
+        bool $retryPending = false,
     ): array {
-        if (PowerOutageIngestion::query()->where('message_id', $messageId)->exists()) {
+        $existing = PowerOutageIngestion::query()->where('message_id', $messageId)->first();
+        if ($existing !== null) {
+            if ($existing->status === PowerOutageIngestion::STATUS_PENDING && ($retryPending || config('outages.auto_publish', true)) && ! $dryRun) {
+                return $this->publishFromIngestion($existing);
+            }
+
             return [
                 'ok' => true,
-                'status' => PowerOutageIngestion::STATUS_SKIPPED_DUPLICATE,
+                'status' => $existing->status,
                 'message_id' => $messageId,
-                'failure_reason' => 'Message-ID već obrađen.',
+                'failure_reason' => $existing->failure_reason ?: 'Message-ID već obrađen.',
+                'external_id' => $existing->elektrodoboj_id,
             ];
         }
 
@@ -100,6 +128,12 @@ class OutageIngestService
                 'raw_subject' => $subject,
                 'body_hash' => hash('sha256', $body),
                 'body_excerpt' => mb_substr($body, 0, 500),
+            ]);
+
+            Log::warning('Outage parse failed', [
+                'message_id' => $messageId,
+                'subject' => $subject,
+                'error' => $exception->getMessage(),
             ]);
 
             return [
@@ -136,29 +170,157 @@ class OutageIngestService
         $places = $this->matcher->match($notice);
         $title = $this->writer->title($notice, $places);
         $preview = $this->buildPreview($notice, $places, $title, $messageId);
+        $parsedPayload = [
+            'notice' => $notice->toArray(),
+            'places' => array_map(fn (MatchedPlace $place) => $place->toArray(), $places),
+        ];
 
-        if ($dryRun || ! config('outages.auto_publish', true)) {
+        if ($dryRun) {
             return $preview + ['ok' => true, 'status' => 'dry_run'];
         }
 
+        if (! config('outages.auto_publish', true)) {
+            PowerOutageIngestion::query()->create([
+                'message_id' => $messageId,
+                'elektrodoboj_id' => (int) $notice->externalId,
+                'status' => PowerOutageIngestion::STATUS_PENDING,
+                'failure_reason' => 'OUTAGE_AUTO_PUBLISH=false — obavijest je parsirana ali nije objavljena.',
+                'processed_at' => now(),
+                'raw_subject' => $subject,
+                'parsed' => $parsedPayload,
+                'body_hash' => hash('sha256', $body),
+            ]);
+
+            Log::info('Outage parsed but not published (auto_publish disabled)', [
+                'message_id' => $messageId,
+                'external_id' => $notice->externalId,
+            ]);
+
+            return $preview + [
+                'ok' => true,
+                'status' => PowerOutageIngestion::STATUS_PENDING,
+            ];
+        }
+
+        return $this->publishNotice(
+            messageId: $messageId,
+            subject: $subject,
+            body: $body,
+            notice: $notice,
+            places: $places,
+            preview: $preview,
+            parsedPayload: $parsedPayload,
+        );
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function publishPendingIngestions(): array
+    {
+        $results = [];
+
+        foreach ($this->pendingIngestions()->get() as $ingestion) {
+            $results[] = $this->publishFromIngestion($ingestion);
+        }
+
+        return $results;
+    }
+
+    /** @return array<string, mixed> */
+    private function publishFromIngestion(PowerOutageIngestion $ingestion): array
+    {
+        $noticeData = data_get($ingestion->parsed, 'notice');
+        if (! is_array($noticeData)) {
+            return [
+                'ok' => false,
+                'message_id' => $ingestion->message_id,
+                'failure_reason' => 'Pending zapis nema parsirane podatke.',
+            ];
+        }
+
+        try {
+            $notice = PowerOutageNotice::fromArray($noticeData);
+        } catch (\Throwable $exception) {
+            return [
+                'ok' => false,
+                'message_id' => $ingestion->message_id,
+                'failure_reason' => $exception->getMessage(),
+            ];
+        }
+
+        $places = $this->placesFromParsed(data_get($ingestion->parsed, 'places', []));
+        if ($places === []) {
+            $places = $this->matcher->match($notice);
+        }
+
+        $preview = $this->buildPreview($notice, $places, $this->writer->title($notice, $places), $ingestion->message_id);
+
+        if (Post::query()->where('slug', 'like', '%-elektrodoboj-'.$notice->externalId)->exists()) {
+            $ingestion->update([
+                'status' => PowerOutageIngestion::STATUS_SKIPPED_DUPLICATE,
+                'failure_reason' => 'Elektro Doboj ID već objavljen.',
+                'processed_at' => now(),
+            ]);
+
+            return $preview + [
+                'ok' => true,
+                'status' => PowerOutageIngestion::STATUS_SKIPPED_DUPLICATE,
+                'message_id' => $ingestion->message_id,
+                'external_id' => $notice->externalId,
+            ];
+        }
+
+        return $this->publishNotice(
+            messageId: $ingestion->message_id,
+            subject: (string) $ingestion->raw_subject,
+            body: '',
+            notice: $notice,
+            places: $places,
+            preview: $preview,
+            parsedPayload: (array) $ingestion->parsed,
+            existingIngestion: $ingestion,
+        );
+    }
+
+    /**
+     * @param list<MatchedPlace> $places
+     * @param array<string, mixed> $preview
+     * @param array<string, mixed> $parsedPayload
+     * @return array<string, mixed>
+     */
+    private function publishNotice(
+        string $messageId,
+        string $subject,
+        string $body,
+        PowerOutageNotice $notice,
+        array $places,
+        array $preview,
+        array $parsedPayload,
+        ?PowerOutageIngestion $existingIngestion = null,
+    ): array {
         try {
             $post = $this->publisher->publish($notice, $places);
         } catch (\Throwable $exception) {
             Log::error('Outage publish failed', ['message_id' => $messageId, 'error' => $exception->getMessage()]);
-            PowerOutageIngestion::query()->create([
-                'message_id' => $messageId,
-                'elektrodoboj_id' => (int) $notice->externalId,
-                'status' => PowerOutageIngestion::STATUS_FAILED_PUBLISH,
-                'failure_reason' => $exception->getMessage(),
-                'processed_at' => now(),
-                'raw_subject' => $subject,
-                'parsed' => [
-                    'notice' => $notice->toArray(),
-                    'places' => array_map(fn (MatchedPlace $place) => $place->toArray(), $places),
-                ],
-                'body_hash' => hash('sha256', $body),
-                'body_excerpt' => mb_substr($body, 0, 500),
-            ]);
+
+            if ($existingIngestion !== null) {
+                $existingIngestion->update([
+                    'status' => PowerOutageIngestion::STATUS_FAILED_PUBLISH,
+                    'failure_reason' => $exception->getMessage(),
+                    'processed_at' => now(),
+                ]);
+            } else {
+                PowerOutageIngestion::query()->create([
+                    'message_id' => $messageId,
+                    'elektrodoboj_id' => (int) $notice->externalId,
+                    'status' => PowerOutageIngestion::STATUS_FAILED_PUBLISH,
+                    'failure_reason' => $exception->getMessage(),
+                    'processed_at' => now(),
+                    'raw_subject' => $subject,
+                    'parsed' => $parsedPayload,
+                    'body_hash' => $body !== '' ? hash('sha256', $body) : null,
+                    'body_excerpt' => $body !== '' ? mb_substr($body, 0, 500) : null,
+                ]);
+            }
 
             return [
                 'ok' => false,
@@ -167,18 +329,32 @@ class OutageIngestService
             ];
         }
 
-        PowerOutageIngestion::query()->create([
+        if ($existingIngestion !== null) {
+            $existingIngestion->update([
+                'elektrodoboj_id' => (int) $notice->externalId,
+                'post_id' => $post->id,
+                'status' => PowerOutageIngestion::STATUS_PUBLISHED,
+                'failure_reason' => null,
+                'processed_at' => now(),
+                'parsed' => $parsedPayload,
+            ]);
+        } else {
+            PowerOutageIngestion::query()->create([
+                'message_id' => $messageId,
+                'elektrodoboj_id' => (int) $notice->externalId,
+                'post_id' => $post->id,
+                'status' => PowerOutageIngestion::STATUS_PUBLISHED,
+                'processed_at' => now(),
+                'raw_subject' => $subject,
+                'parsed' => $parsedPayload,
+                'body_hash' => $body !== '' ? hash('sha256', $body) : null,
+            ]);
+        }
+
+        Log::info('Outage published', [
             'message_id' => $messageId,
-            'elektrodoboj_id' => (int) $notice->externalId,
-            'post_id' => $post->id,
-            'status' => PowerOutageIngestion::STATUS_PUBLISHED,
-            'processed_at' => now(),
-            'raw_subject' => $subject,
-            'parsed' => [
-                'notice' => $notice->toArray(),
-                'places' => array_map(fn (MatchedPlace $place) => $place->toArray(), $places),
-            ],
-            'body_hash' => hash('sha256', $body),
+            'external_id' => $notice->externalId,
+            'slug' => $post->slug,
         ]);
 
         return $preview + [
@@ -186,6 +362,37 @@ class OutageIngestService
             'status' => PowerOutageIngestion::STATUS_PUBLISHED,
             'slug' => $post->slug,
         ];
+    }
+
+    /** @param mixed $placesData @return list<MatchedPlace> */
+    private function placesFromParsed(mixed $placesData): array
+    {
+        if (! is_array($placesData)) {
+            return [];
+        }
+
+        $places = [];
+        foreach ($placesData as $place) {
+            if (! is_array($place) || empty($place['slug'])) {
+                continue;
+            }
+
+            $places[] = new MatchedPlace(
+                slug: (string) $place['slug'],
+                name: (string) ($place['name'] ?? $place['slug']),
+                locative: filled($place['locative'] ?? null) ? (string) $place['locative'] : null,
+                isPrimary: (bool) ($place['isPrimary'] ?? false),
+            );
+        }
+
+        return $places;
+    }
+
+    private function pendingIngestions()
+    {
+        return PowerOutageIngestion::query()
+            ->where('status', PowerOutageIngestion::STATUS_PENDING)
+            ->orderBy('id');
     }
 
     /** @param list<MatchedPlace> $places */

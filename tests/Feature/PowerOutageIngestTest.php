@@ -52,6 +52,43 @@ class PowerOutageIngestTest extends TestCase
         $this->assertStringContainsString('Dobrinji', $post->title);
     }
 
+    public function test_auto_publish_disabled_stores_pending_and_retry_publishes(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+        $this->seed(PlaceSeeder::class);
+        config(['outages.auto_publish' => false]);
+
+        $fixture = base_path('tests/fixtures/power-outage-dobrinja.txt');
+
+        $this->artisan('outages:ingest', [
+            '--fixture' => $fixture,
+            '--message-id' => 'test-message-pending-15175',
+        ])
+            ->expectsOutputToContain('[PENDING]')
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('power_outage_ingestions', [
+            'message_id' => 'test-message-pending-15175',
+            'status' => 'pending',
+            'elektrodoboj_id' => 15175,
+        ]);
+        $this->assertSame(0, Post::query()->where('service_type', 'power_outage')->count());
+
+        config(['outages.auto_publish' => true]);
+
+        $this->artisan('outages:ingest', [
+            '--retry-pending' => true,
+        ])
+            ->expectsOutputToContain('Objavljeno: /clanak/')
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('power_outage_ingestions', [
+            'message_id' => 'test-message-pending-15175',
+            'status' => 'published',
+        ]);
+        $this->assertSame(1, Post::query()->where('service_type', 'power_outage')->count());
+    }
+
     public function test_outages_api_returns_published_outage(): void
     {
         $this->seed(DatabaseSeeder::class);
@@ -63,7 +100,7 @@ class PowerOutageIngestTest extends TestCase
         $author = User::query()->where('email', 'redakcija@milosevac.test')->first();
         (new OutagePublisher())->publish($notice, $places, $author);
 
-        $response = $this->getJson('/api/outages?status=upcoming');
+        $response = $this->getJson('/api/outages');
 
         $response->assertOk()
             ->assertJsonPath('outages.0.serviceType', 'power_outage')

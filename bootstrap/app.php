@@ -14,9 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('outages:ingest')
-            ->hourly()
-            ->between('07:00', '16:00')
+        $schedule->command('outages:ingest --retry-pending')
+            ->everyThirtyMinutes()
+            ->between('07:00', '20:00')
             ->timezone('Europe/Sarajevo')
             ->withoutOverlapping();
     })
