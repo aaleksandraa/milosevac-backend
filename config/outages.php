@@ -14,6 +14,8 @@ return [
     'lookback_days' => (int) env('OUTAGE_LOOKBACK_DAYS', 30),
     'allowed_source_hosts' => ['elektrodoboj.net', 'www.elektrodoboj.net'],
     'auto_publish' => env('OUTAGE_AUTO_PUBLISH', true),
+    'facebook_auto_share' => env('OUTAGE_FACEBOOK_AUTO_SHARE', false),
+    'facebook_only_milosevac' => env('OUTAGE_FACEBOOK_ONLY_MILOSEVAC', false),
     'default_image' => env(
         'OUTAGE_DEFAULT_IMAGE',
         'wordpress/2026/06/748cb43f-d07e-4539-a3f0-1ee7a129aa3c-1200.webp'

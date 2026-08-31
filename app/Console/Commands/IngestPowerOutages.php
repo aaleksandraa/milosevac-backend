@@ -151,6 +151,11 @@ class IngestPowerOutages extends Command
             $this->comment('POST NIJE OBJAVLJEN (--dry-run)');
         } else {
             $this->comment('Objavljeno: /clanak/'.($result['slug'] ?? ''));
+            if (! empty($result['facebook_post_id'])) {
+                $this->comment('Facebook: '.$result['facebook_post_id']);
+            } elseif (config('outages.facebook_auto_share')) {
+                $this->comment('Facebook: nije podijeljeno (provjerite log).');
+            }
         }
     }
 }

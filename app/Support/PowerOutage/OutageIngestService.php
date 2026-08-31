@@ -5,6 +5,7 @@ namespace App\Support\PowerOutage;
 use App\Models\Place;
 use App\Models\PowerOutageIngestion;
 use App\Models\Post;
+use App\Support\Social\FacebookPagePublisher;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Webklex\PHPIMAP\ClientManager;
@@ -17,6 +18,7 @@ class OutageIngestService
         private PlaceMatcher $matcher = new PlaceMatcher(),
         private ArticleWriter $writer = new ArticleWriter(),
         private OutagePublisher $publisher = new OutagePublisher(),
+        private FacebookPagePublisher $facebook = new FacebookPagePublisher(),
     ) {}
 
     /** @return array{results: list<array<string, mixed>>, scanned: int, matched: int} */
@@ -357,11 +359,30 @@ class OutageIngestService
             'slug' => $post->slug,
         ]);
 
+        $facebookPostId = $this->shareToFacebook($post);
+
         return $preview + [
             'ok' => true,
             'status' => PowerOutageIngestion::STATUS_PUBLISHED,
             'slug' => $post->slug,
+            'facebook_post_id' => $facebookPostId,
         ];
+    }
+
+    private function shareToFacebook(Post $post): ?string
+    {
+        if (! $this->facebook->shouldShare($post)) {
+            return data_get($post->seo_metadata, 'facebook.postId');
+        }
+
+        $facebookPostId = $this->facebook->sharePost($post);
+        if ($facebookPostId === null) {
+            return null;
+        }
+
+        $this->facebook->markShared($post, $facebookPostId);
+
+        return $facebookPostId;
     }
 
     /** @param mixed $placesData @return list<MatchedPlace> */

@@ -9,6 +9,7 @@ use App\Support\PowerOutage\PlaceMatcher;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\PlaceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class PowerOutageIngestTest extends TestCase
@@ -89,6 +90,34 @@ class PowerOutageIngestTest extends TestCase
             'status' => 'published',
         ]);
         $this->assertSame(1, Post::query()->where('service_type', 'power_outage')->count());
+    }
+
+    public function test_fixture_publish_shares_to_facebook_when_enabled(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+        $this->seed(PlaceSeeder::class);
+        config([
+            'outages.facebook_auto_share' => true,
+            'services.facebook.page_id' => '123456789',
+            'services.facebook.page_access_token' => 'page-token',
+            'services.frontend.url' => 'https://milosevac.com',
+        ]);
+
+        Http::fake([
+            'graph.facebook.com/*' => Http::response(['id' => 'fb-post-1'], 200),
+        ]);
+
+        $fixture = base_path('tests/fixtures/power-outage-dobrinja.txt');
+
+        $this->artisan('outages:ingest', [
+            '--fixture' => $fixture,
+            '--message-id' => 'test-message-facebook-15175',
+        ])
+            ->expectsOutputToContain('Facebook: fb-post-1')
+            ->assertSuccessful();
+
+        $post = Post::query()->where('service_type', 'power_outage')->first();
+        $this->assertSame('fb-post-1', data_get($post->seo_metadata, 'facebook.postId'));
     }
 
     public function test_outages_api_returns_published_outage(): void
