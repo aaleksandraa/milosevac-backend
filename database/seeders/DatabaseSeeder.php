@@ -123,5 +123,6 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call(PlaceSeeder::class);
+        $this->call(GeoAtlasSeeder::class);
     }
 }
