@@ -3,14 +3,18 @@
 namespace App\Support;
 
 use App\Models\Category;
+use App\Models\GeoMunicipality;
+use App\Models\GeoSettlement;
 use App\Models\Post;
 use App\Models\Setting;
 use App\Models\Tag;
 use App\Models\User;
+use App\Support\Atlas\PopulationSelector;
+use App\Support\Atlas\SettlementIndexability;
 use App\Support\PowerOutage\PowerOutageFeaturedImage;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class Seo
@@ -230,5 +234,120 @@ class Seo
                 'item' => $item['url'],
             ])->all(),
         ];
+    }
+
+    public static function atlasIndex(): array
+    {
+        $canonical = self::frontendUrl('mjesta');
+        $title = 'Atlas naseljenih mjesta';
+        $description = 'Pilot podaci Popisa 2013. za naseljena mjesta opština Modriča i Šamac. Atlas Bosne i Hercegovine je u fazi proširenja.';
+
+        $seo = self::page($title, $description, $canonical, null, [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'name' => $title,
+            'description' => $description,
+            'url' => $canonical,
+        ]);
+        $seo['schemas'][] = self::breadcrumb([
+            ['name' => 'Početna', 'url' => self::frontendUrl('/')],
+            ['name' => 'Mjesta', 'url' => $canonical],
+        ]);
+
+        return $seo;
+    }
+
+    public static function atlasMunicipality(GeoMunicipality $municipality, ?int $settlementCount = null, ?int $population2013 = null): array
+    {
+        $canonical = self::frontendUrl('mjesta/'.$municipality->slug);
+        $admin = $municipality->admin_type->publicLabel();
+        $genitive = match ($municipality->admin_type->value) {
+            'municipality' => 'opštine',
+            'city' => 'grada',
+            'district' => 'distrikta',
+            default => $admin,
+        };
+        $title = 'Naselja '.$genitive.' '.$municipality->name;
+        $description = $admin.' '.$municipality->name;
+        if ($municipality->relationLoaded('entity') && $municipality->entity) {
+            $description .= ' u '.$municipality->entity->name;
+        }
+        $description .= '.';
+        if ($settlementCount !== null) {
+            $description .= ' '.$settlementCount.' '.($settlementCount === 1 ? 'naselje' : 'naselja');
+        }
+        if ($population2013 !== null) {
+            $description .= ' i '.self::bsNumber($population2013).' stanovnika prema Popisu 2013.';
+        } else {
+            $description .= ' Podaci o stanovništvu prema Popisu 2013. gdje su uvezeni.';
+        }
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'AdministrativeArea',
+            'name' => $municipality->name,
+            'url' => $canonical,
+        ];
+        if ($municipality->relationLoaded('entity') && $municipality->entity) {
+            $schema['containedInPlace'] = [
+                '@type' => 'AdministrativeArea',
+                'name' => $municipality->entity->name,
+            ];
+        }
+
+        $seo = self::page($title, $description, $canonical, null, $schema);
+        $seo['schemas'][] = self::breadcrumb([
+            ['name' => 'Početna', 'url' => self::frontendUrl('/')],
+            ['name' => 'Mjesta', 'url' => self::frontendUrl('mjesta')],
+            ['name' => $municipality->name, 'url' => $canonical],
+        ]);
+
+        return $seo;
+    }
+
+    public static function atlasSettlement(GeoSettlement $settlement): array
+    {
+        $municipality = $settlement->municipality;
+        $canonical = self::frontendUrl('mjesta/'.$municipality->slug.'/'.$settlement->slug);
+        $title = $settlement->name.' – stanovništvo i podaci';
+        $description = $settlement->name.', naselje u '.$municipality->admin_type->publicLabel().' '.$municipality->name.'.';
+
+        $census = $settlement->relationLoaded('populationRecords')
+            ? (new PopulationSelector)->preferredForYear($settlement->populationRecords, 2013)
+            : null;
+        if ($census !== null) {
+            $description .= ' '.self::bsNumber((int) $census->population).' stanovnika prema Popisu 2013.';
+        }
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Place',
+            'name' => $settlement->name,
+            'url' => $canonical,
+            'containedInPlace' => [
+                '@type' => 'AdministrativeArea',
+                'name' => $municipality->name,
+                'url' => self::frontendUrl('mjesta/'.$municipality->slug),
+            ],
+        ];
+
+        $seo = self::page($title, $description, $canonical, null, $schema);
+        $seo['schemas'][] = self::breadcrumb([
+            ['name' => 'Početna', 'url' => self::frontendUrl('/')],
+            ['name' => 'Mjesta', 'url' => self::frontendUrl('mjesta')],
+            ['name' => $municipality->name, 'url' => self::frontendUrl('mjesta/'.$municipality->slug)],
+            ['name' => $settlement->name, 'url' => $canonical],
+        ]);
+
+        if (! SettlementIndexability::isReady($settlement)) {
+            $seo = self::noindex($seo);
+        }
+
+        return $seo;
+    }
+
+    public static function bsNumber(int $value): string
+    {
+        return number_format($value, 0, ',', '.');
     }
 }

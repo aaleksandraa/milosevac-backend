@@ -6,7 +6,8 @@ Branch: `feature/bih-settlement-atlas`
 |---|---|---|
 | M0 | Done | Audit and policy docs |
 | M1 | Complete | Core schema |
-| **M2** | **Complete** | Pilot Modriča + Šamac settlements |
-| M3 | Not started | Public settlement page + `/api/geo` |
+| M2 | Complete | Pilot Modriča + Šamac settlements |
+| **M3** | **Complete** | Public `/api/geo` + crawler/sitemap |
+| M4 | Not started | Boundaries + DEM |
 
-See frontend `docs/settlement-atlas/M2_PILOT_SETTLEMENT_IMPORT.md`.
+See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).

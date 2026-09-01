@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\GeoMunicipalityController;
+use App\Http\Controllers\Api\GeoSettlementController;
 use App\Http\Controllers\PublicPortalController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
@@ -11,3 +13,11 @@ Route::get('/content', [PublicPortalController::class, 'apiContent'])->name('con
 Route::get('/content/{post:slug}', [PublicPortalController::class, 'apiShowPost'])->name('content.show');
 Route::get('/fk-posavina', [PublicPortalController::class, 'apiFkPosavina'])->name('fk-posavina');
 Route::get('/fk-posavina/matches/{match:slug}', [PublicPortalController::class, 'apiShowMatch'])->name('matches.show');
+
+Route::get('/geo/municipalities', [GeoMunicipalityController::class, 'index'])->name('geo.municipalities.index');
+Route::get('/geo/municipalities/{municipality}', [GeoMunicipalityController::class, 'show'])->name('geo.municipalities.show');
+Route::get('/geo/municipalities/{municipality}/settlements', [GeoSettlementController::class, 'index'])->name('geo.settlements.index');
+Route::get('/geo/municipalities/{municipality}/settlements/{settlement}', [GeoSettlementController::class, 'show'])->name('geo.settlements.show');
+Route::get('/geo/settlements/{settlement}', [GeoSettlementController::class, 'showById'])
+    ->whereNumber('settlement')
+    ->name('geo.settlements.show-id');

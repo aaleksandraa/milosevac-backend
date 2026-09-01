@@ -22,12 +22,16 @@ Route::get('/kontakt', [FrontendRedirectController::class, 'contact'])->name('co
 Route::get('/politika-privatnosti', [FrontendRedirectController::class, 'privacy'])->name('privacy');
 Route::get('/politika-kolacica', [FrontendRedirectController::class, 'cookies'])->name('cookies');
 Route::get('/uslovi-koristenja', [FrontendRedirectController::class, 'terms'])->name('terms');
+Route::get('/mjesta', [FrontendRedirectController::class, 'atlasIndex'])->name('atlas.index');
+Route::get('/mjesta/{municipality}/{settlement}', [FrontendRedirectController::class, 'atlasSettlement'])->name('atlas.settlement');
+Route::get('/mjesta/{municipality}', [FrontendRedirectController::class, 'atlasMunicipality'])->name('atlas.municipality');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
 Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts'])->name('sitemap.posts');
 Route::get('/sitemap-matches.xml', [SitemapController::class, 'matches'])->name('sitemap.matches');
 Route::get('/sitemap-news.xml', [SitemapController::class, 'news'])->name('sitemap.news');
 Route::get('/sitemap-taxonomies.xml', [SitemapController::class, 'taxonomies'])->name('sitemap.taxonomies');
+Route::get('/sitemap-settlements.xml', [SitemapController::class, 'settlements'])->name('sitemap.settlements');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 Route::get('/feed.xml', [SitemapController::class, 'feed'])->name('feed');
 

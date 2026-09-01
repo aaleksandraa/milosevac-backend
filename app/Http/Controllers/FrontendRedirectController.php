@@ -7,6 +7,8 @@ use App\Models\FootballMatch;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
+use App\Support\Atlas\AtlasQueryService;
+use App\Support\Atlas\PopulationSelector;
 use App\Support\Seo;
 use App\Support\SocialPreviewDetector;
 use Illuminate\Http\RedirectResponse;
@@ -157,6 +159,52 @@ class FrontendRedirectController extends Controller
             'Pravila korištenja sadržaja i usluga portala Miloševac.',
             Seo::frontendUrl('uslovi-koristenja'),
         ));
+    }
+
+    public function atlasIndex(Request $request): RedirectResponse|Response
+    {
+        return $this->respond($request, '/mjesta', Seo::atlasIndex());
+    }
+
+    public function atlasMunicipality(Request $request, string $municipality): RedirectResponse|Response
+    {
+        $path = '/mjesta/'.$municipality;
+        if (! $this->wantsSocialPreview($request)) {
+            return $this->to($path);
+        }
+
+        $row = app(AtlasQueryService::class)->municipalityBySlug($municipality);
+        abort_if($row === null, 404);
+
+        $population = null;
+        if ($row->relationLoaded('settlements')) {
+            $selector = new PopulationSelector;
+            $rows = $row->settlements
+                ->map(fn ($settlement) => $selector->preferredForYear($settlement->populationRecords, 2013))
+                ->filter();
+            if ($rows->isNotEmpty()) {
+                $population = (int) $rows->sum('population');
+            }
+        }
+
+        return $this->preview(Seo::atlasMunicipality(
+            $row,
+            (int) ($row->settlements_count ?? $row->settlements->count()),
+            $population,
+        ));
+    }
+
+    public function atlasSettlement(Request $request, string $municipality, string $settlement): RedirectResponse|Response
+    {
+        $path = '/mjesta/'.$municipality.'/'.$settlement;
+        if (! $this->wantsSocialPreview($request)) {
+            return $this->to($path);
+        }
+
+        $row = app(AtlasQueryService::class)->settlementInMunicipality($municipality, $settlement);
+        abort_if($row === null, 404);
+
+        return $this->preview(Seo::atlasSettlement($row));
     }
 
     private function respond(Request $request, string $path, array $seo): RedirectResponse|Response

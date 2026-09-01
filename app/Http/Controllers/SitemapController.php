@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\FootballMatch;
+use App\Models\GeoMunicipality;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
+use App\Support\Atlas\AtlasQueryService;
 
 /**
  * Machine-readable discovery endpoints: XML sitemaps, the RSS feed and robots.txt.
@@ -63,6 +65,18 @@ class SitemapController extends Controller
         return $this->xml('seo.sitemap-taxonomies', compact('categories', 'tags', 'authors'));
     }
 
+    public function settlements(AtlasQueryService $atlas)
+    {
+        $municipalities = GeoMunicipality::query()
+            ->whereHas('settlements')
+            ->orderBy('name')
+            ->get();
+        $settlements = $atlas->indexableSettlements();
+        $lastmod = $settlements->max('updated_at') ?: now();
+
+        return $this->xml('seo.sitemap-settlements', compact('municipalities', 'settlements', 'lastmod'));
+    }
+
     public function feed()
     {
         $posts = Post::published()->with(['category', 'author'])->latest('published_at')->take(30)->get();
@@ -82,6 +96,7 @@ class SitemapController extends Controller
             'Allow: /sitemap-news.xml',
             'Allow: /sitemap-matches.xml',
             'Allow: /sitemap-taxonomies.xml',
+            'Allow: /sitemap-settlements.xml',
             'Disallow: /api/',
             'Disallow: /admin',
             'Disallow: /author',

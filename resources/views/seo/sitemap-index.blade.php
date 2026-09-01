@@ -20,4 +20,8 @@
         <loc>{{ route('sitemap.taxonomies') }}</loc>
         <lastmod>{{ now()->toAtomString() }}</lastmod>
     </sitemap>
+    <sitemap>
+        <loc>{{ route('sitemap.settlements') }}</loc>
+        <lastmod>{{ now()->toAtomString() }}</lastmod>
+    </sitemap>
 </sitemapindex>
