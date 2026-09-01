@@ -1,0 +1,13 @@
+{
+  "source": {"dataset_version": "osm-test"},
+  "mappings": [
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "milosevac",
+      "statistical_code": "213942",
+      "osm_id": 9,
+      "source_feature_id": "relation/9",
+      "match_method": "test"
+    }
+  ]
+}

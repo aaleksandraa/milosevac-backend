@@ -37,6 +37,13 @@
 /storage/app/purifier/*
 /storage/framework/*
 /storage/logs/*
+/tools/atlas/cache/
+/tools/atlas/dem/
+/tools/atlas/**/__pycache__/
+__pycache__/
+*.pyc
+*.tif
+*.tiff
 /vendor
 Homestead.json
 Homestead.yaml

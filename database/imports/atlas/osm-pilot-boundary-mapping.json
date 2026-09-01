@@ -1,0 +1,1252 @@
+{
+  "source": {
+    "dataset_name": "OpenStreetMap administrative settlement polygons (admin_level=9)",
+    "publisher": "OpenStreetMap contributors",
+    "source_url": "https://www.openstreetmap.org/copyright",
+    "geometry_export_url": "https://polygons.openstreetmap.fr/get_geojson.py",
+    "overpass_url": "https://overpass-api.de/api/interpreter",
+    "retrieval_date": "2026-09-02",
+    "license": "ODbL",
+    "geographic_crs": "EPSG:4326",
+    "dataset_version": "osm-2026-09-01",
+    "feature_identifier_field": "osm_id",
+    "settlement_name_field": "name / name:sr-Latn / name:sr",
+    "municipality_field": "two-pass: unique BiH name, then pass-1 cluster envelope",
+    "geometry_type": "MultiPolygon",
+    "class": "C",
+    "known_limitations": [
+      "Not an official cadastral or 2013-census settlement boundary product.",
+      "RGURS GeoServer WFS advertised GetFeature but FeatureTypeList was empty; naselja layers returned HTTP 400.",
+      "OSM WikiProject BiH still lists admin_level 8/9 as incomplete; coverage is community-mapped.",
+      "place=village nodes are not used as boundaries.",
+      "Relation 8758298 (wikidata Q533433) is a Serbia polygon and is excluded.",
+      "Relation 13426749 carries municipality wikidata Q391033 but the exported polygon is town-scale and is used only for naselje Šamac.",
+      "FBiH homonyms are excluded by explicit (FBiH) qualifiers or by falling outside the RS cluster envelope."
+    ]
+  },
+  "excluded_osm_ids": {
+    "8758298": "Geometry is in Serbia (Kruševac area); wikidata Q533433 is incorrectly applied."
+  },
+  "mappings": [
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "babesnica",
+      "settlement_name": "Babešnica",
+      "statistical_code": "213837",
+      "osm_type": "relation",
+      "osm_id": 14590886,
+      "source_feature_id": "relation/14590886",
+      "source_name": "Babesnica",
+      "source_names": [
+        "Babesnica",
+        "ÐÐ°Ð±ÐµÑÐ½Ð¸ÑÐ°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ°Ð±ÐµÑÐ½Ð¸ÑÐ°",
+        "name:en": "Babesnica",
+        "name:sr": "ÐÐ°Ð±ÐµÑÐ½Ð¸ÑÐ°"
+      },
+      "bbox": [
+        18.2344723,
+        44.9138999,
+        18.2554579,
+        44.9389824
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "borovo-polje",
+      "settlement_name": "Borovo Polje",
+      "statistical_code": "230600",
+      "osm_type": "relation",
+      "osm_id": 14590948,
+      "source_feature_id": "relation/14590948",
+      "source_name": "Borovo Polje",
+      "source_names": [
+        "Borovo Polje",
+        "ÐÐ¾ÑÐ¾Ð²Ð¾ ÐÐ¾ÑÐµ"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ¾ÑÐ¾Ð²Ð¾ ÐÐ¾ÑÐµ",
+        "name:en": "Borovo Polje",
+        "name:sr": "ÐÐ¾ÑÐ¾Ð²Ð¾ ÐÐ¾ÑÐµ"
+      },
+      "bbox": [
+        18.3807429,
+        44.9031342,
+        18.418886,
+        44.9381622
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "dobra-voda",
+      "settlement_name": "Dobra Voda",
+      "statistical_code": "213861",
+      "osm_type": "relation",
+      "osm_id": 14590744,
+      "source_feature_id": "relation/14590744",
+      "source_name": "Dobra Voda",
+      "source_names": [
+        "Dobra Voda",
+        "ÐÐ¾Ð±ÑÐ° ÐÐ¾Ð´Ð°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ¾Ð±ÑÐ° ÐÐ¾Ð´Ð°",
+        "name:en": "Dobra Voda",
+        "name:sr": "ÐÐ¾Ð±ÑÐ° ÐÐ¾Ð´Ð°"
+      },
+      "bbox": [
+        18.1251489,
+        44.9750829,
+        18.1668699,
+        45.0060393
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "dobrinja",
+      "settlement_name": "Dobrinja",
+      "statistical_code": "213870",
+      "osm_type": "relation",
+      "osm_id": 14590942,
+      "source_feature_id": "relation/14590942",
+      "source_name": "Dobrinja",
+      "source_names": [
+        "Dobrinja",
+        "ÐÐ¾Ð±ÑÐ¸ÑÐ°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ¾Ð±ÑÐ¸ÑÐ°",
+        "name:en": "Dobrinja",
+        "name:sr": "ÐÐ¾Ð±ÑÐ¸ÑÐ°"
+      },
+      "bbox": [
+        18.265264,
+        44.8904634,
+        18.3226633,
+        44.9451336
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "dugo-polje",
+      "settlement_name": "Dugo Polje",
+      "statistical_code": "213888",
+      "osm_type": "relation",
+      "osm_id": 14590840,
+      "source_feature_id": "relation/14590840",
+      "source_name": "Dugo Polje",
+      "source_names": [
+        "Dugo Polje",
+        "ÐÑÐ³Ð¾ ÐÐ¾ÑÐµ"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÑÐ³Ð¾ ÐÐ¾ÑÐµ",
+        "name:en": "Dugo Polje",
+        "name:sr": "ÐÑÐ³Ð¾ ÐÐ¾ÑÐµ"
+      },
+      "bbox": [
+        18.1322825,
+        44.9169693,
+        18.2055151,
+        45.0026672
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "garevac",
+      "settlement_name": "Garevac",
+      "statistical_code": "213896",
+      "osm_type": "relation",
+      "osm_id": 14590928,
+      "source_feature_id": "relation/14590928",
+      "source_name": "Garevac",
+      "source_names": [
+        "Garevac",
+        "ÐÐ°ÑÐµÐ²Ð°Ñ"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ°ÑÐµÐ²Ð°Ñ",
+        "name:en": "Garevac",
+        "name:sr": "ÐÐ°ÑÐµÐ²Ð°Ñ"
+      },
+      "bbox": [
+        18.3200991,
+        44.9349268,
+        18.3756852,
+        44.9939934
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "jasenica",
+      "settlement_name": "Jasenica",
+      "statistical_code": "213799",
+      "osm_type": "relation",
+      "osm_id": 14590907,
+      "source_feature_id": "relation/14590907",
+      "source_name": "Jasenica (RS)",
+      "source_names": [
+        "Jasenica (RS)",
+        "ÐÐ°ÑÐµÐ½Ð¸ÑÐ° (Ð Ð¡)"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ°ÑÐµÐ½Ð¸ÑÐ° (Ð Ð¡)",
+        "name:bs": "Jasenica (RS)",
+        "name:sr": "ÐÐ°ÑÐµÐ½Ð¸ÑÐ° (Ð Ð¡)",
+        "name:sr-Latn": "Jasenica (RS)"
+      },
+      "bbox": [
+        18.298123,
+        44.826448,
+        18.3372583,
+        44.8500731
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "kladari-donji",
+      "settlement_name": "Kladari Donji",
+      "statistical_code": "213900",
+      "osm_type": "relation",
+      "osm_id": 14590935,
+      "source_feature_id": "relation/14590935",
+      "source_name": "Kladari Donji",
+      "source_names": [
+        "Kladari Donji",
+        "ÐÐ»Ð°Ð´Ð°ÑÐ¸ ÐÐ¾ÑÐ¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ»Ð°Ð´Ð°ÑÐ¸ ÐÐ¾ÑÐ¸",
+        "name:en": "Kladari Donji",
+        "name:sr": "ÐÐ»Ð°Ð´Ð°ÑÐ¸ ÐÐ¾ÑÐ¸"
+      },
+      "bbox": [
+        18.3501255,
+        44.9550198,
+        18.4205103,
+        45.0071551
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "kladari-gornji",
+      "settlement_name": "Kladari Gornji",
+      "statistical_code": "213918",
+      "osm_type": "relation",
+      "osm_id": 14590943,
+      "source_feature_id": "relation/14590943",
+      "source_name": "Kladari Gornji",
+      "source_names": [
+        "Kladari Gornji",
+        "ÐÐ»Ð°Ð´Ð°ÑÐ¸ ÐÐ¾ÑÑÐ¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ»Ð°Ð´Ð°ÑÐ¸ ÐÐ¾ÑÑÐ¸",
+        "name:en": "Kladari Gornji",
+        "name:sr": "ÐÐ»Ð°Ð´Ð°ÑÐ¸ ÐÐ¾ÑÑÐ¸"
+      },
+      "bbox": [
+        18.3179533,
+        44.9227583,
+        18.359313,
+        44.9472067
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "koprivna",
+      "settlement_name": "Koprivna",
+      "statistical_code": "213926",
+      "osm_type": "relation",
+      "osm_id": 14590875,
+      "source_feature_id": "relation/14590875",
+      "source_name": "Koprivna",
+      "source_names": [
+        "Koprivna",
+        "ÐÐ¾Ð¿ÑÐ¸Ð²Ð½Ð°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ¾Ð¿ÑÐ¸Ð²Ð½Ð°",
+        "name:en": "Koprivna",
+        "name:sr": "ÐÐ¾Ð¿ÑÐ¸Ð²Ð½Ð°"
+      },
+      "bbox": [
+        18.118155,
+        44.8532622,
+        18.2238074,
+        44.9307798
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "krcevljani",
+      "settlement_name": "Krčevljani",
+      "statistical_code": "213802",
+      "osm_type": "relation",
+      "osm_id": 14590904,
+      "source_feature_id": "relation/14590904",
+      "source_name": "Krcevljani",
+      "source_names": [
+        "Krcevljani",
+        "ÐÑÑÐµÐ²ÑÐ°Ð½Ð¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÑÑÐµÐ²ÑÐ°Ð½Ð¸",
+        "name:en": "Krcevljani",
+        "name:sr": "ÐÑÑÐµÐ²ÑÐ°Ð½Ð¸"
+      },
+      "bbox": [
+        18.2473247,
+        44.8290246,
+        18.3072138,
+        44.8682188
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "kuznjaca",
+      "settlement_name": "Kužnjača",
+      "statistical_code": "213934",
+      "osm_type": "relation",
+      "osm_id": 14590869,
+      "source_feature_id": "relation/14590869",
+      "source_name": "Kuznjaca",
+      "source_names": [
+        "Kuznjaca",
+        "ÐÑÐ¶ÑÐ°ÑÐ°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÑÐ¶ÑÐ°ÑÐ°",
+        "name:en": "Kuznjaca",
+        "name:sr": "ÐÑÐ¶ÑÐ°ÑÐ°"
+      },
+      "bbox": [
+        18.2343864,
+        44.9361572,
+        18.2633221,
+        44.9578972
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "milosevac",
+      "settlement_name": "Miloševac",
+      "statistical_code": "213942",
+      "osm_type": "relation",
+      "osm_id": 14590939,
+      "source_feature_id": "relation/14590939",
+      "source_name": "Milosevac",
+      "source_names": [
+        "Milosevac",
+        "ÐÐ¸Ð»Ð¾ÑÐµÐ²Ð°Ñ"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ¸Ð»Ð¾ÑÐµÐ²Ð°Ñ",
+        "name:en": "Milosevac",
+        "name:sr": "ÐÐ¸Ð»Ð¾ÑÐµÐ²Ð°Ñ"
+      },
+      "bbox": [
+        18.3662009,
+        44.9685478,
+        18.446182,
+        45.0190347
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "modrica",
+      "settlement_name": "Modriča",
+      "statistical_code": "213969",
+      "osm_type": "relation",
+      "osm_id": 14590926,
+      "source_feature_id": "relation/14590926",
+      "source_name": "ModriÄa",
+      "source_names": [
+        "ModriÄa",
+        "Modrica",
+        "ÐÐ¾Ð´ÑÐ¸ÑÐ°"
+      ],
+      "wikidata_id": null,
+      "place": "town",
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ModriÄa",
+        "name:bs": "ModriÄa",
+        "name:en": "Modrica",
+        "name:ru": "ÐÐ¾Ð´ÑÐ¸ÑÐ°",
+        "name:sr": "ÐÐ¾Ð´ÑÐ¸ÑÐ°",
+        "place": "town"
+      },
+      "bbox": [
+        18.2578049,
+        44.9399697,
+        18.3382416,
+        44.9820872
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "rijecani-donji",
+      "settlement_name": "Riječani Donji",
+      "statistical_code": "213977",
+      "osm_type": "relation",
+      "osm_id": 14590890,
+      "source_feature_id": "relation/14590890",
+      "source_name": "Rijecani Donji",
+      "source_names": [
+        "Rijecani Donji",
+        "Ð Ð¸ÑÐµÑÐ°Ð½Ð¸ ÐÐ¾ÑÐ¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Ð Ð¸ÑÐµÑÐ°Ð½Ð¸ ÐÐ¾ÑÐ¸",
+        "name:en": "Rijecani Donji",
+        "name:sr": "Ð Ð¸ÑÐµÑÐ°Ð½Ð¸ ÐÐ¾ÑÐ¸"
+      },
+      "bbox": [
+        18.243463,
+        44.8955406,
+        18.2899833,
+        44.9384508
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "rijecani-gornji",
+      "settlement_name": "Riječani Gornji",
+      "statistical_code": "213985",
+      "osm_type": "relation",
+      "osm_id": 14590894,
+      "source_feature_id": "relation/14590894",
+      "source_name": "Rijecani Gornji",
+      "source_names": [
+        "Rijecani Gornji",
+        "Ð Ð¸ÑÐµÑÐ°Ð½Ð¸ ÐÐ¾ÑÑÐ¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Ð Ð¸ÑÐµÑÐ°Ð½Ð¸ ÐÐ¾ÑÑÐ¸",
+        "name:en": "Rijecani Gornji",
+        "name:sr": "Ð Ð¸ÑÐµÑÐ°Ð½Ð¸ ÐÐ¾ÑÑÐ¸"
+      },
+      "bbox": [
+        18.2297194,
+        44.8436695,
+        18.2838034,
+        44.9018333
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "skugric-gornji",
+      "settlement_name": "Skugrić Gornji",
+      "statistical_code": "213993",
+      "osm_type": "relation",
+      "osm_id": 14590945,
+      "source_feature_id": "relation/14590945",
+      "source_name": "Skugric Gornji",
+      "source_names": [
+        "Skugric Gornji",
+        "Ð¡ÐºÑÐ³ÑÐ¸Ñ ÐÐ¾ÑÑÐ¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Ð¡ÐºÑÐ³ÑÐ¸Ñ ÐÐ¾ÑÑÐ¸",
+        "name:en": "Skugric Gornji",
+        "name:sr": "Ð¡ÐºÑÐ³ÑÐ¸Ñ ÐÐ¾ÑÑÐ¸"
+      },
+      "bbox": [
+        18.2744264,
+        44.8891712,
+        18.3926797,
+        44.9431744
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "tarevci",
+      "settlement_name": "Tarevci",
+      "statistical_code": "214019",
+      "osm_type": "relation",
+      "osm_id": 14590864,
+      "source_feature_id": "relation/14590864",
+      "source_name": "Tarevci",
+      "source_names": [
+        "Tarevci",
+        "Ð¢Ð°ÑÐµÐ²ÑÐ¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Ð¢Ð°ÑÐµÐ²ÑÐ¸",
+        "name:en": "Tarevci",
+        "name:sr": "Ð¢Ð°ÑÐµÐ²ÑÐ¸"
+      },
+      "bbox": [
+        18.2243657,
+        44.9344103,
+        18.299253,
+        44.98136
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "tolisa",
+      "settlement_name": "Tolisa",
+      "statistical_code": "213829",
+      "osm_type": "relation",
+      "osm_id": 14590914,
+      "source_feature_id": "relation/14590914",
+      "source_name": "Tolisa",
+      "source_names": [
+        "Tolisa",
+        "Ð¢Ð¾Ð»Ð¸ÑÐ°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_name_plus_municipality_cluster_envelope",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Ð¢Ð¾Ð»Ð¸ÑÐ°",
+        "name:en": "Tolisa",
+        "name:sr": "Ð¢Ð¾Ð»Ð¸ÑÐ°"
+      },
+      "bbox": [
+        18.2725596,
+        44.8491908,
+        18.3397007,
+        44.8924548
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "vranjak",
+      "settlement_name": "Vranjak",
+      "statistical_code": "214027",
+      "osm_type": "relation",
+      "osm_id": 14590876,
+      "source_feature_id": "relation/14590876",
+      "source_name": "Vranjak",
+      "source_names": [
+        "Vranjak",
+        "ÐÑÐ°ÑÐ°Ðº"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÑÐ°ÑÐ°Ðº",
+        "name:en": "Vranjak",
+        "name:sr": "ÐÑÐ°ÑÐ°Ðº"
+      },
+      "bbox": [
+        18.1818151,
+        44.853756,
+        18.2537842,
+        44.957176
+      ]
+    },
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "cardak",
+      "settlement_name": "Čardak",
+      "statistical_code": "213853",
+      "osm_type": "relation",
+      "osm_id": 14590940,
+      "source_feature_id": "relation/14590940",
+      "source_name": "Cardak",
+      "source_names": [
+        "Cardak",
+        "Ð§Ð°ÑÐ´Ð°Ðº"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Ð§Ð°ÑÐ´Ð°Ðº",
+        "name:en": "Cardak",
+        "name:sr": "Ð§Ð°ÑÐ´Ð°Ðº"
+      },
+      "bbox": [
+        18.3678102,
+        44.9343576,
+        18.439553,
+        44.9687652
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "batkusa",
+      "settlement_name": "Batkuša",
+      "statistical_code": "229075",
+      "osm_type": "relation",
+      "osm_id": 14578428,
+      "source_feature_id": "relation/14578428",
+      "source_name": "Batkusa",
+      "source_names": [
+        "Batkusa",
+        "ÐÐ°ÑÐºÑÑÐ°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ°ÑÐºÑÑÐ°",
+        "name:en": "Batkusa",
+        "name:sr": "ÐÐ°ÑÐºÑÑÐ°"
+      },
+      "bbox": [
+        18.5240221,
+        44.9632266,
+        18.5839776,
+        45.0091811
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "brvnik",
+      "settlement_name": "Brvnik",
+      "statistical_code": "229091",
+      "osm_type": "relation",
+      "osm_id": 14578443,
+      "source_feature_id": "relation/14578443",
+      "source_name": "Brvnik (RS)",
+      "source_names": [
+        "Brvnik (RS)",
+        "ÐÑÐ²Ð½Ð¸Ðº (Ð Ð¡)"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÑÐ²Ð½Ð¸Ðº (Ð Ð¡)",
+        "name:bs": "Brvnik (RS)",
+        "name:sr": "ÐÑÐ²Ð½Ð¸Ðº (Ð Ð¡)",
+        "name:sr-Latn": "Brvnik (RS)"
+      },
+      "bbox": [
+        18.5139316,
+        44.9976352,
+        18.5706891,
+        45.0285651
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "crkvina",
+      "settlement_name": "Crkvina",
+      "statistical_code": "229105",
+      "osm_type": "relation",
+      "osm_id": 14579029,
+      "source_feature_id": "relation/14579029",
+      "source_name": "Crkvina",
+      "source_names": [
+        "Crkvina",
+        "Ð¦ÑÐºÐ²Ð¸Ð½Ð°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Ð¦ÑÐºÐ²Ð¸Ð½Ð°",
+        "name:en": "Crkvina",
+        "name:sr": "Ð¦ÑÐºÐ²Ð¸Ð½Ð°"
+      },
+      "bbox": [
+        18.3798632,
+        45.0159941,
+        18.4457299,
+        45.0484952
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "donja-slatina",
+      "settlement_name": "Donja Slatina",
+      "statistical_code": "229113",
+      "osm_type": "relation",
+      "osm_id": 14578386,
+      "source_feature_id": "relation/14578386",
+      "source_name": "Donja Slatina",
+      "source_names": [
+        "Donja Slatina",
+        "ÐÐ¾ÑÐ° Ð¡Ð»Ð°ÑÐ¸Ð½Ð°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ¾ÑÐ° Ð¡Ð»Ð°ÑÐ¸Ð½Ð°",
+        "name:en": "Donja Slatina",
+        "name:sr": "ÐÐ¾ÑÐ° Ð¡Ð»Ð°ÑÐ¸Ð½Ð°"
+      },
+      "bbox": [
+        18.5046995,
+        44.9607486,
+        18.5480761,
+        45.0031808
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "donji-hasic",
+      "settlement_name": "Donji Hasić",
+      "statistical_code": "229121",
+      "osm_type": "relation",
+      "osm_id": 14578973,
+      "source_feature_id": "relation/14578973",
+      "source_name": "Donji Hasic",
+      "source_names": [
+        "Donji Hasic",
+        "ÐÐ¾ÑÐ¸ Ð¥Ð°ÑÐ¸Ñ"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ¾ÑÐ¸ Ð¥Ð°ÑÐ¸Ñ",
+        "name:en": "Donji Hasic",
+        "name:sr": "ÐÐ¾ÑÐ¸ Ð¥Ð°ÑÐ¸Ñ"
+      },
+      "bbox": [
+        18.4511398,
+        45.0122442,
+        18.4909451,
+        45.0348257
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "gajevi",
+      "settlement_name": "Gajevi",
+      "statistical_code": "229067",
+      "osm_type": "relation",
+      "osm_id": 13426744,
+      "source_feature_id": "relation/13426744",
+      "source_name": "Gajevi (RS)",
+      "source_names": [
+        "Gajevi (RS)",
+        "ÐÐ°ÑÐµÐ²Ð¸ (Ð Ð¡)"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Gajevi (RS)",
+        "name:bs": "Gajevi (RS)",
+        "name:sr": "ÐÐ°ÑÐµÐ²Ð¸ (Ð Ð¡)",
+        "name:sr-Latn": "Gajevi (RS)"
+      },
+      "bbox": [
+        18.4379833,
+        44.9304263,
+        18.4798639,
+        44.9543441
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "gornja-slatina",
+      "settlement_name": "Gornja Slatina",
+      "statistical_code": "229130",
+      "osm_type": "relation",
+      "osm_id": 14578378,
+      "source_feature_id": "relation/14578378",
+      "source_name": "Gornja Slatina",
+      "source_names": [
+        "Gornja Slatina",
+        "ÐÐ¾ÑÑÐ° Ð¡Ð»Ð°ÑÐ¸Ð½Ð°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ¾ÑÑÐ° Ð¡Ð»Ð°ÑÐ¸Ð½Ð°",
+        "name:en": "Gornja Slatina",
+        "name:sr": "ÐÐ¾ÑÑÐ° Ð¡Ð»Ð°ÑÐ¸Ð½Ð°"
+      },
+      "bbox": [
+        18.4406974,
+        44.9499766,
+        18.5113943,
+        45.0138685
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "grebnice",
+      "settlement_name": "Grebnice",
+      "statistical_code": "229156",
+      "osm_type": "relation",
+      "osm_id": 14578458,
+      "source_feature_id": "relation/14578458",
+      "source_name": "Grebnice (RS)",
+      "source_names": [
+        "Grebnice (RS)",
+        "ÐÑÐµÐ±Ð½Ð¸ÑÐµ (Ð Ð¡)"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÑÐµÐ±Ð½Ð¸ÑÐµ (Ð Ð¡)",
+        "name:bs": "Grebnice (RS)",
+        "name:sr": "ÐÑÐµÐ±Ð½Ð¸ÑÐµ (Ð Ð¡)",
+        "name:sr-Latn": "Grebnice (RS)"
+      },
+      "bbox": [
+        18.5098922,
+        45.0146422,
+        18.552234,
+        45.0431747
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "kornica",
+      "settlement_name": "Kornica",
+      "statistical_code": "229164",
+      "osm_type": "relation",
+      "osm_id": 13426742,
+      "source_feature_id": "relation/13426742",
+      "source_name": "Kornica",
+      "source_names": [
+        "Kornica",
+        "ÐÐ¾ÑÐ½Ð¸ÑÐ°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Kornica",
+        "name:sr": "ÐÐ¾ÑÐ½Ð¸ÑÐ°",
+        "name:sr-Latn": "Kornica"
+      },
+      "bbox": [
+        18.4116863,
+        44.9390821,
+        18.4455365,
+        44.9729705
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "lugovi",
+      "settlement_name": "Lugovi",
+      "statistical_code": "229059",
+      "osm_type": "relation",
+      "osm_id": 5969840,
+      "source_feature_id": "relation/5969840",
+      "source_name": "Lugovi",
+      "source_names": [
+        "Lugovi",
+        "ÐÑÐ³Ð¾Ð²Ð¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Lugovi",
+        "name:sr": "ÐÑÐ³Ð¾Ð²Ð¸"
+      },
+      "bbox": [
+        18.4457853,
+        44.9991593,
+        18.457102,
+        45.003132
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "novo-selo",
+      "settlement_name": "Novo Selo",
+      "statistical_code": "229199",
+      "osm_type": "relation",
+      "osm_id": 13501029,
+      "source_feature_id": "relation/13501029",
+      "source_name": "Novo Selo (RS)",
+      "source_names": [
+        "Novo Selo (RS)",
+        "ÐÐ¾Ð²Ð¾ Ð¡ÐµÐ»Ð¾ (Ð Ð¡)"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Novo Selo (RS)",
+        "name:bs": "Novo Selo (RS)",
+        "name:sr": "ÐÐ¾Ð²Ð¾ Ð¡ÐµÐ»Ð¾ (Ð Ð¡)",
+        "name:sr-Latn": "Novo Selo (RS)"
+      },
+      "bbox": [
+        18.3453628,
+        45.0072354,
+        18.399557,
+        45.0262494
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "obudovac",
+      "settlement_name": "Obudovac",
+      "statistical_code": "229202",
+      "osm_type": "relation",
+      "osm_id": 14578396,
+      "source_feature_id": "relation/14578396",
+      "source_name": "Obudovac",
+      "source_names": [
+        "Obudovac",
+        "ÐÐ±ÑÐ´Ð¾Ð²Ð°Ñ"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ±ÑÐ´Ð¾Ð²Ð°Ñ",
+        "name:en": "Obudovac",
+        "name:sr": "ÐÐ±ÑÐ´Ð¾Ð²Ð°Ñ"
+      },
+      "bbox": [
+        18.5341868,
+        44.9284278,
+        18.6380678,
+        44.9922419
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "pisari",
+      "settlement_name": "Pisari",
+      "statistical_code": "229229",
+      "osm_type": "relation",
+      "osm_id": 13426748,
+      "source_feature_id": "relation/13426748",
+      "source_name": "Pisari",
+      "source_names": [
+        "Pisari",
+        "ÐÐ¸ÑÐ°ÑÐ¸"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Pisari",
+        "name:sr": "ÐÐ¸ÑÐ°ÑÐ¸"
+      },
+      "bbox": [
+        18.4208859,
+        45.0355852,
+        18.4529108,
+        45.058484
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "srednja-slatina",
+      "settlement_name": "Srednja Slatina",
+      "statistical_code": "229245",
+      "osm_type": "relation",
+      "osm_id": 13426743,
+      "source_feature_id": "relation/13426743",
+      "source_name": "Srednja Slatina",
+      "source_names": [
+        "Srednja Slatina",
+        "Ð¡ÑÐµÐ´ÑÐ° Ð¡Ð»Ð°ÑÐ¸Ð½Ð°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "Srednja Slatina",
+        "name:sr": "Ð¡ÑÐµÐ´ÑÐ° Ð¡Ð»Ð°ÑÐ¸Ð½Ð°"
+      },
+      "bbox": [
+        18.4644905,
+        44.9247333,
+        18.5200675,
+        44.9749424
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "zasavica",
+      "settlement_name": "Zasavica",
+      "statistical_code": "229270",
+      "osm_type": "relation",
+      "osm_id": 14579023,
+      "source_feature_id": "relation/14579023",
+      "source_name": "Zasavica",
+      "source_names": [
+        "Zasavica",
+        "ÐÐ°ÑÐ°Ð²Ð¸ÑÐ°"
+      ],
+      "wikidata_id": null,
+      "place": null,
+      "admin_level": "9",
+      "match_method": "exact_normalized_name_unique_in_bih",
+      "source_properties": {
+        "admin_level": "9",
+        "boundary": "administrative",
+        "name": "ÐÐ°ÑÐ°Ð²Ð¸ÑÐ°",
+        "name:en": "Zasavica",
+        "name:sr": "ÐÐ°ÑÐ°Ð²Ð¸ÑÐ°"
+      },
+      "bbox": [
+        18.3814143,
+        45.0280727,
+        18.4260785,
+        45.0438569
+      ]
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "samac",
+      "settlement_name": "Šamac",
+      "statistical_code": "229083",
+      "osm_type": "relation",
+      "osm_id": 13426749,
+      "source_feature_id": "relation/13426749",
+      "source_name": "Šamac",
+      "source_names": [
+        "Šamac"
+      ],
+      "wikidata_id": "Q391033",
+      "place": null,
+      "admin_level": "9",
+      "match_method": "explicit_manual_review",
+      "notes": "OSM relation carries municipality Wikidata Q391033, but the exported polygon is town-scale (bbox 18.44-18.49E, 45.04-45.07N) and does not cover other Šamac naselja such as Obudovac. Reviewed and attached only to naselje Šamac.",
+      "source_properties": {
+        "name": "Šamac",
+        "wikidata": "Q391033",
+        "admin_level": "9",
+        "boundary": "administrative"
+      },
+      "bbox": [
+        18.4415676,
+        45.0409308,
+        18.4920807,
+        45.0686296
+      ]
+    }
+  ],
+  "unmatched_settlements": [
+    {
+      "municipality_slug": "modrica",
+      "municipality_name": "Modriča",
+      "settlement_name": "Botajica",
+      "settlement_slug": "botajica",
+      "statistical_code": "213845",
+      "key": "botajica"
+    },
+    {
+      "municipality_slug": "modrica",
+      "municipality_name": "Modriča",
+      "settlement_name": "Donji Skugrić",
+      "settlement_slug": "donji-skugric",
+      "statistical_code": "213764",
+      "key": "donji skugric"
+    },
+    {
+      "municipality_slug": "modrica",
+      "municipality_name": "Modriča",
+      "settlement_name": "Gornje Krečane",
+      "settlement_slug": "gornje-krecane",
+      "statistical_code": "213772",
+      "key": "gornje krecane"
+    },
+    {
+      "municipality_slug": "samac",
+      "municipality_name": "Šamac",
+      "settlement_name": "Gornji Hasić",
+      "settlement_slug": "gornji-hasic",
+      "statistical_code": "229148",
+      "key": "gornji hasic"
+    },
+    {
+      "municipality_slug": "samac",
+      "municipality_name": "Šamac",
+      "settlement_name": "Kruškovo Polje",
+      "settlement_slug": "kruskovo-polje",
+      "statistical_code": "229172",
+      "key": "kruskovo polje"
+    },
+    {
+      "municipality_slug": "samac",
+      "municipality_name": "Šamac",
+      "settlement_name": "Njegoševo",
+      "settlement_slug": "njegosevo",
+      "statistical_code": "229237",
+      "key": "njegosevo"
+    },
+    {
+      "municipality_slug": "samac",
+      "municipality_name": "Šamac",
+      "settlement_name": "Škarić",
+      "settlement_slug": "skaric",
+      "statistical_code": "229253",
+      "key": "skaric"
+    },
+    {
+      "municipality_slug": "samac",
+      "municipality_name": "Šamac",
+      "settlement_name": "Tišina",
+      "settlement_slug": "tisina",
+      "statistical_code": "229261",
+      "key": "tisina"
+    }
+  ],
+  "ambiguous_matches": [],
+  "failed_geometries": []
+}

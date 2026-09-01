@@ -91,6 +91,9 @@ final class AtlasQueryService
             },
             'populationRecords.source',
             'labelPointSource',
+            'boundaries.source',
+            'terrainStats.source',
+            'terrainStats.boundary',
         ];
     }
 }

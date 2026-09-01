@@ -60,6 +60,41 @@ class DataSourceSeeder extends Seeder
                 'dataset_version' => '2013',
                 'metadata' => ['used_for' => ['pilot_settlement_import']],
             ],
+            [
+                'name' => 'OpenStreetMap — granice naselja (admin_level=9)',
+                'provider' => 'OpenStreetMap contributors',
+                'source_class' => DataSourceClass::CommunityGeographic,
+                'authority_rank' => SourceAuthority::OPENSTREETMAP,
+                'source_type' => 'osm_settlement_boundaries',
+                'url' => 'https://www.openstreetmap.org/copyright',
+                'license' => 'ODbL',
+                'attribution' => '© OpenStreetMap contributors (ODbL). Granice nisu katastarski izvod.',
+                'dataset_version' => 'osm-2026-09-01',
+                'metadata' => [
+                    'retrieval_date' => '2026-09-02',
+                    'used_for' => ['pilot_settlement_boundaries'],
+                    'notes' => 'Zajednički OSM poligoni admin_level=9, usklađeni sa popisnim identitetom. Nisu službene katastarske granice.',
+                ],
+            ],
+            [
+                'name' => 'Copernicus DEM GLO-30 Public',
+                'provider' => 'European Space Agency / European Commission',
+                'source_class' => DataSourceClass::ReputablePublic,
+                'authority_rank' => SourceAuthority::SCIENTIFIC_PUBLIC,
+                'source_type' => 'copernicus_dem_glo30',
+                'url' => 'https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model',
+                'license' => 'Copernicus DEM GLO-30 Public licence',
+                'attribution' => 'Copernicus DEM GLO-30 Public, ESA/EC. Raster-izvedene visine unutar granice naselja.',
+                'dataset_version' => '2021_1',
+                'metadata' => [
+                    'retrieval_date' => '2026-09-02',
+                    'nominal_resolution_m' => 30,
+                    'horizontal_crs' => 'EPSG:4326',
+                    'vertical_datum' => 'EGM2008',
+                    'used_for' => ['pilot_settlement_terrain'],
+                    'notes' => 'Nadmorske visine su raster-izvedene iz Copernicus DEM GLO-30, nisu službeno izmjerene visine naselja.',
+                ],
+            ],
         ];
 
         foreach ($sources as $source) {

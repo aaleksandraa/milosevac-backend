@@ -275,8 +275,10 @@ class GeoAtlasHierarchyTest extends TestCase
 
     public function test_atlas_migrations_roll_back_and_can_be_reapplied(): void
     {
-        $this->artisan('migrate:rollback', ['--step' => 8])->assertSuccessful();
+        $this->artisan('migrate:rollback', ['--step' => 10])->assertSuccessful();
 
+        $this->assertFalse(Schema::hasTable('settlement_terrain_stats'));
+        $this->assertFalse(Schema::hasTable('settlement_boundaries'));
         $this->assertFalse(Schema::hasTable('settlement_population'));
         $this->assertFalse(Schema::hasTable('geo_settlements'));
         $this->assertFalse(Schema::hasTable('geo_countries'));

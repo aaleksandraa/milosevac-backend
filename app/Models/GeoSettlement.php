@@ -65,4 +65,14 @@ class GeoSettlement extends Model
     {
         return $this->belongsTo(DataSource::class, 'label_point_source_id');
     }
+
+    public function boundaries(): HasMany
+    {
+        return $this->hasMany(SettlementBoundary::class, 'settlement_id');
+    }
+
+    public function terrainStats(): HasMany
+    {
+        return $this->hasMany(SettlementTerrainStat::class, 'settlement_id');
+    }
 }

@@ -1,0 +1,49 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "relation/1001",
+      "properties": {
+        "source_feature_id": "relation/1001",
+        "municipality_slug": "modrica",
+        "settlement_slug": "milosevac",
+        "settlement_name": "Miloševac",
+        "statistical_code": "213942",
+        "name": "Miloševac"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [18.40, 44.99],
+          [18.41, 44.99],
+          [18.41, 45.00],
+          [18.40, 45.00],
+          [18.40, 44.99]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "relation/2001",
+      "properties": {
+        "source_feature_id": "relation/2001",
+        "municipality_slug": "samac",
+        "settlement_slug": "milosevac",
+        "settlement_name": "Miloševac",
+        "statistical_code": "999001",
+        "name": "Miloševac"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [18.50, 45.02],
+          [18.51, 45.02],
+          [18.51, 45.03],
+          [18.50, 45.03],
+          [18.50, 45.02]
+        ]]
+      }
+    }
+  ]
+}

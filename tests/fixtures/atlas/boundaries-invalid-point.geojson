@@ -1,0 +1,17 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "relation/9",
+      "properties": {
+        "source_feature_id": "relation/9",
+        "statistical_code": "213942"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [18.4, 44.99]
+      }
+    }
+  ]
+}

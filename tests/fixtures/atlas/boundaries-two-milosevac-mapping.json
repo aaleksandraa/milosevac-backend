@@ -1,0 +1,31 @@
+{
+  "source": {
+    "dataset_name": "Test OSM polygons",
+    "publisher": "OpenStreetMap contributors",
+    "dataset_version": "osm-test",
+    "retrieval_date": "2026-09-02",
+    "license": "ODbL"
+  },
+  "mappings": [
+    {
+      "municipality_slug": "modrica",
+      "settlement_slug": "milosevac",
+      "settlement_name": "Miloševac",
+      "statistical_code": "213942",
+      "osm_id": 1001,
+      "source_feature_id": "relation/1001",
+      "source_name": "Miloševac",
+      "match_method": "municipality_scope_plus_statistical_code"
+    },
+    {
+      "municipality_slug": "samac",
+      "settlement_slug": "milosevac",
+      "settlement_name": "Miloševac",
+      "statistical_code": "999001",
+      "osm_id": 2001,
+      "source_feature_id": "relation/2001",
+      "source_name": "Miloševac",
+      "match_method": "municipality_scope_plus_statistical_code"
+    }
+  ]
+}
