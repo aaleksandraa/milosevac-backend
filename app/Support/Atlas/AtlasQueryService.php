@@ -4,6 +4,7 @@ namespace App\Support\Atlas;
 
 use App\Models\GeoMunicipality;
 use App\Models\GeoSettlement;
+use App\Models\SettlementTerrainStat;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
@@ -62,6 +63,39 @@ final class AtlasQueryService
             ->whereKey($id)
             ->with($this->settlementDetailRelations())
             ->first();
+    }
+
+    public function municipalitySlugExists(string $slug): bool
+    {
+        return GeoMunicipality::query()->where('slug', $slug)->exists();
+    }
+
+    /**
+     * Settlements with a valid canonical boundary, for the public map FeatureCollection.
+     *
+     * @return Collection<int, GeoSettlement>
+     */
+    public function settlementsForMap(?string $municipalitySlug = null): Collection
+    {
+        $query = GeoSettlement::query()
+            ->whereHas('boundaries', fn ($builder) => $builder->where('geometry_valid', true))
+            ->with([
+                'municipality:id,name,slug',
+                'populationRecords.source',
+                'boundaries' => function (HasMany $query) {
+                    $query->where('geometry_valid', true)->with('source:id,source_type,name,provider');
+                },
+                'terrainStats' => function (HasMany $query) {
+                    $query->where('quality_flag', '!=', SettlementTerrainStat::QUALITY_UNAVAILABLE);
+                },
+            ])
+            ->orderBy('name');
+
+        if ($municipalitySlug !== null && $municipalitySlug !== '') {
+            $query->whereHas('municipality', fn ($builder) => $builder->where('slug', $municipalitySlug));
+        }
+
+        return $query->get();
     }
 
     /**

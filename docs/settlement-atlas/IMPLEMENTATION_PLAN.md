@@ -9,6 +9,7 @@ Branch: `feature/bih-settlement-atlas`
 | M2 | Complete | Pilot Modriča + Šamac settlements |
 | **M3** | **Complete** | Public `/api/geo` + crawler/sitemap |
 | **M4** | **Complete** | Settlement boundaries + DEM terrain stats (37/45) |
+| **M5** | **Complete** | Public map GeoJSON endpoint |
 
 See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 
@@ -20,4 +21,11 @@ See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 - Public `geography` API block
 - See [M4_BOUNDARIES_TERRAIN.md](M4_BOUNDARIES_TERRAIN.md)
 
-M5 was not started.
+## M5 result
+
+- `GET /api/geo/map/settlements` FeatureCollection of valid M4 boundaries
+- Optional `?municipality=` filter, ETag / Last-Modified, 10-minute app cache
+- Canonical GeoJSON, no serving-layer simplification (pilot ~381 KB / 37 features)
+- See [M5_INTERACTIVE_MAP.md](M5_INTERACTIVE_MAP.md)
+
+M6 was not started.
