@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "municipality": "modrica",
+    "endpoint": "https://overpass.test/api/interpreter",
+    "query": "[out:json];out geom;",
+    "retrieved_at": "2026-09-02T00:00:00+00:00",
+    "response_hash": "fixture-mini",
+    "element_count": 8
+  },
+  "elements": [
+    {
+      "type": "node",
+      "id": 1001,
+      "lat": 44.995,
+      "lon": 18.405,
+      "version": 3,
+      "timestamp": "2024-01-01T00:00:00Z",
+      "tags": {
+        "amenity": "pharmacy",
+        "name": "Apoteka Test",
+        "name:sr-Latn": "Apoteka Test",
+        "phone": "+387 53 000 000",
+        "website": "https://example.test/apoteka",
+        "addr:street": "Ulica Test",
+        "addr:housenumber": "1",
+        "addr:city": "Modriča"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1002,
+      "lat": 44.9951,
+      "lon": 18.4051,
+      "version": 1,
+      "tags": {
+        "amenity": "pharmacy",
+        "name": "Apoteka Test"
+      }
+    },
+    {
+      "type": "way",
+      "id": 2001,
+      "version": 2,
+      "center": { "lat": 44.994, "lon": 18.404 },
+      "geometry": [
+        { "lat": 44.9940, "lon": 18.4040 },
+        { "lat": 44.9940, "lon": 18.4044 },
+        { "lat": 44.9944, "lon": 18.4044 },
+        { "lat": 44.9944, "lon": 18.4040 },
+        { "lat": 44.9940, "lon": 18.4040 }
+      ],
+      "tags": {
+        "leisure": "pitch",
+        "sport": "soccer"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1003,
+      "lat": 44.996,
+      "lon": 18.406,
+      "version": 1,
+      "tags": {
+        "amenity": "school",
+        "name": "Osnovna škola Test",
+        "isced:level": "1"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1004,
+      "lat": 44.997,
+      "lon": 18.407,
+      "version": 1,
+      "tags": {
+        "building": "church",
+        "amenity": "place_of_worship",
+        "religion": "christian",
+        "name": "Crkva Test"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1005,
+      "lat": 45.02,
+      "lon": 18.42,
+      "version": 1,
+      "tags": {
+        "amenity": "fire_station",
+        "name": "DVD izvan poligona"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1006,
+      "lat": 44.75,
+      "lon": 19.55,
+      "version": 1,
+      "tags": {
+        "amenity": "pharmacy",
+        "name": "Apoteka preko Drine",
+        "addr:city": "Modriča"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1007,
+      "lat": 44.9952,
+      "lon": 18.4052,
+      "version": 1,
+      "tags": {
+        "amenity": "bench",
+        "name": "Klupa"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1008,
+      "lat": 44.995,
+      "lon": 18.51,
+      "version": 1,
+      "tags": {
+        "amenity": "police",
+        "name": "Policija Šamac"
+      }
+    }
+  ]
+}

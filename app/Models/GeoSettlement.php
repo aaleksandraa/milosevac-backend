@@ -75,4 +75,9 @@ class GeoSettlement extends Model
     {
         return $this->hasMany(SettlementTerrainStat::class, 'settlement_id');
     }
+
+    public function places(): HasMany
+    {
+        return $this->hasMany(GeoPlace::class, 'settlement_id');
+    }
 }

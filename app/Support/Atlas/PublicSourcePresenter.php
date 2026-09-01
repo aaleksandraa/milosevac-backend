@@ -33,6 +33,8 @@ final class PublicSourcePresenter
             $payload['methodology_note'] = 'Granica naselja je OSM poligon (admin_level=9), usklađen sa popisnim identitetom naselja. Nije katastarski ili statistički službeni poligon. Licenca ODbL.';
         } elseif ($source->source_type === 'copernicus_dem_glo30') {
             $payload['methodology_note'] = 'Nadmorske visine i nagib su raster-izvedeni iz Copernicus DEM GLO-30 unutar izabrane granice naselja. To nije službena izmjerena visina naselja.';
+        } elseif ($source->source_type === 'osm_pois') {
+            $payload['methodology_note'] = 'Objekti su uvezeni iz OpenStreetMap (ODbL) kao trenutno mapirani/uvezeni zapisi. OSM pokrivenost je zajednička i može biti nepotpuna ili zastarjela. Dodjela naselju koristi dostupni atlas poligon, a ne službenu statističku pripadnost. To nije službeni inventar niti Google katalog.';
         } elseif (is_string($metadata['notes'] ?? null) && $metadata['notes'] !== '') {
             $payload['methodology_note'] = $metadata['notes'];
         }

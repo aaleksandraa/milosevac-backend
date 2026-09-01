@@ -11,6 +11,7 @@ class GeoAtlasSeeder extends Seeder
         $this->call([
             DataSourceSeeder::class,
             GeoHierarchySeeder::class,
+            GeoPlaceTypeSeeder::class,
         ]);
     }
 }

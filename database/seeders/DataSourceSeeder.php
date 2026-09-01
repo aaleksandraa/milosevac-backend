@@ -95,6 +95,21 @@ class DataSourceSeeder extends Seeder
                     'notes' => 'Nadmorske visine su raster-izvedene iz Copernicus DEM GLO-30, nisu službeno izmjerene visine naselja.',
                 ],
             ],
+            [
+                'name' => 'OpenStreetMap — tačke interesa (POI)',
+                'provider' => 'OpenStreetMap contributors',
+                'source_class' => DataSourceClass::CommunityGeographic,
+                'authority_rank' => SourceAuthority::OPENSTREETMAP,
+                'source_type' => 'osm_pois',
+                'url' => 'https://www.openstreetmap.org/copyright',
+                'license' => 'ODbL',
+                'attribution' => '© OpenStreetMap contributors (ODbL). Katalog objekata nije službeni popis niti potpun inventar.',
+                'dataset_version' => 'osm-overpass-pilot',
+                'metadata' => [
+                    'used_for' => ['pilot_settlement_pois'],
+                    'notes' => 'Zajednički OSM objekti uvezeni Overpass-om u operator/import toku. Nisu službeno verifikovani, nisu Google podaci, i ne predstavljaju iscrpan popis objekata na terenu. Licenca ODbL.',
+                ],
+            ],
         ];
 
         foreach ($sources as $source) {

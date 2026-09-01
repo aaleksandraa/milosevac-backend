@@ -12,6 +12,8 @@ final class GeoJsonPolygon
 
     public const CENTROID_ALGORITHM = 'equirectangular_shoelace_mean_latitude';
 
+    public const REPRESENTATIVE_POINT_ALGORITHM = 'centroid_if_inside_else_bbox_scan';
+
     /** WGS84 authalic radius in metres. */
     public const AUTHALIC_RADIUS_M = 6371008.8;
 
@@ -167,6 +169,91 @@ final class GeoJsonPolygon
     public function isAbsurdlyLarge(): bool
     {
         return $this->areaKm2() > self::MAX_AREA_KM2;
+    }
+
+    public function contains(float $lng, float $lat): bool
+    {
+        foreach ($this->polygons() as $rings) {
+            if ($rings === []) {
+                continue;
+            }
+
+            if (! $this->ringContains($this->numericRing($rings[0]), $lng, $lat)) {
+                continue;
+            }
+
+            $inHole = false;
+            foreach (array_slice($rings, 1) as $hole) {
+                if ($this->ringContains($this->numericRing($hole), $lng, $lat)) {
+                    $inHole = true;
+                    break;
+                }
+            }
+
+            if (! $inHole) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Display point for a polygon. Prefer the geographic centroid when it falls
+     * inside; otherwise a deterministic bbox scan (point-on-surface). This is a
+     * representative point for the map, not a building entrance.
+     *
+     * @return array{lat: float, lng: float, algorithm: string}
+     */
+    public function representativePoint(): array
+    {
+        $centroid = $this->geographicCentroid();
+        if ($this->contains($centroid['lng'], $centroid['lat'])) {
+            return [
+                'lat' => $centroid['lat'],
+                'lng' => $centroid['lng'],
+                'algorithm' => 'geographic_centroid_inside',
+            ];
+        }
+
+        $bbox = $this->bbox();
+        $steps = 24;
+        $best = null;
+        $bestDist = PHP_FLOAT_MAX;
+        $width = $bbox['max_lng'] - $bbox['min_lng'];
+        $height = $bbox['max_lat'] - $bbox['min_lat'];
+
+        for ($i = 0; $i <= $steps; $i++) {
+            for ($j = 0; $j <= $steps; $j++) {
+                $lng = $bbox['min_lng'] + ($width * $i / $steps);
+                $lat = $bbox['min_lat'] + ($height * $j / $steps);
+                if (! $this->contains($lng, $lat)) {
+                    continue;
+                }
+
+                $dist = ($lng - $centroid['lng']) ** 2 + ($lat - $centroid['lat']) ** 2;
+                if ($dist < $bestDist) {
+                    $bestDist = $dist;
+                    $best = [
+                        'lat' => round($lat, 7),
+                        'lng' => round($lng, 7),
+                        'algorithm' => 'bbox_scan_point_on_surface',
+                    ];
+                }
+            }
+        }
+
+        if ($best !== null) {
+            return $best;
+        }
+
+        $first = $this->polygons()[0][0][0];
+
+        return [
+            'lat' => round((float) $first[1], 7),
+            'lng' => round((float) $first[0], 7),
+            'algorithm' => 'first_vertex_fallback',
+        ];
     }
 
     /**
@@ -347,6 +434,32 @@ final class GeoJsonPolygon
         $metres2 = abs($sum) * self::AUTHALIC_RADIUS_M * self::AUTHALIC_RADIUS_M / 2.0;
 
         return $metres2 / 1_000_000;
+    }
+
+    /**
+     * @param  list<array{0: float, 1: float}>  $ring
+     */
+    private function ringContains(array $ring, float $lng, float $lat): bool
+    {
+        $inside = false;
+        $count = count($ring);
+        if ($count < 4) {
+            return false;
+        }
+
+        for ($i = 0, $j = $count - 1; $i < $count; $j = $i++) {
+            $xi = $ring[$i][0];
+            $yi = $ring[$i][1];
+            $xj = $ring[$j][0];
+            $yj = $ring[$j][1];
+            $intersects = (($yi > $lat) !== ($yj > $lat))
+                && ($lng < ($xj - $xi) * ($lat - $yi) / (($yj - $yi) ?: 1e-12) + $xi);
+            if ($intersects) {
+                $inside = ! $inside;
+            }
+        }
+
+        return $inside;
     }
 
     private function meanLatitude(): float

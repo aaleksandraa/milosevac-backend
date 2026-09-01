@@ -45,4 +45,9 @@ class GeoMunicipality extends Model
     {
         return $this->hasMany(GeoSettlement::class, 'municipality_id');
     }
+
+    public function places(): HasMany
+    {
+        return $this->hasMany(GeoPlace::class, 'municipality_id');
+    }
 }
