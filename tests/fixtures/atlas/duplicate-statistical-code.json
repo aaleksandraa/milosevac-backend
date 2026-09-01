@@ -1,0 +1,23 @@
+{
+  "source": {
+    "name": "Popis stanovništva, domaćinstava i stanova 2013. — naseljena mjesta",
+    "provider": "Agencija za statistiku BiH / Republički zavod za statistiku Republike Srpske",
+    "source_class": "A",
+    "authority_rank": 100,
+    "source_type": "census_settlements",
+    "dataset_version": "2013",
+    "urls": ["http://www.statistika.ba/?id=20354&show=12"],
+    "retrieval_date": "2026-09-01"
+  },
+  "municipalities": [
+    {
+      "slug": "modrica",
+      "name": "Modriča",
+      "statistical_code": "20354",
+      "settlements": [
+        {"statistical_code": "213942", "name": "Miloševac", "population": 1366, "households": 469},
+        {"statistical_code": "213942", "name": "Miloševac duplikat", "population": 1, "households": 1}
+      ]
+    }
+  ]
+}

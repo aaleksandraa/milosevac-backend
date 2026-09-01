@@ -23,6 +23,8 @@
 /deploy-frontend.lock
 /database/*.sqlite*
 /database/imports/*
+!/database/imports/atlas/
+!/database/imports/atlas/**
 /bootstrap/cache/*.php
 /public/build
 /public/hot

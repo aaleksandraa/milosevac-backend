@@ -1,0 +1,21 @@
+{
+  "source": {
+    "name": "Niski autoritet test izvor",
+    "provider": "Test",
+    "source_class": "C",
+    "authority_rank": 50,
+    "source_type": "openstreetmap",
+    "dataset_version": "test",
+    "retrieval_date": "2026-09-01"
+  },
+  "municipalities": [
+    {
+      "slug": "modrica",
+      "name": "Modriča",
+      "statistical_code": "20354",
+      "settlements": [
+        {"statistical_code": "213942", "name": "Pogrešan naziv", "population": 9999, "households": 1}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "source": {
+    "name": "Popis stanovništva, domaćinstava i stanova 2013. — naseljena mjesta",
+    "provider": "Agencija za statistiku BiH / Republički zavod za statistiku Republike Srpske",
+    "source_class": "A",
+    "authority_rank": 100,
+    "source_type": "census_settlements",
+    "dataset_version": "2013",
+    "license": null,
+    "attribution": "Popis stanovništva, domaćinstava i stanova u BiH 2013. Tabele naseljenih mjesta. Izvod statističkih šifara, naziva, broja stanovnika i broja domaćinstava.",
+    "retrieval_date": "2026-09-01",
+    "urls": [
+      "http://www.statistika.ba/?id=20354&show=12",
+      "http://www.statistika.ba/?id=20656&show=12",
+      "https://rzs.rs.ba/static/uploads/bilteni/popis/gradovi_opstine_naseljena_mjesta/Rezultati_Popisa_2013_Gradovi_Opstine_Naseljena_Mjesta_WEB.pdf"
+    ],
+    "notes": "Checked-in fixture is a normalized extract of 2013 census settlement tables (statistical code, official name, population, households). Retrieved via statistika.ba census presentation of official tables on 2026-09-01; municipality totals 25720 (Modriča) and 17273 (Šamac) match published 2013 census municipality totals. statistika.ba is a third-party presentation, not the BHAS CMS. Direct download of the RZS PDF from this environment timed out. Names and codes are census settlement identity, not OSM."
+  },
+  "municipalities": [
+    {
+      "slug": "modrica",
+      "name": "Modriča",
+      "statistical_code": "20354",
+      "settlements": [
+        {"statistical_code": "213837", "name": "Babešnica", "population": 20, "households": 6},
+        {"statistical_code": "230600", "name": "Borovo Polje", "population": 181, "households": 50},
+        {"statistical_code": "213845", "name": "Botajica", "population": 601, "households": 213},
+        {"statistical_code": "213853", "name": "Čardak", "population": 410, "households": 111},
+        {"statistical_code": "213861", "name": "Dobra Voda", "population": 3, "households": 4},
+        {"statistical_code": "213870", "name": "Dobrinja", "population": 457, "households": 149},
+        {"statistical_code": "213764", "name": "Donji Skugrić", "population": 937, "households": 322},
+        {"statistical_code": "213888", "name": "Dugo Polje", "population": 1013, "households": 346},
+        {"statistical_code": "213896", "name": "Garevac", "population": 3221, "households": 904},
+        {"statistical_code": "213772", "name": "Gornje Krečane", "population": 38, "households": 15},
+        {"statistical_code": "213799", "name": "Jasenica", "population": 46, "households": 16},
+        {"statistical_code": "213900", "name": "Kladari Donji", "population": 425, "households": 141},
+        {"statistical_code": "213918", "name": "Kladari Gornji", "population": 365, "households": 109},
+        {"statistical_code": "213926", "name": "Koprivna", "population": 1210, "households": 465},
+        {"statistical_code": "213802", "name": "Krčevljani", "population": 266, "households": 81},
+        {"statistical_code": "213934", "name": "Kužnjača", "population": 31, "households": 12},
+        {"statistical_code": "213942", "name": "Miloševac", "population": 1366, "households": 469},
+        {"statistical_code": "213969", "name": "Modriča", "population": 9419, "households": 3299},
+        {"statistical_code": "213977", "name": "Riječani Donji", "population": 14, "households": 6},
+        {"statistical_code": "213985", "name": "Riječani Gornji", "population": 177, "households": 54},
+        {"statistical_code": "213993", "name": "Skugrić Gornji", "population": 832, "households": 293},
+        {"statistical_code": "214019", "name": "Tarevci", "population": 2863, "households": 900},
+        {"statistical_code": "213829", "name": "Tolisa", "population": 372, "households": 135},
+        {"statistical_code": "214027", "name": "Vranjak", "population": 1453, "households": 538}
+      ]
+    },
+    {
+      "slug": "samac",
+      "name": "Šamac",
+      "statistical_code": "20656",
+      "settlements": [
+        {"statistical_code": "229075", "name": "Batkuša", "population": 652, "households": 210},
+        {"statistical_code": "229091", "name": "Brvnik", "population": 256, "households": 89},
+        {"statistical_code": "229105", "name": "Crkvina", "population": 1251, "households": 436},
+        {"statistical_code": "229113", "name": "Donja Slatina", "population": 478, "households": 164},
+        {"statistical_code": "229121", "name": "Donji Hasić", "population": 254, "households": 96},
+        {"statistical_code": "229067", "name": "Gajevi", "population": 463, "households": 148},
+        {"statistical_code": "229130", "name": "Gornja Slatina", "population": 947, "households": 315},
+        {"statistical_code": "229148", "name": "Gornji Hasić", "population": 502, "households": 169},
+        {"statistical_code": "229156", "name": "Grebnice", "population": 455, "households": 129},
+        {"statistical_code": "229164", "name": "Kornica", "population": 348, "households": 185},
+        {"statistical_code": "229172", "name": "Kruškovo Polje", "population": 604, "households": 201},
+        {"statistical_code": "229059", "name": "Lugovi", "population": 432, "households": 123},
+        {"statistical_code": "229199", "name": "Novo Selo", "population": 431, "households": 131},
+        {"statistical_code": "229237", "name": "Njegoševo", "population": 0, "households": 0},
+        {"statistical_code": "229202", "name": "Obudovac", "population": 2480, "households": 820},
+        {"statistical_code": "229229", "name": "Pisari", "population": 445, "households": 160},
+        {"statistical_code": "229245", "name": "Srednja Slatina", "population": 577, "households": 158},
+        {"statistical_code": "229083", "name": "Šamac", "population": 5133, "households": 1820},
+        {"statistical_code": "229253", "name": "Škarić", "population": 285, "households": 103},
+        {"statistical_code": "229261", "name": "Tišina", "population": 915, "households": 328},
+        {"statistical_code": "229270", "name": "Zasavica", "population": 365, "households": 85}
+      ]
+    }
+  ]
+}
