@@ -1,0 +1,112 @@
+{
+  "algorithm_version": "m7.1",
+  "artifact_sha256": "test-fixture-not-a-real-hash",
+  "source": {
+    "provider": "Copernicus Climate Change Service / ECMWF",
+    "temperature_dataset": "ERA5-Land",
+    "precipitation_dataset": "ERA5",
+    "temperature_doi": "10.24381/cds.e2161bac",
+    "precipitation_doi": "10.24381/cds.adbb2d47",
+    "licence": "Copernicus C3S/CAMS Licence",
+    "retrieval": "synthetic fixture; Open-Meteo Historical Weather API is not called in tests",
+    "grid": "ERA5-Land 0.1°; ERA5 0.25°",
+    "timezone": "Europe/Sarajevo",
+    "normal_period": "1991-01-01/2020-12-31",
+    "historical_period": "1950-01-01/2025-12-31",
+    "retrieval_date": "2026-09-02"
+  },
+  "records": [
+    {
+      "settlement_id": 0,
+      "boundary_id": null,
+      "municipality_slug": "modrica",
+      "settlement_slug": "milosevac",
+      "status": "ok",
+      "quality_flag": "coarse_spatial_resolution",
+      "spatial_method": "area_weighted_grid_intersection",
+      "algorithm_version": "m7.1",
+      "source_resolution_km": 9.0,
+      "grid_cell_count": 1,
+      "normal_period_start": "1991-01-01",
+      "normal_period_end": "2020-12-31",
+      "historical_period_start": "1950-01-01",
+      "historical_period_end": "2025-12-31",
+      "calculated_at": "2026-09-02",
+      "temperature_mean_1961_1990_c": 10.9,
+      "temperature_mean_change_c": 0.7,
+      "annual": {
+        "temperature_mean_c": 11.6,
+        "precipitation_mm": 780.0,
+        "coldest_month": 1,
+        "warmest_month": 7,
+        "wettest_month": 6,
+        "driest_month": 2,
+        "temperature_range_c": 21.4
+      },
+      "monthly": [
+        {"month": 1, "temperature_mean_c": 0.0, "temperature_mean_min_c": -4.1, "temperature_mean_max_c": 4.2, "precipitation_mean_mm": 0.0},
+        {"month": 2, "temperature_mean_c": 2.1, "temperature_mean_min_c": -2.8, "temperature_mean_max_c": 7.0, "precipitation_mean_mm": 42.0},
+        {"month": 3, "temperature_mean_c": 6.4, "temperature_mean_min_c": 1.2, "temperature_mean_max_c": 11.8, "precipitation_mean_mm": 55.0},
+        {"month": 4, "temperature_mean_c": 11.2, "temperature_mean_min_c": 5.4, "temperature_mean_max_c": 17.0, "precipitation_mean_mm": 62.0},
+        {"month": 5, "temperature_mean_c": 16.1, "temperature_mean_min_c": 10.0, "temperature_mean_max_c": 22.2, "precipitation_mean_mm": 78.0},
+        {"month": 6, "temperature_mean_c": 19.8, "temperature_mean_min_c": 13.6, "temperature_mean_max_c": 26.0, "precipitation_mean_mm": 92.0},
+        {"month": 7, "temperature_mean_c": 21.4, "temperature_mean_min_c": 15.0, "temperature_mean_max_c": 28.1, "precipitation_mean_mm": 71.0},
+        {"month": 8, "temperature_mean_c": 21.0, "temperature_mean_min_c": 14.7, "temperature_mean_max_c": 27.8, "precipitation_mean_mm": 68.0},
+        {"month": 9, "temperature_mean_c": 16.4, "temperature_mean_min_c": 10.5, "temperature_mean_max_c": 22.6, "precipitation_mean_mm": 64.0},
+        {"month": 10, "temperature_mean_c": 11.0, "temperature_mean_min_c": 5.8, "temperature_mean_max_c": 16.6, "precipitation_mean_mm": 61.0},
+        {"month": 11, "temperature_mean_c": 6.2, "temperature_mean_min_c": 1.8, "temperature_mean_max_c": 10.9, "precipitation_mean_mm": 70.0},
+        {"month": 12, "temperature_mean_c": 1.4, "temperature_mean_min_c": -2.6, "temperature_mean_max_c": 5.4, "precipitation_mean_mm": 57.0}
+      ],
+      "indices": [
+        {"code": "hot_days_30c", "value": 18.2, "threshold": 30, "unit": "days_per_year", "definition": "dnevni Tmax ≥ 30 °C"},
+        {"code": "frost_days", "value": 72.4, "threshold": 0, "unit": "days_per_year", "definition": "dnevni Tmin < 0 °C"},
+        {"code": "precipitation_days_1mm", "value": 110.0, "threshold": 1, "unit": "days_per_year", "definition": "dnevne padavine ≥ 1 mm"}
+      ],
+      "extremes": [
+        {
+          "metric_code": "daily_tmax_max",
+          "value": 39.4,
+          "unit": "°C",
+          "occurred_on": "2007-07-24",
+          "period_start": "1950-01-01",
+          "period_end": "2025-12-31",
+          "wording": "Najviša dnevna maksimalna temperatura u analiziranom ERA5-Land nizu",
+          "kind": "gridded_reanalysis_extreme"
+        },
+        {
+          "metric_code": "daily_tmin_min",
+          "value": -22.1,
+          "unit": "°C",
+          "occurred_on": "1963-01-24",
+          "period_start": "1950-01-01",
+          "period_end": "2025-12-31",
+          "wording": "Najniža dnevna minimalna temperatura u analiziranom ERA5-Land nizu",
+          "kind": "gridded_reanalysis_extreme"
+        },
+        {
+          "metric_code": "daily_precip_max",
+          "value": 78.5,
+          "unit": "mm",
+          "occurred_on": "2014-05-15",
+          "period_start": "1950-01-01",
+          "period_end": "2025-12-31",
+          "wording": "Najveća dnevna količina padavina u analiziranom ERA5 nizu",
+          "kind": "gridded_reanalysis_extreme"
+        }
+      ],
+      "metadata": {
+        "timezone": "Europe/Sarajevo",
+        "temperature_dataset": "ERA5-Land",
+        "precipitation_dataset": "ERA5",
+        "point_semantics": "area_weighted_grid_intersection; not a weather-station observation"
+      }
+    },
+    {
+      "settlement_id": 0,
+      "municipality_slug": "samac",
+      "settlement_slug": "njegosevo",
+      "status": "unavailable",
+      "quality_flag": "no_boundary"
+    }
+  ]
+}

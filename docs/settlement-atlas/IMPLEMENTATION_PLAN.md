@@ -11,6 +11,7 @@ Branch: `feature/bih-settlement-atlas`
 | **M4** | **Complete** | Settlement boundaries + DEM terrain stats (37/45) |
 | **M5** | **Complete** | Public map GeoJSON endpoint |
 | **M6** | **Complete** | `geo_places` catalog + OSM Overpass import + public POI API |
+| **M7** | **Complete** | ERA5-Land/ERA5 climate profiles + public climate API |
 
 See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 
@@ -36,4 +37,12 @@ See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 - 761 unique pilot POIs; `GET /api/geo/map/places` ~345 KB
 - See [M6_POI_CATALOG.md](M6_POI_CATALOG.md)
 
-M7 was not started.
+## M7 result
+
+- Tables `settlement_climate_profiles` / `_monthly` / `_extremes`; algorithm `m7.1`
+- `atlas:export-climate-jobs`, `fetch_climate.py`, `process_climate.py`, `atlas:import-climate`
+- Public `climate` block on settlement detail; map properties for temperature and precipitation
+- Pilot import: **35/37** boundary settlements (`coarse_spatial_resolution`); Šamac town and Pisari `insufficient_source` after Open-Meteo 429
+- See [M7_CLIMATE.md](M7_CLIMATE.md)
+
+M8 was not started.

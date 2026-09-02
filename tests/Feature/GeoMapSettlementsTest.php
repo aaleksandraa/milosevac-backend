@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\DataSource;
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
+use App\Models\SettlementClimateProfile;
 use App\Models\SettlementTerrainStat;
 use App\Support\Atlas\Map\SettlementMapPresenter;
 use Database\Seeders\GeoAtlasSeeder;
@@ -77,7 +78,9 @@ class GeoMapSettlementsTest extends TestCase
         $this->assertSame(96.4, $milosevac['properties']['elevation_mean_m']);
         $this->assertSame(2.45, $milosevac['properties']['slope_mean_deg']);
         $this->assertSame('ok', $milosevac['properties']['terrain_quality_flag']);
+        $this->assertArrayNotHasKey('temperature_mean_annual_c', $milosevac['properties']);
         $this->assertSame('osm_settlement_boundaries', $milosevac['properties']['boundary_source_type']);
+        $this->assertSame(SettlementMapPresenter::CLIMATE_NOTE, $payload['meta']['climate_note']);
         $this->assertContains($milosevac['geometry']['type'], ['Polygon', 'MultiPolygon']);
         $this->assertIsArray($milosevac['geometry']['coordinates']);
 
@@ -167,6 +170,29 @@ class GeoMapSettlementsTest extends TestCase
 
         $this->getJson('/api/geo/municipalities')->assertOk()->assertJsonPath('municipalities.0.slug', 'modrica');
         $this->getJson('/api/geo/municipalities/modrica')->assertOk()->assertJsonPath('municipality.slug', 'modrica');
+    }
+
+    public function test_map_includes_climate_properties_and_keeps_zero(): void
+    {
+        $modrica = $this->settlement('modrica', 'milosevac');
+        $boundary = $this->attachBoundary($modrica, ['source_feature_id' => 'relation/climate-milosevac']);
+        SettlementClimateProfile::factory()->create([
+            'settlement_id' => $modrica->id,
+            'boundary_id' => $boundary->id,
+            'source_id' => DataSource::query()->where('source_type', 'copernicus_era5_land')->value('id'),
+            'temperature_mean_annual_c' => 0,
+            'precipitation_annual_mm' => 0,
+            'quality_flag' => SettlementClimateProfile::QUALITY_COARSE,
+        ]);
+
+        $feature = collect($this->getJson('/api/geo/map/settlements')->assertOk()->json('features'))
+            ->firstWhere('properties.settlement_slug', 'milosevac');
+
+        $this->assertEqualsWithDelta(0.0, (float) $feature['properties']['temperature_mean_annual_c'], 0.001);
+        $this->assertEqualsWithDelta(0.0, (float) $feature['properties']['precipitation_annual_mm'], 0.001);
+        $this->assertSame('1991–2020', $feature['properties']['climate_normal_period']);
+        $this->assertSame(SettlementClimateProfile::QUALITY_COARSE, $feature['properties']['climate_quality_flag']);
+        $this->assertSame(1366, $feature['properties']['population_2013']);
     }
 
     private function settlement(string $municipalitySlug, string $settlementSlug): GeoSettlement

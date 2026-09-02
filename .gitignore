@@ -44,6 +44,10 @@ __pycache__/
 *.pyc
 *.tif
 *.tiff
+*.nc
+*.grib
+*.grb
+*.zarr
 /vendor
 Homestead.json
 Homestead.yaml

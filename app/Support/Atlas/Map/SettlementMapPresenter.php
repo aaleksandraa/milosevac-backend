@@ -4,6 +4,7 @@ namespace App\Support\Atlas\Map;
 
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
+use App\Models\SettlementClimateProfile;
 use App\Models\SettlementTerrainStat;
 use App\Support\Atlas\PopulationSelector;
 use App\Support\Atlas\SettlementIndexability;
@@ -16,6 +17,8 @@ final class SettlementMapPresenter
     public const TERRAIN_NOTE = 'Visinski podaci izvedeni su iz Copernicus DEM GLO-30 modela terena unutar izabrane granice naselja. To nisu službene izmjerene visine.';
 
     public const COVERAGE_NOTE = 'Pokretanje karte obuhvata samo naselja s važećom granicom. U pilotu Modriča + Šamac granica postoji za 37 od 45 uvezenih naselja.';
+
+    public const CLIMATE_NOTE = 'Klimatske vrijednosti su ERA5-Land / ERA5 reanaliza za period 1991–2020, ne mjerenja meteorološke stanice.';
 
     /**
      * Canonical M4 geometry is served as GeoJSON without simplification.
@@ -58,6 +61,8 @@ final class SettlementMapPresenter
                 'boundary_note' => self::BOUNDARY_NOTE,
                 'terrain_note' => self::TERRAIN_NOTE,
                 'coverage_note' => self::COVERAGE_NOTE,
+                'climate_note' => self::CLIMATE_NOTE,
+                'climate_source_type' => 'copernicus_era5_land',
             ],
         ];
 
@@ -83,6 +88,7 @@ final class SettlementMapPresenter
             ? (new PopulationSelector)->preferredForYear($settlement->populationRecords, 2013)
             : null;
         $terrain = $this->publicTerrain($settlement);
+        $climate = $this->publicClimate($settlement);
 
         $properties = [
             'settlement_id' => $settlement->id,
@@ -104,6 +110,10 @@ final class SettlementMapPresenter
             'slope_mean_deg' => $this->decimal($terrain?->slope_mean_deg),
             'boundary_source_type' => $boundary->relationLoaded('source') ? $boundary->source?->source_type : null,
             'terrain_quality_flag' => $terrain?->quality_flag,
+            'temperature_mean_annual_c' => $this->decimal($climate?->temperature_mean_annual_c),
+            'precipitation_annual_mm' => $this->decimal($climate?->precipitation_annual_mm),
+            'climate_quality_flag' => $climate?->quality_flag,
+            'climate_normal_period' => $climate ? '1991–2020' : null,
         ];
 
         return [
@@ -135,6 +145,18 @@ final class SettlementMapPresenter
         return $settlement->terrainStats
             ->filter(fn (SettlementTerrainStat $row) => $row->isPubliclyUsable())
             ->sortByDesc(fn (SettlementTerrainStat $row) => $row->calculated_at?->timestamp ?? 0)
+            ->first();
+    }
+
+    private function publicClimate(GeoSettlement $settlement): ?SettlementClimateProfile
+    {
+        if (! $settlement->relationLoaded('climateProfiles')) {
+            return null;
+        }
+
+        return $settlement->climateProfiles
+            ->filter(fn (SettlementClimateProfile $row) => $row->isPubliclyUsable())
+            ->sortByDesc(fn (SettlementClimateProfile $row) => $row->calculated_at?->timestamp ?? 0)
             ->first();
     }
 

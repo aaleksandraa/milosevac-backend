@@ -7,6 +7,7 @@ use App\Models\GeoMunicipality;
 use App\Models\GeoPlace;
 use App\Models\GeoPlaceType;
 use App\Models\GeoSettlement;
+use App\Models\SettlementClimateProfile;
 use App\Models\SettlementTerrainStat;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -99,6 +100,13 @@ final class AtlasQueryService
                 },
                 'terrainStats' => function (HasMany $query) {
                     $query->where('quality_flag', '!=', SettlementTerrainStat::QUALITY_UNAVAILABLE);
+                },
+                'climateProfiles' => function (HasMany $query) {
+                    $query->whereNotIn('quality_flag', [
+                        SettlementClimateProfile::QUALITY_UNAVAILABLE,
+                        SettlementClimateProfile::QUALITY_INSUFFICIENT,
+                        SettlementClimateProfile::QUALITY_NO_BOUNDARY,
+                    ]);
                 },
             ])
             ->orderBy('name');
@@ -208,6 +216,10 @@ final class AtlasQueryService
             'boundaries.source',
             'terrainStats.source',
             'terrainStats.boundary',
+            'climateProfiles' => function (HasMany $query) {
+                $query->whereNotIn('quality_flag', ['unavailable', 'insufficient_source', 'no_boundary'])
+                    ->with(['source', 'monthly', 'extremes']);
+            },
         ];
     }
 }

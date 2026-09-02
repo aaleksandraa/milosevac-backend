@@ -80,4 +80,9 @@ class GeoSettlement extends Model
     {
         return $this->hasMany(GeoPlace::class, 'settlement_id');
     }
+
+    public function climateProfiles(): HasMany
+    {
+        return $this->hasMany(SettlementClimateProfile::class, 'settlement_id');
+    }
 }

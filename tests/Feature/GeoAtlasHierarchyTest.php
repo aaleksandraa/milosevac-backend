@@ -275,8 +275,11 @@ class GeoAtlasHierarchyTest extends TestCase
 
     public function test_atlas_migrations_roll_back_and_can_be_reapplied(): void
     {
-        $this->artisan('migrate:rollback', ['--step' => 12])->assertSuccessful();
+        $this->artisan('migrate:rollback', ['--step' => 15])->assertSuccessful();
 
+        $this->assertFalse(Schema::hasTable('settlement_climate_extremes'));
+        $this->assertFalse(Schema::hasTable('settlement_climate_monthly'));
+        $this->assertFalse(Schema::hasTable('settlement_climate_profiles'));
         $this->assertFalse(Schema::hasTable('geo_places'));
         $this->assertFalse(Schema::hasTable('geo_place_types'));
         $this->assertFalse(Schema::hasTable('settlement_terrain_stats'));
@@ -290,7 +293,7 @@ class GeoAtlasHierarchyTest extends TestCase
         $this->artisan('migrate')->assertSuccessful();
         $this->assertTrue(Schema::hasTable('geo_settlements'));
         $this->assertTrue(Schema::hasTable('geo_places'));
-        $this->assertTrue(Schema::hasTable('geo_place_types'));
+        $this->assertTrue(Schema::hasTable('settlement_climate_profiles'));
         $this->assertTrue(Schema::hasTable('places'));
     }
 }

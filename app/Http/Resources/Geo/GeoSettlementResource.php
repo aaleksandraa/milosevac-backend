@@ -4,6 +4,7 @@ namespace App\Http\Resources\Geo;
 
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
+use App\Support\Atlas\ClimatePresenter;
 use App\Support\Atlas\PopulationSelector;
 use App\Support\Atlas\SettlementIndexability;
 use Illuminate\Http\Request;
@@ -48,6 +49,7 @@ class GeoSettlementResource extends JsonResource
             'census' => $history->isEmpty() ? null : GeoPopulationResource::collection($history)->resolve(),
             'points' => $this->points() ?: null,
             'geography' => $this->geography(),
+            'climate' => $this->climate(),
             'neighbors' => $siblings,
             'source' => $latest && $latest->relationLoaded('source') && $latest->source
                 ? (new GeoSourceResource($latest->source))->resolve()
@@ -141,6 +143,23 @@ class GeoSettlementResource extends JsonResource
         }
 
         return $block === [] ? null : $block;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function climate(): ?array
+    {
+        if (! $this->relationLoaded('climateProfiles')) {
+            return null;
+        }
+
+        $profile = $this->climateProfiles
+            ->filter(fn ($row) => $row->isPubliclyUsable())
+            ->sortByDesc(fn ($row) => $row->calculated_at?->timestamp ?? 0)
+            ->first();
+
+        return (new ClimatePresenter)->present($profile);
     }
 
     private function geographyMethodology(?SettlementBoundary $boundary, mixed $terrain): string

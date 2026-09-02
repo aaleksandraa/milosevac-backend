@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\DataSource;
+use App\Models\GeoSettlement;
+use App\Models\SettlementClimateProfile;
 use Database\Seeders\GeoAtlasSeeder;
 use Tests\TestCase;
 
@@ -49,7 +52,33 @@ class GeoAtlasSeoTest extends TestCase
             ->assertSee('Miloševac – stanovništvo i podaci', false)
             ->assertSee('1.366 stanovnika prema Popisu 2013.', false)
             ->assertSee('"@type":"Place"', false)
-            ->assertDontSee('GeoCoordinates', false);
+            ->assertDontSee('GeoCoordinates', false)
+            ->assertDontSee('ClimateForecast', false);
+    }
+
+    public function test_crawler_adds_climate_sentence_without_inventing_schema(): void
+    {
+        $settlement = GeoSettlement::query()
+            ->where('slug', 'milosevac')
+            ->whereHas('municipality', fn ($query) => $query->where('slug', 'modrica'))
+            ->firstOrFail();
+
+        SettlementClimateProfile::factory()->create([
+            'settlement_id' => $settlement->id,
+            'source_id' => DataSource::query()->where('source_type', 'copernicus_era5_land')->value('id'),
+            'boundary_id' => null,
+            'temperature_mean_annual_c' => 11.6,
+            'precipitation_annual_mm' => 780,
+        ]);
+
+        $this->withHeader('X-Social-Preview', '1')
+            ->get('/mjesta/modrica/milosevac')
+            ->assertOk()
+            ->assertSee('Klima prema ERA5-Land reanalizi 1991–2020', false)
+            ->assertSee('11,6 °C', false)
+            ->assertSee('"@type":"Place"', false)
+            ->assertDontSee('ClimateForecast', false)
+            ->assertDontSee('izmjerena', false);
     }
 
     public function test_crawler_keeps_njegosevo_zero_population(): void

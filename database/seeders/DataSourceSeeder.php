@@ -110,6 +110,23 @@ class DataSourceSeeder extends Seeder
                     'notes' => 'Zajednički OSM objekti uvezeni Overpass-om u operator/import toku. Nisu službeno verifikovani, nisu Google podaci, i ne predstavljaju iscrpan popis objekata na terenu. Licenca ODbL.',
                 ],
             ],
+            [
+                'name' => 'Copernicus Climate Change Service — ERA5-Land',
+                'provider' => 'Copernicus Climate Change Service / ECMWF',
+                'source_class' => DataSourceClass::ReputablePublic,
+                'authority_rank' => SourceAuthority::SCIENTIFIC_PUBLIC,
+                'source_type' => 'copernicus_era5_land',
+                'url' => 'https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land',
+                'license' => 'Copernicus C3S/CAMS Licence',
+                'attribution' => 'ERA5-Land reanalysis, Copernicus Climate Change Service / ECMWF. Padavine: ERA5. Nisu mjerene vrijednosti meteorološke stanice.',
+                'dataset_version' => 'era5-land-open-meteo-archive',
+                'metadata' => [
+                    'used_for' => ['pilot_settlement_climate'],
+                    'temperature_doi' => '10.24381/cds.e2161bac',
+                    'precipitation_doi' => '10.24381/cds.adbb2d47',
+                    'notes' => 'Reanaliza/model, nije službeno mjerenje u naselju. Open-Meteo ERA5-Land ne isporučuje padavine; padavine dolaze iz ERA5.',
+                ],
+            ],
         ];
 
         foreach ($sources as $source) {

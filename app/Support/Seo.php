@@ -319,6 +319,14 @@ class Seo
             $description .= ' '.self::bsNumber((int) $census->population).' stanovnika prema Popisu 2013.';
         }
 
+        $climate = $settlement->relationLoaded('climateProfiles')
+            ? $settlement->climateProfiles->first(fn ($row) => $row->isPubliclyUsable())
+            : null;
+        if ($climate && $climate->temperature_mean_annual_c !== null) {
+            $description .= ' Klima prema ERA5-Land reanalizi 1991–2020: '
+                .str_replace('.', ',', number_format((float) $climate->temperature_mean_annual_c, 1)).' °C.';
+        }
+
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'Place',
