@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RankingScope;
 use App\Models\Category;
 use App\Models\FootballMatch;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use App\Support\Atlas\AtlasQueryService;
+use App\Support\Atlas\Metrics\RankingDatasetVersion;
+use App\Support\Atlas\Metrics\SettlementComparisonService;
+use App\Support\Atlas\Metrics\SettlementMetricRegistry;
+use App\Support\Atlas\Metrics\SettlementRankingService;
 use App\Support\Atlas\PopulationSelector;
 use App\Support\Seo;
 use App\Support\SocialPreviewDetector;
@@ -205,6 +210,83 @@ class FrontendRedirectController extends Controller
         abort_if($row === null, 404);
 
         return $this->preview(Seo::atlasSettlement($row));
+    }
+
+    public function atlasRankings(Request $request): RedirectResponse|Response
+    {
+        $path = '/rang-liste';
+        if (! $this->wantsSocialPreview($request)) {
+            return $this->to($path, $request);
+        }
+
+        $metricCode = is_string($request->query('metric')) ? $request->query('metric') : 'population_2013';
+        $rankings = app(SettlementRankingService::class);
+        $registry = app(SettlementMetricRegistry::class);
+        $metric = $registry->find($metricCode);
+        $label = $metric?->highRankingLabel ?? 'Rang-liste naselja';
+        $rows = [];
+        $scopeNote = null;
+        if ($metric?->rankable) {
+            $table = $rankings->table(
+                $metric->code,
+                RankingScope::Pilot,
+                $metric->defaultDirection,
+            );
+            $scopeNote = app(RankingDatasetVersion::class)->universeNote(
+                $table->scope,
+                $table->municipality,
+                $table->universe->map(fn ($settlement) => $settlement->municipality)->filter()->unique('id')->values(),
+            );
+            $rows = $table->entries->take(max($table->eligible, 0))->map(fn ($entry) => [
+                'rank' => $entry->rank,
+                'name' => $entry->settlement->name,
+                'municipality' => $entry->settlement->municipality?->name,
+                'value' => $entry->value,
+                'unit' => $metric->unit,
+            ])->all();
+        }
+
+        return $this->preview(Seo::atlasRankings($label, $rows, $scopeNote));
+    }
+
+    public function atlasCompare(
+        Request $request,
+        string $municipalityA,
+        string $settlementA,
+        string $municipalityB,
+        string $settlementB,
+    ): RedirectResponse|Response {
+        $path = '/uporedi/'.$municipalityA.'/'.$settlementA.'/'.$municipalityB.'/'.$settlementB;
+        $atlas = app(AtlasQueryService::class);
+        $left = $atlas->settlementInMunicipality($municipalityA, $settlementA);
+        $right = $atlas->settlementInMunicipality($municipalityB, $settlementB);
+        abort_if($left === null || $right === null, 404);
+
+        if (! $this->wantsSocialPreview($request)) {
+            return $this->to($path);
+        }
+
+        $compared = app(SettlementComparisonService::class)->compare($left, $right);
+        $rows = [];
+        foreach ($compared['sections'] as $section) {
+            foreach ($section['rows'] as $row) {
+                $rows[] = [
+                    'label' => $row['label'],
+                    'a' => $row['a']['value'],
+                    'b' => $row['b']['value'],
+                    'unit' => $row['unit'],
+                ];
+            }
+        }
+
+        return $this->preview(Seo::atlasCompare(
+            $path,
+            $left->name,
+            $left->municipality?->name ?? $municipalityA,
+            $right->name,
+            $right->municipality?->name ?? $municipalityB,
+            $rows,
+        ));
     }
 
     private function respond(Request $request, string $path, array $seo): RedirectResponse|Response

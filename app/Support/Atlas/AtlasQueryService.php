@@ -222,6 +222,9 @@ final class AtlasQueryService
                 $query->whereNotIn('quality_flag', ['unavailable', 'insufficient_source', 'no_boundary'])
                     ->with(['source', 'monthly', 'extremes']);
             },
+            'places' => function (HasMany $query) {
+                $query->where('is_active', true)->with('placeType:id,family,code,name,singular_label');
+            },
         ];
     }
 }

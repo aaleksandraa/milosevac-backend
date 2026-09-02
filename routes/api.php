@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\GeoCompareController;
 use App\Http\Controllers\Api\GeoMapController;
 use App\Http\Controllers\Api\GeoMunicipalityController;
 use App\Http\Controllers\Api\GeoPlaceController;
+use App\Http\Controllers\Api\GeoRankingController;
 use App\Http\Controllers\Api\GeoSettlementController;
 use App\Http\Controllers\PublicPortalController;
 use App\Http\Controllers\WeatherController;
@@ -18,6 +20,10 @@ Route::get('/fk-posavina/matches/{match:slug}', [PublicPortalController::class, 
 
 Route::get('/geo/map/settlements', [GeoMapController::class, 'settlements'])->name('geo.map.settlements');
 Route::get('/geo/map/places', [GeoMapController::class, 'places'])->name('geo.map.places');
+Route::get('/geo/metrics', [GeoRankingController::class, 'metrics'])->name('geo.metrics.index');
+Route::get('/geo/rankings', [GeoRankingController::class, 'index'])->name('geo.rankings.index');
+Route::get('/geo/compare/{municipalityA}/{settlementA}/{municipalityB}/{settlementB}', [GeoCompareController::class, 'show'])
+    ->name('geo.compare.show');
 Route::get('/geo/places', [GeoPlaceController::class, 'index'])->name('geo.places.index');
 Route::get('/geo/municipalities', [GeoMunicipalityController::class, 'index'])->name('geo.municipalities.index');
 Route::get('/geo/municipalities/{municipality}', [GeoMunicipalityController::class, 'show'])->name('geo.municipalities.show');

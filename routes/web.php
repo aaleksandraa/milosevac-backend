@@ -25,6 +25,8 @@ Route::get('/uslovi-koristenja', [FrontendRedirectController::class, 'terms'])->
 Route::get('/mjesta', [FrontendRedirectController::class, 'atlasIndex'])->name('atlas.index');
 Route::get('/mjesta/{municipality}/{settlement}', [FrontendRedirectController::class, 'atlasSettlement'])->name('atlas.settlement');
 Route::get('/mjesta/{municipality}', [FrontendRedirectController::class, 'atlasMunicipality'])->name('atlas.municipality');
+Route::get('/rang-liste', [FrontendRedirectController::class, 'atlasRankings'])->name('atlas.rankings');
+Route::get('/uporedi/{municipalityA}/{settlementA}/{municipalityB}/{settlementB}', [FrontendRedirectController::class, 'atlasCompare'])->name('atlas.compare');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
 Route::get('/sitemap-posts.xml', [SitemapController::class, 'posts'])->name('sitemap.posts');

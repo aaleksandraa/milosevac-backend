@@ -367,6 +367,52 @@ class Seo
         return $seo;
     }
 
+    public static function atlasRankings(?string $metricLabel = null, array $rows = [], ?string $scopeNote = null): array
+    {
+        $canonical = self::frontendUrl('rang-liste');
+        $title = 'Rang-liste naselja';
+        $description = 'Rang-liste trenutno obrađenih naseljenih mjesta u atlasu. Rangovi se računaju samo za naselja s važećim podatkom za izabrani metrik. Ovo nisu rang-liste Bosne i Hercegovine.';
+        if ($metricLabel) {
+            $title = $metricLabel;
+            $description = $metricLabel.'. '.$description;
+        }
+
+        $seo = self::page($title, $description, $canonical, null, [
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => $title,
+            'description' => $description,
+            'url' => $canonical,
+        ]);
+        $seo['schemas'][] = self::breadcrumb([
+            ['name' => 'Početna', 'url' => self::frontendUrl('/')],
+            ['name' => 'Mjesta', 'url' => self::frontendUrl('mjesta')],
+            ['name' => 'Rang-liste', 'url' => $canonical],
+        ]);
+        $seo['ranking_caption'] = $title.($scopeNote ? ' — '.$scopeNote : '');
+        $seo['ranking_rows'] = $rows;
+
+        return $seo;
+    }
+
+    public static function atlasCompare(string $path, string $nameA, string $municipalityA, string $nameB, string $municipalityB, array $rows = []): array
+    {
+        $canonical = self::frontendUrl(ltrim($path, '/'));
+        $title = $nameA.' i '.$nameB.' — poređenje naselja';
+        $description = 'Poređenje naselja '.$nameA.' ('.$municipalityA.') i '.$nameB.' ('.$municipalityB.') prema dostupnim atlas podacima. Nije ocjena kvaliteta života.';
+
+        $seo = self::noindex(self::page($title, $description, $canonical, null, [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'name' => $title,
+            'description' => $description,
+        ]));
+        $seo['compare_caption'] = $nameA.' ('.$municipalityA.') i '.$nameB.' ('.$municipalityB.')';
+        $seo['compare_rows'] = $rows;
+
+        return $seo;
+    }
+
     public static function bsNumber(int $value): string
     {
         return number_format($value, 0, ',', '.');

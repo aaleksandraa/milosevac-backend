@@ -32,6 +32,50 @@
     <main>
         <h1>{{ $seo['title'] }}</h1>
         <p>{{ $seo['description'] }}</p>
+        @isset($seo['ranking_rows'])
+            <h2>{{ $seo['ranking_caption'] ?? 'Rang-lista' }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rang</th>
+                        <th>Naselje</th>
+                        <th>Opština</th>
+                        <th>Vrijednost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($seo['ranking_rows'] as $row)
+                        <tr>
+                            <td>{{ $row['rank'] }}</td>
+                            <td>{{ $row['name'] }}</td>
+                            <td>{{ $row['municipality'] }}</td>
+                            <td>{{ $row['value'] }}{{ !empty($row['unit']) ? ' '.$row['unit'] : '' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endisset
+        @isset($seo['compare_rows'])
+            <h2>{{ $seo['compare_caption'] ?? 'Poređenje' }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrik</th>
+                        <th>Naselje A</th>
+                        <th>Naselje B</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($seo['compare_rows'] as $row)
+                        <tr>
+                            <td>{{ $row['label'] }}</td>
+                            <td>{{ $row['a'] === null ? 'Nema dostupnog podatka' : $row['a'] }}{{ !empty($row['unit']) && $row['a'] !== null ? ' '.$row['unit'] : '' }}</td>
+                            <td>{{ $row['b'] === null ? 'Nema dostupnog podatka' : $row['b'] }}{{ !empty($row['unit']) && $row['b'] !== null ? ' '.$row['unit'] : '' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endisset
         <a href="{{ $seo['canonical'] }}">Otvori stranicu</a>
     </main>
 </body>

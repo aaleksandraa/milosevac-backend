@@ -13,6 +13,7 @@ Branch: `feature/bih-settlement-atlas`
 | **M6** | **Complete** | `geo_places` catalog + OSM Overpass import + public POI API |
 | **M7** | **Complete** | ERA5-Land/ERA5 climate profiles + public climate API |
 | **M8** | **Complete** | Historical census 1971/1981/1991 + mappings + change API |
+| **M9** | **Complete** | Metric registry, comparison API, rankings API |
 
 See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 
@@ -53,4 +54,11 @@ See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 - Public `census` comparability + `population_changes`; map `population_change_1991_2013_pct`
 - See [M8_HISTORICAL_POPULATION.md](M8_HISTORICAL_POPULATION.md)
 
-M9 was not started.
+## M9 result
+
+- `SettlementMetricRegistry` + `SettlementRankingService` + `SettlementComparisonService`
+- `GET /api/geo/metrics`, `/api/geo/rankings`, `/api/geo/compare/{mA}/{sA}/{mB}/{sB}`
+- Settlement `relative_facts`; crawler HTML for `/rang-liste`; `noindex` compare URLs
+- See [M9_COMPARISON_RANKINGS.md](M9_COMPARISON_RANKINGS.md)
+
+M10 was not started.

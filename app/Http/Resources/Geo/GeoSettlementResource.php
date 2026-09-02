@@ -5,6 +5,7 @@ namespace App\Http\Resources\Geo;
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
 use App\Support\Atlas\ClimatePresenter;
+use App\Support\Atlas\Metrics\SettlementRankingService;
 use App\Support\Atlas\PopulationPresenter;
 use App\Support\Atlas\PopulationSelector;
 use App\Support\Atlas\SettlementIndexability;
@@ -52,6 +53,7 @@ class GeoSettlementResource extends JsonResource
             'points' => $this->points() ?: null,
             'geography' => $this->geography(),
             'climate' => $this->climate(),
+            'relative_facts' => $this->relativeFacts(),
             'neighbors' => $siblings,
             'source' => $latest && $latest->relationLoaded('source') && $latest->source
                 ? (new GeoSourceResource($latest->source))->resolve()
@@ -145,6 +147,16 @@ class GeoSettlementResource extends JsonResource
         }
 
         return $block === [] ? null : $block;
+    }
+
+    /**
+     * @return list<array<string, mixed>>|null
+     */
+    private function relativeFacts(): ?array
+    {
+        $facts = app(SettlementRankingService::class)->relativeFacts($this->resource);
+
+        return $facts === [] ? null : $facts;
     }
 
     /**

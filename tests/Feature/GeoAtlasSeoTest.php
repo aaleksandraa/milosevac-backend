@@ -111,8 +111,40 @@ class GeoAtlasSeoTest extends TestCase
             ->assertOk()
             ->assertSee('sitemap-settlements.xml', false);
 
+        $this->get('/sitemap-pages.xml')
+            ->assertOk()
+            ->assertSee('<loc>https://milosevac.com/rang-liste</loc>', false)
+            ->assertDontSee('/uporedi/', false);
+
         $this->get('/robots.txt')
             ->assertOk()
             ->assertSee('Allow: /sitemap-settlements.xml', false);
+    }
+
+    public function test_rankings_page_is_indexable_with_real_rows(): void
+    {
+        $this->withHeader('X-Social-Preview', '1')
+            ->get('/rang-liste')
+            ->assertOk()
+            ->assertSee('Rang-liste', false)
+            ->assertSee('trenutno obrađen', false)
+            ->assertSee('Miloševac', false)
+            ->assertDontSee('najniže naselje Bosne', false)
+            ->assertSee('<table>', false);
+    }
+
+    public function test_compare_pages_are_noindex_and_not_cross_resolved(): void
+    {
+        $this->withHeader('X-Social-Preview', '1')
+            ->get('/uporedi/modrica/milosevac/samac/samac')
+            ->assertOk()
+            ->assertSee('noindex, follow', false)
+            ->assertSee('Miloševac', false)
+            ->assertSee('Šamac', false)
+            ->assertDontSee('/uporedi/milosevac/samac', false);
+
+        $this->withHeader('X-Social-Preview', '1')
+            ->get('/uporedi/samac/milosevac/modrica/modrica')
+            ->assertNotFound();
     }
 }
