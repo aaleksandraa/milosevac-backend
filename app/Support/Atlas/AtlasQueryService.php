@@ -95,6 +95,7 @@ final class AtlasQueryService
             ->with([
                 'municipality:id,name,slug',
                 'populationRecords.source',
+                'censusMappings',
                 'boundaries' => function (HasMany $query) {
                     $query->where('geometry_valid', true)->with('source:id,source_type,name,provider');
                 },
@@ -212,6 +213,7 @@ final class AtlasQueryService
                 $query->orderBy('name')->select(['id', 'municipality_id', 'name', 'slug']);
             },
             'populationRecords.source',
+            'censusMappings',
             'labelPointSource',
             'boundaries.source',
             'terrainStats.source',

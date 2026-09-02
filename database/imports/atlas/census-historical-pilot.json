@@ -1,0 +1,1041 @@
+{
+  "source": {
+    "name": "Popis stanovništva 1991. — uporedni podaci 1971, 1981. i 1991. (naseljena mjesta)",
+    "provider": "Federalni zavod za statistiku Federacije Bosne i Hercegovine",
+    "source_class": "A",
+    "authority_rank": 100,
+    "source_type": "census_settlements_historical",
+    "url": "https://fzs.ba/wp-content/uploads/2016/06/stanovnistvo-uporedni-podaci-1971_1981_-1991-bilten-265.pdf",
+    "attribution": "Federalni zavod za statistiku, Statistički bilten 265, Sarajevo, april 1998. Uporedni podaci 1971, 1981. i 1991.",
+    "dataset_version": "bilten-265-1998",
+    "publication_title": "Popis stanovništva, domaćinstava/kućanstava, stanova i poljoprivrednih gazdinstava 1991. Stanovništvo. Uporedni podaci 1971, 1981. i 1991.",
+    "publication_date": "1998-04",
+    "bulletin_number": 265,
+    "sha256_bilten_265": "7B273266D5BA4F5180AC5412A96B76AC7C2EC49B040A4CF427CD40CC8865CFD9",
+    "sha256_nacion_mz_1991": "BC52CDB60F6576F8391E08C01219FC78EFD10BA9F60F125B0CF148454D29AF56",
+    "url_mz_1991": "https://fzs.ba/wp-content/uploads/2016/06/nacion-po-mjesnim.pdf",
+    "retrieval_date": "2026-09-02",
+    "transcription": {
+      "role": "machine-readable settlement-level totals",
+      "url": "http://pop-stat.mashke.org/bosnia-census.htm",
+      "not_canonical": true,
+      "verification": [
+        "Municipality totals for Modriča and Bosanski Šamac match FZS Statistički bilten 265 (1998) pages 38 and 20.",
+        "1991 settlement totals for Miloševac, Modriča town and Šamac town match FZS 1991 mjesne zajednice PDF aggregations.",
+        "Wikipedia/encyclopedia pages were QA cross-checks only and are not import sources."
+      ]
+    }
+  },
+  "notes": [
+    "Sirovi redovi su ukupno stanovništvo naseljenog mjesta. Etnička/nacionalna struktura nije sačuvana.",
+    "Domaćinstva nisu uvezena jer tabele naselja u korištenom izvodu ne daju usklađena settlement-level households.",
+    "Zbrojevi historijskih opština usklađeni su sa FZS biltenom 265 (Modriča str. 38; Bos. Šamac str. 20).",
+    "1991. naseljske ukupnosti usklađene su sa FZS PDF-om nacionalnog sastava po mjesnim zajednicama, uz agregaciju MZ gdje je naselje podijeljeno (npr. Modriča 1–4, Skugrić Gornji + Živkovo Polje)."
+  ],
+  "municipality_qa": [
+    {
+      "historical_municipality_name": "Modriča",
+      "bulletin_265_page": 38,
+      "years": {
+        "1971": {
+          "official_total": 31622,
+          "parsed_sum": 31622
+        },
+        "1981": {
+          "official_total": 34541,
+          "parsed_sum": 34541
+        },
+        "1991": {
+          "official_total": 35613,
+          "parsed_sum": 35613
+        }
+      }
+    },
+    {
+      "historical_municipality_name": "Bosanski Šamac",
+      "bulletin_265_page": 20,
+      "years": {
+        "1971": {
+          "official_total": 31374,
+          "parsed_sum": 31374
+        },
+        "1981": {
+          "official_total": 32320,
+          "parsed_sum": 32320
+        },
+        "1991": {
+          "official_total": 32960,
+          "parsed_sum": 32960
+        }
+      }
+    }
+  ],
+  "records": [
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Babešnica",
+      "population": 163,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Babešnica",
+      "population": 705,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Babešnica",
+      "population": 147,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Botajica",
+      "population": 1237,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Botajica",
+      "population": 1104,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Botajica",
+      "population": 1019,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Čardak",
+      "population": 1026,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Čardak",
+      "population": 1046,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Čardak",
+      "population": 1006,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dobra Voda",
+      "population": 234,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dobra Voda",
+      "population": 113,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dobra Voda",
+      "population": 89,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dobrinja",
+      "population": 585,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dobrinja",
+      "population": 588,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dobrinja",
+      "population": 437,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dugo Polje",
+      "population": 1918,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dugo Polje",
+      "population": 1798,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dugo Polje",
+      "population": 1596,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Garevac",
+      "population": 2057,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Garevac",
+      "population": 2751,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Garevac",
+      "population": 2795,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Jakeš",
+      "population": 1704,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Jakeš",
+      "population": 1960,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Jakeš",
+      "population": 2546,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kladari Donji",
+      "population": 1010,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kladari Donji",
+      "population": 989,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kladari Donji",
+      "population": 1046,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kladari Gornji",
+      "population": 428,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kladari Gornji",
+      "population": 429,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kladari Gornji",
+      "population": 448,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Koprivna",
+      "population": 2540,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Koprivna",
+      "population": 2539,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Koprivna",
+      "population": 2218,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kužnjača",
+      "population": 221,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kužnjača",
+      "population": 284,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Kužnjača",
+      "population": 272,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Miloševac",
+      "population": 1880,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Miloševac",
+      "population": 1825,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Miloševac",
+      "population": 1735,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Modriča",
+      "population": 7324,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Modriča",
+      "population": 9630,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Modriča",
+      "population": 10454,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Modrički Lug",
+      "population": 1033,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Pećnik",
+      "population": 1739,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Pećnik",
+      "population": 1774,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Pećnik",
+      "population": 1487,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Riječani Donji",
+      "population": 742,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Riječani Donji",
+      "population": 754,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Riječani Donji",
+      "population": 835,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Riječani Gornji",
+      "population": 496,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Riječani Gornji",
+      "population": 398,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Riječani Gornji",
+      "population": 305,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Skugrić Gornji",
+      "population": 1470,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Skugrić Gornji",
+      "population": 1438,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Skugrić Gornji",
+      "population": 1453,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Tarevci",
+      "population": 1965,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Tarevci",
+      "population": 2242,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Tarevci",
+      "population": 2322,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Vranjak",
+      "population": 2883,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Vranjak",
+      "population": 2174,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Vranjak",
+      "population": 2370,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Donji Skugrić",
+      "population": 1481,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Donji Skugrić",
+      "population": 1410,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Donji Skugrić",
+      "population": 1402,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Gornje Krečane",
+      "population": 360,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Gornje Krečane",
+      "population": 315,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Gornje Krečane",
+      "population": 289,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Jasenica",
+      "population": 553,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Jasenica",
+      "population": 617,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Jasenica",
+      "population": 579,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Krčevljani",
+      "population": 282,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Tolisa",
+      "population": 1495,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Tolisa",
+      "population": 1274,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Tolisa",
+      "population": 858,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Batkuša",
+      "population": 983,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Batkuša",
+      "population": 975,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Batkuša",
+      "population": 924,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bazik",
+      "population": 571,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bazik",
+      "population": 535,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bazik",
+      "population": 539,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bosanski Šamac",
+      "population": 4877,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bosanski Šamac",
+      "population": 5605,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bosanski Šamac",
+      "population": 6239,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Brvnik",
+      "population": 687,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Brvnik",
+      "population": 628,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Brvnik",
+      "population": 609,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Crkvina",
+      "population": 1640,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Crkvina",
+      "population": 1607,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Crkvina",
+      "population": 1704,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Domaljevac",
+      "population": 3699,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Domaljevac",
+      "population": 4009,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Domaljevac",
+      "population": 4152,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Donja Slatina",
+      "population": 764,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Donja Slatina",
+      "population": 692,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Donja Slatina",
+      "population": 623,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Donji Hasić",
+      "population": 951,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Donji Hasić",
+      "population": 1067,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Donji Hasić",
+      "population": 1029,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Gajevi",
+      "population": 626,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Gornja Slatina",
+      "population": 2110,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Gornja Slatina",
+      "population": 2055,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Gornja Slatina",
+      "population": 1361,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Gornji Hasić",
+      "population": 1039,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Gornji Hasić",
+      "population": 1037,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Gornji Hasić",
+      "population": 1048,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Grebnice",
+      "population": 2003,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Grebnice",
+      "population": 2094,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Grebnice",
+      "population": 2210,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Kornica",
+      "population": 819,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Kornica",
+      "population": 832,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Kornica",
+      "population": 830,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Kruškovo Polje",
+      "population": 743,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Kruškovo Polje",
+      "population": 746,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Kruškovo Polje",
+      "population": 706,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Novo Selo",
+      "population": 1067,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Novo Selo",
+      "population": 1009,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Novo Selo",
+      "population": 1095,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Obudovac",
+      "population": 3403,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Obudovac",
+      "population": 3388,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Obudovac",
+      "population": 3199,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Pisari",
+      "population": 509,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Pisari",
+      "population": 518,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Pisari",
+      "population": 608,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Prud",
+      "population": 1250,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Prud",
+      "population": 1293,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Prud",
+      "population": 1293,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Škarić",
+      "population": 333,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Škarić",
+      "population": 365,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Škarić",
+      "population": 298,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Srednja Slatina",
+      "population": 1597,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Srednja Slatina",
+      "population": 1289,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Srednja Slatina",
+      "population": 1277,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Tišina",
+      "population": 1804,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Tišina",
+      "population": 2032,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Tišina",
+      "population": 2032,
+      "households": null
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Zasavica",
+      "population": 525,
+      "households": null
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Zasavica",
+      "population": 544,
+      "households": null
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Zasavica",
+      "population": 558,
+      "households": null
+    }
+  ]
+}

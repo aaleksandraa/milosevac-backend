@@ -26,7 +26,12 @@ final class PopulationSelector
                 return ($rightSource === null) <=> ($leftSource === null);
             }
 
-            return $this->comparator->compare($leftSource, $rightSource);
+            $rank = $this->comparator->compare($leftSource, $rightSource);
+            if ($rank !== 0) {
+                return $rank;
+            }
+
+            return $left->id <=> $right->id;
         })->first();
     }
 

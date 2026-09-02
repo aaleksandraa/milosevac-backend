@@ -1,0 +1,151 @@
+{
+  "version": "m8.1-test",
+  "mappings": [
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Miloševac",
+      "current_municipality_slug": "modrica",
+      "current_settlement_slug": "milosevac",
+      "mapping_status": "exact_identity",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Isti popisni identitet."
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Miloševac",
+      "current_municipality_slug": "modrica",
+      "current_settlement_slug": "milosevac",
+      "mapping_status": "exact_identity",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Isti popisni identitet."
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Miloševac",
+      "current_municipality_slug": "modrica",
+      "current_settlement_slug": "milosevac",
+      "mapping_status": "exact_identity",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Isti popisni identitet."
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bosanski Šamac",
+      "current_municipality_slug": "samac",
+      "current_settlement_slug": "samac",
+      "mapping_status": "renamed",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Izvorni naziv Bosanski Šamac; kanonsko naselje danas je Šamac.",
+      "alias": true
+    },
+    {
+      "census_year": 1981,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bosanski Šamac",
+      "current_municipality_slug": "samac",
+      "current_settlement_slug": "samac",
+      "mapping_status": "renamed",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Izvorni naziv Bosanski Šamac; kanonsko naselje danas je Šamac.",
+      "alias": true
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Bosanski Šamac",
+      "current_municipality_slug": "samac",
+      "current_settlement_slug": "samac",
+      "mapping_status": "renamed",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Izvorni naziv Bosanski Šamac; kanonsko naselje danas je Šamac.",
+      "alias": true
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Donji Skugrić",
+      "current_municipality_slug": "modrica",
+      "current_settlement_slug": "donji-skugric",
+      "mapping_status": "exact_identity",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Historijska opština Gradačac; današnja pripadnost je opština Modriča."
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Gradačac",
+      "historical_settlement_name": "Donji Skugrić",
+      "current_municipality_slug": "modrica",
+      "current_settlement_slug": "donji-skugric",
+      "mapping_status": "exact_identity",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Historijska opština Gradačac; današnja pripadnost je opština Modriča."
+    },
+    {
+      "census_year": 1971,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Njegoševo",
+      "current_municipality_slug": "samac",
+      "current_settlement_slug": "njegosevo",
+      "mapping_status": "exact_identity",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable",
+      "notes": "Nula je službena vrijednost, nije nedostajući podatak."
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Dvojno Ime",
+      "current_municipality_slug": null,
+      "current_settlement_slug": null,
+      "mapping_status": "ambiguous",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "unresolved",
+      "notes": "Isti historijski naziv u dvije opštine; nije automatski povezan."
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Dvojno Ime",
+      "current_municipality_slug": null,
+      "current_settlement_slug": null,
+      "mapping_status": "ambiguous",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "unresolved",
+      "notes": "Isti historijski naziv u dvije opštine; nije automatski povezan."
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Bosanski Šamac",
+      "historical_settlement_name": "Gajevi dio",
+      "current_municipality_slug": null,
+      "current_settlement_slug": null,
+      "mapping_status": "split",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "not_directly_comparable",
+      "notes": "Dio naselja bez kanonskog mapiranja; ne uvezi stanovništvo."
+    },
+    {
+      "census_year": 1991,
+      "historical_municipality_name": "Modriča",
+      "historical_settlement_name": "Babešnica",
+      "current_municipality_slug": "modrica",
+      "current_settlement_slug": "babesnica",
+      "mapping_status": "exact_identity",
+      "mapping_method": "checked_in_mapping",
+      "comparability": "comparable_with_caveat",
+      "notes": "Isti identitet, ali statistička definicija nije nužno ista kroz vrijeme."
+    }
+  ]
+}

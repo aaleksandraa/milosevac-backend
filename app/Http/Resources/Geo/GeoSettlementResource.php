@@ -5,6 +5,7 @@ namespace App\Http\Resources\Geo;
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
 use App\Support\Atlas\ClimatePresenter;
+use App\Support\Atlas\PopulationPresenter;
 use App\Support\Atlas\PopulationSelector;
 use App\Support\Atlas\SettlementIndexability;
 use Illuminate\Http\Request;
@@ -21,6 +22,10 @@ class GeoSettlementResource extends JsonResource
         $history = $this->relationLoaded('populationRecords')
             ? (new PopulationSelector)->history($this->populationRecords)
             : collect();
+        $mappings = $this->relationLoaded('censusMappings') ? $this->censusMappings : collect();
+        $presenter = new PopulationPresenter;
+        $census = $presenter->census($history, $mappings);
+        $changes = $presenter->changes($history, $mappings);
         $latest = $history->first();
         $siblings = $this->siblings();
 
@@ -41,12 +46,9 @@ class GeoSettlementResource extends JsonResource
                 $this->relationLoaded('municipality') && $this->municipality?->relationLoaded('entity'),
                 fn () => (new GeoEntityResource($this->municipality->entity))->resolve(),
             ),
-            'population' => $latest ? [
-                'year' => $latest->census_year,
-                'population' => $latest->population,
-                'households' => $latest->households,
-            ] : null,
-            'census' => $history->isEmpty() ? null : GeoPopulationResource::collection($history)->resolve(),
+            'population' => $presenter->latest($history),
+            'census' => $census === [] ? null : $census,
+            'population_changes' => $changes === [] ? null : $changes,
             'points' => $this->points() ?: null,
             'geography' => $this->geography(),
             'climate' => $this->climate(),

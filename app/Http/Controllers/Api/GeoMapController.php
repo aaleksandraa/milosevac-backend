@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GeoPlace;
 use App\Models\SettlementBoundary;
 use App\Models\SettlementClimateProfile;
+use App\Models\SettlementPopulation;
 use App\Models\SettlementTerrainStat;
 use App\Support\Atlas\AtlasQueryService;
 use App\Support\Atlas\Map\PlaceMapPresenter;
@@ -110,12 +111,14 @@ class GeoMapController extends Controller
         $boundaryStamp = SettlementBoundary::query()->max('updated_at');
         $terrainStamp = SettlementTerrainStat::query()->max('updated_at');
         $climateStamp = SettlementClimateProfile::query()->max('updated_at');
+        $populationStamp = SettlementPopulation::query()->max('updated_at');
         $boundaryCount = SettlementBoundary::query()->where('geometry_valid', true)->count();
 
         return sha1(implode('|', [
             (string) $boundaryStamp,
             (string) $terrainStamp,
             (string) $climateStamp,
+            (string) $populationStamp,
             (string) $boundaryCount,
         ]));
     }
@@ -126,6 +129,7 @@ class GeoMapController extends Controller
             SettlementBoundary::query()->max('updated_at'),
             SettlementTerrainStat::query()->max('updated_at'),
             SettlementClimateProfile::query()->max('updated_at'),
+            SettlementPopulation::query()->max('updated_at'),
         ]);
 
         if ($stamps === []) {

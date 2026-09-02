@@ -275,8 +275,9 @@ class GeoAtlasHierarchyTest extends TestCase
 
     public function test_atlas_migrations_roll_back_and_can_be_reapplied(): void
     {
-        $this->artisan('migrate:rollback', ['--step' => 15])->assertSuccessful();
+        $this->artisan('migrate:rollback', ['--step' => 16])->assertSuccessful();
 
+        $this->assertFalse(Schema::hasTable('settlement_census_mappings'));
         $this->assertFalse(Schema::hasTable('settlement_climate_extremes'));
         $this->assertFalse(Schema::hasTable('settlement_climate_monthly'));
         $this->assertFalse(Schema::hasTable('settlement_climate_profiles'));

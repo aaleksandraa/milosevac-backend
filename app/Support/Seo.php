@@ -315,8 +315,21 @@ class Seo
         $census = $settlement->relationLoaded('populationRecords')
             ? (new PopulationSelector)->preferredForYear($settlement->populationRecords, 2013)
             : null;
+        $historyYears = $settlement->relationLoaded('populationRecords')
+            ? (new PopulationSelector)->history($settlement->populationRecords)
+                ->pluck('census_year')
+                ->map(fn ($year) => (int) $year)
+                ->unique()
+                ->sort()
+                ->values()
+            : collect();
         if ($census !== null) {
             $description .= ' '.self::bsNumber((int) $census->population).' stanovnika prema Popisu 2013.';
+        }
+        $historicalYears = $historyYears->reject(fn (int $year) => $year === 2013);
+        if ($historicalYears->isNotEmpty()) {
+            $labels = $historicalYears->map(fn (int $year) => (string) $year)->implode(', ');
+            $description .= ' Dostupni su i podaci popisa '.$labels.'.';
         }
 
         $climate = $settlement->relationLoaded('climateProfiles')

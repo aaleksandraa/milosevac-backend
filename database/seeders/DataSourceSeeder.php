@@ -127,6 +127,24 @@ class DataSourceSeeder extends Seeder
                     'notes' => 'Reanaliza/model, nije službeno mjerenje u naselju. Open-Meteo ERA5-Land ne isporučuje padavine; padavine dolaze iz ERA5.',
                 ],
             ],
+            [
+                'name' => 'Popis stanovništva 1991. — uporedni podaci 1971, 1981. i 1991. (naseljena mjesta)',
+                'provider' => 'Federalni zavod za statistiku Federacije Bosne i Hercegovine',
+                'source_class' => DataSourceClass::Official,
+                'authority_rank' => SourceAuthority::OFFICIAL_STATE,
+                'source_type' => 'census_settlements_historical',
+                'url' => 'https://fzs.ba/wp-content/uploads/2016/06/stanovnistvo-uporedni-podaci-1971_1981_-1991-bilten-265.pdf',
+                'license' => null,
+                'attribution' => 'Federalni zavod za statistiku, Statistički bilten 265, Sarajevo, april 1998. Uporedni podaci 1971, 1981. i 1991.',
+                'dataset_version' => 'bilten-265-1998',
+                'metadata' => [
+                    'retrieval_date' => '2026-09-02',
+                    'publication_date' => '1998-04',
+                    'bulletin_number' => 265,
+                    'used_for' => ['pilot_historical_census_population'],
+                    'notes' => 'Historijska opština je izvorni popisni kontekst. Naseljske vrijednosti su ukupno stanovništvo; etnička struktura nije uvezena.',
+                ],
+            ],
         ];
 
         foreach ($sources as $source) {

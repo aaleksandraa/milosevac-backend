@@ -29,6 +29,8 @@ final class PublicSourcePresenter
 
         if ($source->source_type === 'census_settlements') {
             $payload['methodology_note'] = $this->censusMethodologyNote(is_string($retrievalDate) ? $retrievalDate : null);
+        } elseif ($source->source_type === 'census_settlements_historical') {
+            $payload['methodology_note'] = $this->historicalCensusMethodologyNote(is_string($retrievalDate) ? $retrievalDate : null);
         } elseif ($source->source_type === 'osm_settlement_boundaries') {
             $payload['methodology_note'] = 'Granica naselja je OSM poligon (admin_level=9), usklađen sa popisnim identitetom naselja. Nije katastarski ili statistički službeni poligon. Licenca ODbL.';
         } elseif ($source->source_type === 'copernicus_dem_glo30') {
@@ -50,5 +52,13 @@ final class PublicSourcePresenter
 
         return 'Normalizovani izvod tabela naseljenih mjesta Popisa stanovništva, domaćinstava i stanova u BiH 2013. (Agencija za statistiku BiH / Republički zavod za statistiku RS).'.$retrieved
             .' Izvor je prezentacija statistika.ba, a ne direktan BHAS datotečni izvod.';
+    }
+
+    private function historicalCensusMethodologyNote(?string $retrievalDate): string
+    {
+        $retrieved = $retrievalDate ? ' Preuzeto '.$retrievalDate.'.' : '';
+
+        return 'Uporedni podaci Popisa 1971, 1981. i 1991. za naseljena mjesta, usklađeni sa Statističkim biltenom 265 Federalnog zavoda za statistiku (Sarajevo, april 1998.) i 1991. tabele mjesnih zajednica.'.$retrieved
+            .' Historijska opština je izvorni popisni kontekst i nije isto što i današnja opština. Etnička/nacionalna struktura nije prikazana. Domaćinstva za 1971–1991. nisu uvezena.';
     }
 }

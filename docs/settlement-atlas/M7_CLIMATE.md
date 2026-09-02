@@ -1,6 +1,6 @@
 # M7 — Climate normals + historical climate analytics
 
-**Status: implemented** on `feature/bih-settlement-atlas`. **M8 was not started.**
+**Status: implemented** on `feature/bih-settlement-atlas`.
 
 Pilot: Modriča + Šamac. Climate is computed only for settlements with a valid M4 boundary. Settlements without polygons are left unavailable. Climate is **not** taken from the municipality centre.
 

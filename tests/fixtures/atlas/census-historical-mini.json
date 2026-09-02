@@ -1,0 +1,28 @@
+{
+  "source": {
+    "name": "Test historical census publication",
+    "provider": "Test FZS",
+    "source_class": "A",
+    "authority_rank": 100,
+    "source_type": "census_settlements_historical",
+    "url": "https://example.test/historical-census",
+    "attribution": "Test only. Not an official import.",
+    "dataset_version": "test-m8",
+    "retrieval_date": "2026-09-02"
+  },
+  "records": [
+    {"census_year": 1971, "historical_municipality_name": "Modriča", "historical_settlement_name": "Miloševac", "population": 1880, "households": null},
+    {"census_year": 1981, "historical_municipality_name": "Modriča", "historical_settlement_name": "Miloševac", "population": 1825, "households": null},
+    {"census_year": 1991, "historical_municipality_name": "Modriča", "historical_settlement_name": "Miloševac", "population": 1735, "households": null},
+    {"census_year": 1971, "historical_municipality_name": "Bosanski Šamac", "historical_settlement_name": "Bosanski Šamac", "population": 4877, "households": null},
+    {"census_year": 1981, "historical_municipality_name": "Bosanski Šamac", "historical_settlement_name": "Bosanski Šamac", "population": 5605, "households": null},
+    {"census_year": 1991, "historical_municipality_name": "Bosanski Šamac", "historical_settlement_name": "Bosanski Šamac", "population": 6239, "households": null},
+    {"census_year": 1971, "historical_municipality_name": "Gradačac", "historical_settlement_name": "Donji Skugrić", "population": 1481, "households": null},
+    {"census_year": 1991, "historical_municipality_name": "Gradačac", "historical_settlement_name": "Donji Skugrić", "population": 1402, "households": null},
+    {"census_year": 1971, "historical_municipality_name": "Bosanski Šamac", "historical_settlement_name": "Njegoševo", "population": 0, "households": null},
+    {"census_year": 1991, "historical_municipality_name": "Modriča", "historical_settlement_name": "Dvojno Ime", "population": 99, "households": null},
+    {"census_year": 1991, "historical_municipality_name": "Bosanski Šamac", "historical_settlement_name": "Dvojno Ime", "population": 88, "households": null},
+    {"census_year": 1991, "historical_municipality_name": "Bosanski Šamac", "historical_settlement_name": "Gajevi dio", "population": 50, "households": null},
+    {"census_year": 1991, "historical_municipality_name": "Modriča", "historical_settlement_name": "Babešnica", "population": 147, "households": null}
+  ]
+}

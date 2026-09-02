@@ -2,10 +2,13 @@
 
 namespace App\Support\Atlas\Map;
 
+use App\Enums\CensusComparability;
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
+use App\Models\SettlementCensusMapping;
 use App\Models\SettlementClimateProfile;
 use App\Models\SettlementTerrainStat;
+use App\Support\Atlas\PopulationChangeCalculator;
 use App\Support\Atlas\PopulationSelector;
 use App\Support\Atlas\SettlementIndexability;
 use Illuminate\Support\Collection;
@@ -19,6 +22,8 @@ final class SettlementMapPresenter
     public const COVERAGE_NOTE = 'Pokretanje karte obuhvata samo naselja s važećom granicom. U pilotu Modriča + Šamac granica postoji za 37 od 45 uvezenih naselja.';
 
     public const CLIMATE_NOTE = 'Klimatske vrijednosti su ERA5-Land / ERA5 reanaliza za period 1991–2020, ne mjerenja meteorološke stanice.';
+
+    public const POPULATION_CHANGE_NOTE = 'Promjena stanovništva je razlika između Popisa 1991. i Popisa 2013. za uporediva naselja. Nije procjena uzroka niti trenutnog broja stanovnika.';
 
     /**
      * Canonical M4 geometry is served as GeoJSON without simplification.
@@ -63,6 +68,7 @@ final class SettlementMapPresenter
                 'coverage_note' => self::COVERAGE_NOTE,
                 'climate_note' => self::CLIMATE_NOTE,
                 'climate_source_type' => 'copernicus_era5_land',
+                'population_change_note' => self::POPULATION_CHANGE_NOTE,
             ],
         ];
 
@@ -114,6 +120,7 @@ final class SettlementMapPresenter
             'precipitation_annual_mm' => $this->decimal($climate?->precipitation_annual_mm),
             'climate_quality_flag' => $climate?->quality_flag,
             'climate_normal_period' => $climate ? '1991–2020' : null,
+            'population_change_1991_2013_pct' => $this->populationChangePct($settlement),
         ];
 
         return [
@@ -125,6 +132,32 @@ final class SettlementMapPresenter
             ),
             'geometry' => $geometry,
         ];
+    }
+
+    private function populationChangePct(GeoSettlement $settlement): ?float
+    {
+        if (! $settlement->relationLoaded('populationRecords')) {
+            return null;
+        }
+
+        $selector = new PopulationSelector;
+        $from = $selector->preferredForYear($settlement->populationRecords, 1991);
+        $to = $selector->preferredForYear($settlement->populationRecords, 2013);
+        if ($from === null || $to === null) {
+            return null;
+        }
+
+        $mapping = $settlement->relationLoaded('censusMappings')
+            ? $settlement->censusMappings->first(
+                fn (SettlementCensusMapping $row) => (int) $row->census_year === 1991
+                    && (int) $row->settlement_id === (int) $settlement->id,
+            )
+            : null;
+        if ($mapping?->comparability !== CensusComparability::Comparable) {
+            return null;
+        }
+
+        return (new PopulationChangeCalculator)->percentageChange((int) $from->population, (int) $to->population);
     }
 
     private function validBoundary(GeoSettlement $settlement): ?SettlementBoundary

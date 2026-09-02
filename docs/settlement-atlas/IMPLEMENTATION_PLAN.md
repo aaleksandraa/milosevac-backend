@@ -12,6 +12,7 @@ Branch: `feature/bih-settlement-atlas`
 | **M5** | **Complete** | Public map GeoJSON endpoint |
 | **M6** | **Complete** | `geo_places` catalog + OSM Overpass import + public POI API |
 | **M7** | **Complete** | ERA5-Land/ERA5 climate profiles + public climate API |
+| **M8** | **Complete** | Historical census 1971/1981/1991 + mappings + change API |
 
 See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 
@@ -45,4 +46,11 @@ See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 - Pilot import: **35/37** boundary settlements (`coarse_spatial_resolution`); Šamac town and Pisari `insufficient_source` after Open-Meteo 429
 - See [M7_CLIMATE.md](M7_CLIMATE.md)
 
-M8 was not started.
+## M8 result
+
+- `settlement_census_mappings`; importer `atlas:import-historical-population` (`m8.1`)
+- Fixtures `census-historical-pilot.json` + `census-historical-pilot-mapping.json`
+- Public `census` comparability + `population_changes`; map `population_change_1991_2013_pct`
+- See [M8_HISTORICAL_POPULATION.md](M8_HISTORICAL_POPULATION.md)
+
+M9 was not started.
