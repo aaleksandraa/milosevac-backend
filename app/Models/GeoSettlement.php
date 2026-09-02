@@ -86,6 +86,11 @@ class GeoSettlement extends Model
         return $this->hasMany(SettlementClimateProfile::class, 'settlement_id');
     }
 
+    public function surfaceProfiles(): HasMany
+    {
+        return $this->hasMany(SettlementSurfaceProfile::class, 'settlement_id');
+    }
+
     public function censusMappings(): HasMany
     {
         return $this->hasMany(SettlementCensusMapping::class, 'settlement_id');

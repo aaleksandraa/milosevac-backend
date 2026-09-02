@@ -1,0 +1,117 @@
+{
+  "algorithm_version": "m10.1",
+  "artifact_sha256": "test-fixture-not-a-real-hash",
+  "source": {
+    "clc2018": {
+      "provider": "European Environment Agency / Copernicus Land Monitoring Service",
+      "doi": "https://doi.org/10.2909/71c95a07-e296-44fc-b22b-415f42acfdf0",
+      "version": "v2020_20u1",
+      "retrieval_date": "2026-09-02",
+      "crs": "EPSG:3035"
+    },
+    "hrl_tcd_2018": {
+      "provider": "European Environment Agency / Copernicus Land Monitoring Service",
+      "doi": "https://doi.org/10.2909/e677441e-fb94-431c-b4f9-304f10e4dfd8",
+      "version": "2018",
+      "retrieval_date": "2026-09-02"
+    },
+    "hrl_imd_2018": {
+      "provider": "European Environment Agency / Copernicus Land Monitoring Service",
+      "doi": "https://doi.org/10.2909/3bf542bd-eebd-4d73-b53c-a0243f2ed862",
+      "version": "2018",
+      "retrieval_date": "2026-09-02"
+    }
+  },
+  "records": [
+    {
+      "settlement_id": 0,
+      "boundary_id": null,
+      "municipality_slug": "modrica",
+      "settlement_slug": "milosevac",
+      "status": "ok",
+      "algorithm_version": "m10.1",
+      "profiles": [
+        {
+          "product_code": "clc2018",
+          "reference_year": 2018,
+          "algorithm_version": "m10.1",
+          "processing_method": "clc_vector_intersection_epsg3035",
+          "source_resolution_m": null,
+          "total_analysis_area_km2": 10.0,
+          "valid_area_km2": 10.0,
+          "nodata_area_km2": 0.0,
+          "quality_flag": "ok",
+          "calculated_at": "2026-09-02",
+          "summary": {
+            "landcover_artificial_pct": 4.0,
+            "landcover_agricultural_pct": 70.0,
+            "landcover_forest_pct": 20.0,
+            "landcover_seminatural_pct": 3.0,
+            "landcover_open_or_sparse_pct": 0.0,
+            "landcover_wetland_pct": 0.0,
+            "landcover_water_pct": 3.0,
+            "dominant_class": {
+              "code": "211",
+              "label": "Neirigirane oranice",
+              "atlas_group": "agricultural",
+              "area_km2": 7.0,
+              "share_pct": 70.0
+            },
+            "dominant_group": {
+              "code": "agricultural",
+              "label": "Poljoprivredne površine",
+              "share_pct": 70.0,
+              "area_km2": 7.0
+            }
+          },
+          "classes": [
+            {"class_code": "211", "source_class_code": "211", "source_class_label": "Neirigirane oranice", "atlas_group": "agricultural", "area_km2": 7.0, "share_pct": 70.0},
+            {"class_code": "311", "source_class_code": "311", "source_class_label": "Širokolisna šuma", "atlas_group": "forest", "area_km2": 2.0, "share_pct": 20.0},
+            {"class_code": "112", "source_class_code": "112", "source_class_label": "Diskontinuirano urbano tkivo", "atlas_group": "artificial_surfaces", "area_km2": 0.4, "share_pct": 4.0},
+            {"class_code": "324", "source_class_code": "324", "source_class_label": "Prijelazna šumsko-žbunasta vegetacija", "atlas_group": "shrub_herbaceous_or_seminatural", "area_km2": 0.3, "share_pct": 3.0},
+            {"class_code": "511", "source_class_code": "511", "source_class_label": "Vodeni tokovi", "atlas_group": "water", "area_km2": 0.3, "share_pct": 3.0}
+          ],
+          "metadata": {"share_sum_pct": 100.0}
+        },
+        {
+          "product_code": "hrl_tcd_2018",
+          "reference_year": 2018,
+          "algorithm_version": "m10.1",
+          "processing_method": "hrl_fractional_pixel_area_epsg3035",
+          "source_resolution_m": 10,
+          "total_analysis_area_km2": 10.0,
+          "valid_area_km2": 10.0,
+          "nodata_area_km2": 0.0,
+          "quality_flag": "ok",
+          "calculated_at": "2026-09-02",
+          "summary": {"tree_cover_mean_pct": 18.4},
+          "classes": [],
+          "metadata": {"zero_is_valid": true}
+        },
+        {
+          "product_code": "hrl_imd_2018",
+          "reference_year": 2018,
+          "algorithm_version": "m10.1",
+          "processing_method": "hrl_fractional_pixel_area_epsg3035",
+          "source_resolution_m": 10,
+          "total_analysis_area_km2": 10.0,
+          "valid_area_km2": 10.0,
+          "nodata_area_km2": 0.0,
+          "quality_flag": "ok",
+          "calculated_at": "2026-09-02",
+          "summary": {"imperviousness_mean_pct": 2.1},
+          "classes": [],
+          "metadata": {"zero_is_valid": true}
+        }
+      ]
+    },
+    {
+      "settlement_id": 0,
+      "boundary_id": null,
+      "municipality_slug": "samac",
+      "settlement_slug": "njegosevo",
+      "status": "unavailable",
+      "profiles": []
+    }
+  ]
+}

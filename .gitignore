@@ -44,6 +44,9 @@ __pycache__/
 *.pyc
 *.tif
 *.tiff
+*.gpkg
+*.img
+*.jp2
 *.nc
 *.grib
 *.grb

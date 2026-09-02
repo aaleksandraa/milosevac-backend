@@ -7,7 +7,9 @@ use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
 use App\Models\SettlementCensusMapping;
 use App\Models\SettlementClimateProfile;
+use App\Models\SettlementSurfaceProfile;
 use App\Models\SettlementTerrainStat;
+use App\Support\Atlas\LandCover\ClcNomenclature;
 use App\Support\Atlas\PopulationChangeCalculator;
 use App\Support\Atlas\PopulationSelector;
 use App\Support\Atlas\SettlementIndexability;
@@ -22,6 +24,8 @@ final class SettlementMapPresenter
     public const COVERAGE_NOTE = 'Pokretanje karte obuhvata samo naselja s važećom granicom. U pilotu Modriča + Šamac granica postoji za 37 od 45 uvezenih naselja.';
 
     public const CLIMATE_NOTE = 'Klimatske vrijednosti su ERA5-Land / ERA5 reanaliza za period 1991–2020, ne mjerenja meteorološke stanice.';
+
+    public const LAND_COVER_NOTE = 'Pokrov zemljišta je CLC 2018 / Copernicus HRL 2018 unutar trenutno dostupne atlas granice naselja. Referentna 2018. godina, ne trenutno stanje.';
 
     public const POPULATION_CHANGE_NOTE = 'Promjena stanovništva je razlika između Popisa 1991. i Popisa 2013. za uporediva naselja. Nije procjena uzroka niti trenutnog broja stanovnika.';
 
@@ -68,6 +72,8 @@ final class SettlementMapPresenter
                 'coverage_note' => self::COVERAGE_NOTE,
                 'climate_note' => self::CLIMATE_NOTE,
                 'climate_source_type' => 'copernicus_era5_land',
+                'landcover_note' => self::LAND_COVER_NOTE,
+                'landcover_source_type' => 'copernicus_clc_2018',
                 'population_change_note' => self::POPULATION_CHANGE_NOTE,
             ],
         ];
@@ -95,6 +101,9 @@ final class SettlementMapPresenter
             : null;
         $terrain = $this->publicTerrain($settlement);
         $climate = $this->publicClimate($settlement);
+        $clc = $this->publicSurface($settlement, ClcNomenclature::PRODUCT_CLC);
+        $tcd = $this->publicSurface($settlement, ClcNomenclature::PRODUCT_TCD);
+        $imd = $this->publicSurface($settlement, ClcNomenclature::PRODUCT_IMD);
 
         $properties = [
             'settlement_id' => $settlement->id,
@@ -120,6 +129,11 @@ final class SettlementMapPresenter
             'precipitation_annual_mm' => $this->decimal($climate?->precipitation_annual_mm),
             'climate_quality_flag' => $climate?->quality_flag,
             'climate_normal_period' => $climate ? '1991–2020' : null,
+            'landcover_agricultural_pct' => $this->surfacePct($clc, 'landcover_agricultural_pct'),
+            'landcover_forest_pct' => $this->surfacePct($clc, 'landcover_forest_pct'),
+            'landcover_artificial_pct' => $this->surfacePct($clc, 'landcover_artificial_pct'),
+            'tree_cover_mean_pct' => $this->surfacePct($tcd, 'tree_cover_mean_pct'),
+            'imperviousness_mean_pct' => $this->surfacePct($imd, 'imperviousness_mean_pct'),
             'population_change_1991_2013_pct' => $this->populationChangePct($settlement),
         ];
 
@@ -191,6 +205,25 @@ final class SettlementMapPresenter
             ->filter(fn (SettlementClimateProfile $row) => $row->isPubliclyUsable())
             ->sortByDesc(fn (SettlementClimateProfile $row) => $row->calculated_at?->timestamp ?? 0)
             ->first();
+    }
+
+    private function publicSurface(GeoSettlement $settlement, string $product): ?SettlementSurfaceProfile
+    {
+        if (! $settlement->relationLoaded('surfaceProfiles')) {
+            return null;
+        }
+
+        return $settlement->surfaceProfiles
+            ->filter(fn (SettlementSurfaceProfile $row) => $row->product_code === $product && $row->isPubliclyUsable())
+            ->sortByDesc(fn (SettlementSurfaceProfile $row) => $row->calculated_at?->timestamp ?? 0)
+            ->first();
+    }
+
+    private function surfacePct(?SettlementSurfaceProfile $profile, string $key): ?float
+    {
+        $value = $profile?->summaryValue($key);
+
+        return $value === null ? null : round($value, 1);
     }
 
     private function decimal(mixed $value): ?float

@@ -39,6 +39,16 @@ final class PublicSourcePresenter
             $payload['methodology_note'] = 'Klimatološki podaci su ERA5-Land reanaliza (Copernicus C3S / ECMWF) za područje naselja, period 1991–2020. Padavine su ERA5 jer Open-Meteo ERA5-Land ne isporučuje padavine. To nisu mjerenja meteorološke stanice niti prognoza.';
         } elseif ($source->source_type === 'osm_pois') {
             $payload['methodology_note'] = 'Objekti su uvezeni iz OpenStreetMap (ODbL) kao trenutno mapirani/uvezeni zapisi. OSM pokrivenost je zajednička i može biti nepotpuna ili zastarjela. Dodjela naselju koristi dostupni atlas poligon, a ne službenu statističku pripadnost. To nije službeni inventar niti Google katalog.';
+        } elseif ($source->source_type === 'copernicus_clc_2018') {
+            $payload['methodology_note'] = 'CORINE Land Cover 2018 (v2020_20u1) unutar trenutno dostupne atlas granice naselja. Generalizovani inventar (MMU 25 ha), referentna 2018. godina, ne katastar i ne trenutno stanje.';
+        } elseif ($source->source_type === 'copernicus_hrl_tcd_2018') {
+            $payload['methodology_note'] = 'Copernicus HRL Tree Cover Density 2018: gustoća krošnji 0–100 unutar atlas granice. Nije CLC udio šume.';
+        } elseif ($source->source_type === 'copernicus_hrl_imd_2018') {
+            $payload['methodology_note'] = 'Copernicus HRL Imperviousness Density 2018: gustoća nepropusnosti 0–100. Nije udio zgrada niti nivo urbanizacije.';
+        } elseif ($source->source_type === 'copernicus_hrl_waw_2018') {
+            $payload['methodology_note'] = 'Copernicus HRL Water and Wetness 2018. Nije riječna mreža, poplavna zona niti sliv.';
+        } elseif ($source->source_type === 'copernicus_hrl_fty_2018') {
+            $payload['methodology_note'] = 'Copernicus HRL Forest Type 2018: šumska maska, nije gustoća krošnji.';
         } elseif (is_string($metadata['notes'] ?? null) && $metadata['notes'] !== '') {
             $payload['methodology_note'] = $metadata['notes'];
         }

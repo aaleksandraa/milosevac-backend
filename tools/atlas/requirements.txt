@@ -3,4 +3,5 @@ tifffile>=2024.0
 shapely>=2.0
 imagecodecs>=2024.0
 certifi>=2024.0
+pyproj>=3.6
 

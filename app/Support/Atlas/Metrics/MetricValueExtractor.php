@@ -9,6 +9,7 @@ use App\Models\GeoPlace;
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
 use App\Models\SettlementClimateProfile;
+use App\Models\SettlementSurfaceProfile;
 use App\Models\SettlementTerrainStat;
 use App\Support\Atlas\PopulationChangeCalculator;
 use App\Support\Atlas\PopulationSelector;
@@ -43,6 +44,12 @@ final class MetricValueExtractor
             'poi_count_education' => $this->poiCount($settlement, GeoPlaceFamily::Education),
             'poi_count_religion' => $this->poiCount($settlement, GeoPlaceFamily::Religion),
             'poi_count_historic' => $this->poiCount($settlement, GeoPlaceFamily::Historic),
+            'landcover_agricultural_pct' => $this->surfaceSummary($settlement, 'clc2018', 'landcover_agricultural_pct'),
+            'landcover_forest_pct' => $this->surfaceSummary($settlement, 'clc2018', 'landcover_forest_pct'),
+            'landcover_artificial_pct' => $this->surfaceSummary($settlement, 'clc2018', 'landcover_artificial_pct'),
+            'landcover_water_pct' => $this->surfaceSummary($settlement, 'clc2018', 'landcover_water_pct'),
+            'tree_cover_mean_pct' => $this->surfaceSummary($settlement, 'hrl_tcd_2018', 'tree_cover_mean_pct'),
+            'imperviousness_mean_pct' => $this->surfaceSummary($settlement, 'hrl_imd_2018', 'imperviousness_mean_pct'),
             default => null,
         };
     }
@@ -241,6 +248,28 @@ final class MetricValueExtractor
         return $settlement->climateProfiles
             ->filter(fn (SettlementClimateProfile $row) => $row->isPubliclyUsable())
             ->sortByDesc(fn (SettlementClimateProfile $row) => $row->calculated_at?->timestamp ?? 0)
+            ->first();
+    }
+
+    private function surfaceSummary(GeoSettlement $settlement, string $product, string $key): ?float
+    {
+        $profile = $this->usableSurface($settlement, $product);
+        if ($profile === null) {
+            return null;
+        }
+
+        return $profile->summaryValue($key);
+    }
+
+    private function usableSurface(GeoSettlement $settlement, string $product): ?SettlementSurfaceProfile
+    {
+        if (! $settlement->relationLoaded('surfaceProfiles')) {
+            return null;
+        }
+
+        return $settlement->surfaceProfiles
+            ->filter(fn (SettlementSurfaceProfile $row) => $row->product_code === $product && $row->isPubliclyUsable())
+            ->sortByDesc(fn (SettlementSurfaceProfile $row) => $row->calculated_at?->timestamp ?? 0)
             ->first();
     }
 }

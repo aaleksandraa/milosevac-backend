@@ -9,6 +9,7 @@ use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
 use App\Models\SettlementClimateProfile;
 use App\Models\SettlementPopulation;
+use App\Models\SettlementSurfaceProfile;
 use App\Models\SettlementTerrainStat;
 use Illuminate\Support\Collection;
 
@@ -32,6 +33,7 @@ final class RankingDatasetVersion
             $this->forFamily('terrain'),
             $this->forFamily('climate'),
             $this->forFamily('poi'),
+            $this->forFamily('landcover'),
         ]));
     }
 
@@ -60,6 +62,10 @@ final class RankingDatasetVersion
             'poi' => [
                 (string) GeoPlace::query()->max('updated_at'),
                 (string) GeoPlace::query()->where('is_active', true)->count(),
+            ],
+            'landcover' => [
+                (string) SettlementSurfaceProfile::query()->max('updated_at'),
+                (string) SettlementSurfaceProfile::query()->count(),
             ],
             default => [
                 (string) GeoSettlement::query()->max('updated_at'),

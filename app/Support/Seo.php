@@ -340,6 +340,15 @@ class Seo
                 .str_replace('.', ',', number_format((float) $climate->temperature_mean_annual_c, 1)).' °C.';
         }
 
+        $clc = $settlement->relationLoaded('surfaceProfiles')
+            ? $settlement->surfaceProfiles->first(fn ($row) => $row->product_code === 'clc2018' && $row->isPubliclyUsable())
+            : null;
+        $agricultural = $clc?->summaryValue('landcover_agricultural_pct');
+        if ($agricultural !== null) {
+            $description .= ' Prema CORINE Land Cover 2018, u okviru trenutno dostupne atlas granice, poljoprivredne površine čine '
+                .str_replace('.', ',', number_format($agricultural, 1)).'% analizirane površine.';
+        }
+
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'Place',

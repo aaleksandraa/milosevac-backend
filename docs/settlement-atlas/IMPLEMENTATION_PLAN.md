@@ -14,6 +14,7 @@ Branch: `feature/bih-settlement-atlas`
 | **M7** | **Complete** | ERA5-Land/ERA5 climate profiles + public climate API |
 | **M8** | **Complete** | Historical census 1971/1981/1991 + mappings + change API |
 | **M9** | **Complete** | Metric registry, comparison API, rankings API |
+| **M10** | **Complete** | CLC/HRL land-cover profiles + public API/map/M9 metrics |
 
 See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 
@@ -61,4 +62,11 @@ See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 - Settlement `relative_facts`; crawler HTML for `/rang-liste`; `noindex` compare URLs
 - See [M9_COMPARISON_RANKINGS.md](M9_COMPARISON_RANKINGS.md)
 
-M10 was not started.
+## M10 result
+
+- Tables `settlement_surface_profiles` / `settlement_land_cover_classes`; algorithm `m10.1`
+- `atlas:export-landcover-jobs`, `fetch_landcover.py`, `process_landcover.py`, `atlas:import-landcover`
+- Public `land_cover` block; compact map properties; ranking denominators 37 eligible / 8 missing
+- See [M10_LAND_COVER.md](M10_LAND_COVER.md)
+
+M11 was not started.

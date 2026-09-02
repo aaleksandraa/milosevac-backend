@@ -80,12 +80,17 @@ final class SettlementComparisonService
         if ($leftValue !== null && $rightValue !== null) {
             $absolute = $leftValue - $rightValue;
             $percentage = null;
+            $percentagePoints = null;
             if ($metric->percentageDifferenceUseful && $rightValue != 0) {
                 $percentage = round((($leftValue - $rightValue) / $rightValue) * 100, 1);
+            }
+            if ($metric->percentagePointDifference) {
+                $percentagePoints = $this->roundValue($absolute, $metric->precision);
             }
             $difference = [
                 'absolute' => $this->roundValue($absolute, $metric->precision),
                 'percentage' => $percentage,
+                'percentage_points' => $percentagePoints,
             ];
         }
 

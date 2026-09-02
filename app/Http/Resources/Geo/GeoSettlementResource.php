@@ -5,6 +5,7 @@ namespace App\Http\Resources\Geo;
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
 use App\Support\Atlas\ClimatePresenter;
+use App\Support\Atlas\LandCoverPresenter;
 use App\Support\Atlas\Metrics\SettlementRankingService;
 use App\Support\Atlas\PopulationPresenter;
 use App\Support\Atlas\PopulationSelector;
@@ -53,6 +54,7 @@ class GeoSettlementResource extends JsonResource
             'points' => $this->points() ?: null,
             'geography' => $this->geography(),
             'climate' => $this->climate(),
+            'land_cover' => $this->landCover(),
             'relative_facts' => $this->relativeFacts(),
             'neighbors' => $siblings,
             'source' => $latest && $latest->relationLoaded('source') && $latest->source
@@ -174,6 +176,18 @@ class GeoSettlementResource extends JsonResource
             ->first();
 
         return (new ClimatePresenter)->present($profile);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function landCover(): ?array
+    {
+        if (! $this->relationLoaded('surfaceProfiles')) {
+            return null;
+        }
+
+        return (new LandCoverPresenter)->present($this->surfaceProfiles);
     }
 
     private function geographyMethodology(?SettlementBoundary $boundary, mixed $terrain): string

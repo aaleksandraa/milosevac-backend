@@ -39,6 +39,12 @@ final class SettlementMetricRegistry
         'poi_count_education',
         'poi_count_religion',
         'poi_count_historic',
+        'landcover_agricultural_pct',
+        'landcover_forest_pct',
+        'landcover_artificial_pct',
+        'landcover_water_pct',
+        'tree_cover_mean_pct',
+        'imperviousness_mean_pct',
     ];
 
     /** @var array<string, MetricDefinition>|null */
@@ -389,6 +395,54 @@ final class SettlementMetricRegistry
                 'Broj trenutno uvezenih OSM objekata porodice istorija dodijeljenih naselju. Nije službeni inventar.',
                 'Sva trenutno obrađena naselja. Računaju se samo objekti dodijeljeni naselju.',
             ),
+            $this->landcover(
+                'landcover_agricultural_pct',
+                'Udio poljoprivrednih površina',
+                'Poljoprivreda (CLC)',
+                'Najveći udio poljoprivrednih površina',
+                'Najmanji udio poljoprivrednih površina',
+                'Udio CLC poljoprivrednih razreda (2xx) unutar trenutno dostupne atlas granice naselja, CORINE Land Cover 2018. Nije obradivo zemljište, prinos niti vlasništvo. Referentna 2018. godina.',
+            ),
+            $this->landcover(
+                'landcover_forest_pct',
+                'Udio šumskog pokrova (CLC)',
+                'Šuma (CLC)',
+                'Najveći udio šumskog pokrova',
+                'Najmanji udio šumskog pokrova',
+                'Udio CLC šumskih razreda 311–313 unutar atlas granice, CORINE Land Cover 2018. Nije gustoća krošnji, drvna zaliha niti zaštićeno područje. Referentna 2018. godina.',
+            ),
+            $this->landcover(
+                'landcover_artificial_pct',
+                'Udio umjetnih površina',
+                'Umjetne površine (CLC)',
+                'Najveći udio umjetnih površina',
+                'Najmanji udio umjetnih površina',
+                'Udio CLC umjetnih površina (1xx) unutar atlas granice, CORINE Land Cover 2018. Nisu sve umjetne površine zgrade, niti je ovo nivo urbanizacije. Referentna 2018. godina.',
+            ),
+            $this->landcover(
+                'landcover_water_pct',
+                'Udio voda (CLC)',
+                'Vode (CLC)',
+                'Najveći udio voda',
+                'Najmanji udio voda',
+                'Udio CLC vodenih razreda (5xx) unutar atlas granice, CORINE Land Cover 2018. Nije riječna mreža, poplavna zona niti sliv. Referentna 2018. godina.',
+            ),
+            $this->landcover(
+                'tree_cover_mean_pct',
+                'Prosječna pokrivenost krošnjama',
+                'Pokrivenost krošnjama',
+                'Najveća prosječna pokrivenost krošnjama',
+                'Najmanja prosječna pokrivenost krošnjama',
+                'Prosječna gustoća drvenastog pokrova prema Copernicus HRL Tree Cover Density 2018 unutar atlas granice. To nije CLC udio šume. Referentna 2018. godina.',
+            ),
+            $this->landcover(
+                'imperviousness_mean_pct',
+                'Prosječna gustoća nepropusnosti',
+                'Nepropusnost',
+                'Najveća prosječna gustoća nepropusnosti',
+                'Najmanja prosječna gustoća nepropusnosti',
+                'Prosječna gustoća nepropusnosti prema Copernicus HRL Imperviousness Density 2018 unutar atlas granice. Nije udio zgrada niti nivo razvoja. Referentna 2018. godina.',
+            ),
         ];
 
         $indexed = [];
@@ -581,6 +635,37 @@ final class SettlementMetricRegistry
             eligibilityCopy: $eligibility,
             highRankingLabel: $highRank,
             lowRankingLabel: $lowRank,
+        );
+    }
+
+    private function landcover(
+        string $code,
+        string $label,
+        string $short,
+        string $highRank,
+        string $lowRank,
+        string $methodology,
+    ): MetricDefinition {
+        return new MetricDefinition(
+            code: $code,
+            publicLabel: $label,
+            shortLabel: $short,
+            unit: '%',
+            sourceFamily: 'landcover',
+            category: MetricCategory::LandCover,
+            defaultDirection: RankingDirection::Desc,
+            allowsBothDirections: true,
+            rankable: true,
+            zeroIsValid: true,
+            precision: 1,
+            highSemanticLabel: mb_strtolower($highRank),
+            lowSemanticLabel: mb_strtolower($lowRank),
+            percentageDifferenceUseful: false,
+            methodologyCopy: $methodology,
+            eligibilityCopy: 'Naselje ima javno upotrebljiv M10 profil za taj izvor unutar važeće atlas granice. Nedostajući profil nije 0%.',
+            highRankingLabel: $highRank,
+            lowRankingLabel: $lowRank,
+            percentagePointDifference: true,
         );
     }
 }

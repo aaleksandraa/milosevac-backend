@@ -109,6 +109,9 @@ final class AtlasQueryService
                         SettlementClimateProfile::QUALITY_NO_BOUNDARY,
                     ]);
                 },
+                'surfaceProfiles' => function (HasMany $query) {
+                    $query->whereIn('quality_flag', ['ok', 'high_nodata']);
+                },
             ])
             ->orderBy('name');
 
@@ -221,6 +224,10 @@ final class AtlasQueryService
             'climateProfiles' => function (HasMany $query) {
                 $query->whereNotIn('quality_flag', ['unavailable', 'insufficient_source', 'no_boundary'])
                     ->with(['source', 'monthly', 'extremes']);
+            },
+            'surfaceProfiles' => function (HasMany $query) {
+                $query->whereIn('quality_flag', ['ok', 'high_nodata'])
+                    ->with(['source', 'classes']);
             },
             'places' => function (HasMany $query) {
                 $query->where('is_active', true)->with('placeType:id,family,code,name,singular_label');

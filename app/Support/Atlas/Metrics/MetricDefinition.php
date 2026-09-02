@@ -28,6 +28,7 @@ final readonly class MetricDefinition
         public string $eligibilityCopy,
         public string $highRankingLabel,
         public string $lowRankingLabel,
+        public bool $percentagePointDifference = false,
     ) {}
 
     public function rankingMethod(): string
@@ -66,6 +67,7 @@ final readonly class MetricDefinition
             'high_semantic_label' => $this->highSemanticLabel,
             'low_semantic_label' => $this->lowSemanticLabel,
             'percentage_difference_useful' => $this->percentageDifferenceUseful,
+            'percentage_point_difference' => $this->percentagePointDifference,
             'methodology' => $this->methodologyCopy,
             'eligibility' => $this->eligibilityCopy,
             'high_ranking_label' => $this->highRankingLabel,

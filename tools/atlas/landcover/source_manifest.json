@@ -1,0 +1,150 @@
+{
+  "algorithm_version": "m10.1",
+  "retrieved_at": "2026-09-02T15:59:33Z",
+  "bbox_epsg3035": [
+    4960000.0,
+    2445000.0,
+    5010000.0,
+    2495000.0
+  ],
+  "bbox_epsg4326": [
+    18.08009356217308,
+    44.80500835057138,
+    18.778054042193855,
+    45.201635935186346
+  ],
+  "products": {
+    "clc2018": {
+      "title": "CORINE Land Cover 2018 (vector, EEA DISCOMAP CLC2018_LAEA)",
+      "provider": "European Environment Agency / Copernicus Land Monitoring Service",
+      "reference_year": 2018,
+      "doi": "https://doi.org/10.2909/71c95a07-e296-44fc-b22b-415f42acfdf0",
+      "catalogue": "https://land.copernicus.eu/en/products/corine-land-cover/clc2018",
+      "version": "v2020_20u1",
+      "resolution_m": null,
+      "crs": "EPSG:3035",
+      "licence": "Copernicus Land Monitoring Service data policy / EEA standard re-use",
+      "retrieval_url": "https://image.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2018_LAEA/MapServer/0/query",
+      "thematic": "44 CLC classes, MMU 25 ha, minimum mapping width 100 m. Generalized land-cover inventory, not 10 m parcels.",
+      "file": "clc2018_pilot.geojson",
+      "sha256": "7e31e1e10c45f1fb93e29000715877f30a567a3c846e01cdaa8adab09eff62fa",
+      "bytes": 15364746,
+      "retrieval_date": "2026-09-02",
+      "retrieved_at": "2026-09-02T15:59:33Z",
+      "geographic_scope": "Modriča + Šamac pilot bbox, EPSG:3035",
+      "bbox_epsg3035": [
+        4960000.0,
+        2445000.0,
+        5010000.0,
+        2495000.0
+      ]
+    },
+    "hrl_tcd_2018": {
+      "title": "Copernicus HRL Tree Cover Density 2018",
+      "provider": "European Environment Agency / Copernicus Land Monitoring Service",
+      "reference_year": 2018,
+      "doi": "https://doi.org/10.2909/e677441e-fb94-431c-b4f9-304f10e4dfd8",
+      "catalogue": "https://sdi.eea.europa.eu/catalogue/srv/api/records/486f77da-d605-423e-93a9-680760ab6791",
+      "version": "2018",
+      "resolution_m": 10,
+      "crs": "EPSG:3035",
+      "licence": "Copernicus Land Monitoring Service data policy",
+      "nodata": 255,
+      "thematic": "Tree cover density 0–100 (crown cover). Not a forest-area mask. 0 is valid; 255 is nodata.",
+      "file": "hrl_tcd_2018_pilot.tif",
+      "sha256": "fff9caa3f112bfe9af6385692b7528420b29028a0bb37fa827b3242360f6e848",
+      "bytes": 25000256,
+      "retrieval_date": "2026-09-02",
+      "retrieved_at": "2026-09-02T15:59:33Z",
+      "geographic_scope": "Modriča + Šamac pilot bbox, EPSG:3035",
+      "bbox_epsg3035": [
+        4960000.0,
+        2445000.0,
+        5010000.0,
+        2495000.0
+      ]
+    },
+    "hrl_imd_2018": {
+      "title": "Copernicus HRL Imperviousness Density 2018",
+      "provider": "European Environment Agency / Copernicus Land Monitoring Service",
+      "reference_year": 2018,
+      "doi": "https://doi.org/10.2909/3bf542bd-eebd-4d73-b53c-a0243f2ed862",
+      "catalogue": "https://land.copernicus.eu/en/products/high-resolution-layer-imperviousness/imperviousness-density-2018",
+      "version": "2018",
+      "resolution_m": 10,
+      "crs": "EPSG:3035",
+      "licence": "Copernicus Land Monitoring Service data policy",
+      "nodata": 255,
+      "thematic": "Imperviousness density 0–100 (sealing). Not a binary built-up footprint. 0 is valid; 255 is nodata.",
+      "file": "hrl_imd_2018_pilot.tif",
+      "sha256": "331ef6dee480384c48cc39345043d08f0d5849221eecc21a28aa817dff94f17c",
+      "bytes": 25000256,
+      "retrieval_date": "2026-09-02",
+      "retrieved_at": "2026-09-02T15:59:33Z",
+      "geographic_scope": "Modriča + Šamac pilot bbox, EPSG:3035",
+      "bbox_epsg3035": [
+        4960000.0,
+        2445000.0,
+        5010000.0,
+        2495000.0
+      ]
+    },
+    "hrl_waw_2018": {
+      "title": "Copernicus HRL Water and Wetness 2018",
+      "provider": "European Environment Agency / Copernicus Land Monitoring Service",
+      "reference_year": 2018,
+      "doi": "https://sdi.eea.europa.eu/catalogue/srv/api/records/0dbafef2-b481-4993-8d7e-63ad74934559",
+      "catalogue": "https://land.copernicus.eu/en/products/high-resolution-layer-water-and-wetness/water-and-wetness-2018",
+      "version": "2018",
+      "resolution_m": 10,
+      "crs": "EPSG:3035",
+      "licence": "Copernicus Land Monitoring Service data policy",
+      "nodata": 255,
+      "thematic": "Classified water/wetness: 0 dry, 1 permanent water, 2 temporary water, 3 permanent wet, 4 temporary wet, 254 unclassifiable, 255 nodata. Not a river network or flood zone.",
+      "file": "hrl_waw_2018_pilot.tif",
+      "sha256": "1a66cda06116efb8a1c00d09c482ea6a7548293bfdbc7e67f639888a2611babd",
+      "bytes": 25000256,
+      "retrieval_date": "2026-09-02",
+      "retrieved_at": "2026-09-02T15:59:33Z",
+      "geographic_scope": "Modriča + Šamac pilot bbox, EPSG:3035",
+      "bbox_epsg3035": [
+        4960000.0,
+        2445000.0,
+        5010000.0,
+        2495000.0
+      ]
+    },
+    "hrl_fty_2018": {
+      "title": "Copernicus HRL Forest Type 2018",
+      "provider": "European Environment Agency / Copernicus Land Monitoring Service",
+      "reference_year": 2018,
+      "doi": "https://sdi.eea.europa.eu/catalogue/srv/api/records/59b0620c-7bb4-4c82-b3ce-f16715573137",
+      "catalogue": "https://land.copernicus.eu/en/products/high-resolution-layer-forest-type/forest-type-2018",
+      "version": "2018",
+      "resolution_m": 10,
+      "crs": "EPSG:3035",
+      "licence": "Copernicus Land Monitoring Service data policy",
+      "nodata": 255,
+      "thematic": "FAO-like forest mask after agricultural/urban tree removal. 0 non-forest, 1 broadleaved, 2 coniferous. Distinct from Tree Cover Density.",
+      "file": "hrl_fty_2018_pilot.tif",
+      "sha256": "9a790671000a814ad3b4f275fc382fa0f6462a28a58d06b4bbfd50302c9a2121",
+      "bytes": 25000256,
+      "retrieval_date": "2026-09-02",
+      "retrieved_at": "2026-09-02T15:59:33Z",
+      "geographic_scope": "Modriča + Šamac pilot bbox, EPSG:3035",
+      "bbox_epsg3035": [
+        4960000.0,
+        2445000.0,
+        5010000.0,
+        2495000.0
+      ]
+    }
+  },
+  "notes": [
+    "CLC is a generalized 25 ha inventory. Do not imply parcel-level precision.",
+    "HRL Tree Cover Density is crown-cover density, not CLC forest area.",
+    "HRL Imperviousness Density is sealing density, not a binary building footprint.",
+    "HRL Water and Wetness classes are not a river network, flood zone, or catchment.",
+    "Settlement composition is clipped to M4 OSM admin_level=9 boundaries."
+  ]
+}
