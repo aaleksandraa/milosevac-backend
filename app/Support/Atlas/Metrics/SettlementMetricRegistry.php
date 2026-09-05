@@ -4,6 +4,7 @@ namespace App\Support\Atlas\Metrics;
 
 use App\Enums\MetricCategory;
 use App\Enums\RankingDirection;
+use App\Support\Atlas\Network\NetworkRegistry;
 use InvalidArgumentException;
 
 final class SettlementMetricRegistry
@@ -45,6 +46,7 @@ final class SettlementMetricRegistry
         'landcover_water_pct',
         'tree_cover_mean_pct',
         'imperviousness_mean_pct',
+        'mapped_road_length_km', 'mapped_road_density_km_per_km2', 'major_road_length_km', 'waterway_length_km', 'distance_to_municipality_centre_km', 'distance_to_nearest_major_road_km',
     ];
 
     /** @var array<string, MetricDefinition>|null */
@@ -445,6 +447,21 @@ final class SettlementMetricRegistry
             ),
         ];
 
+        foreach (NetworkRegistry::METRICS as $code => [$label, $unit]) {
+            $metrics[] = new MetricDefinition($code, $label, $label, $unit, 'network', MetricCategory::Network,
+                $code === 'distance_to_nearest_major_road_km' ? RankingDirection::Asc : RankingDirection::Desc,
+                true, true, true, 2, 'veća vrijednost', 'manja vrijednost', false,
+                NetworkRegistry::CAVEAT, 'Uspješno obrađeni podaci; nedostajući podatak nije nula.',
+                match ($code) {
+                    'mapped_road_length_km' => 'Najviše mapiranih puteva',
+                    'mapped_road_density_km_per_km2' => 'Najveća gustina mapirane putne mreže',
+                    'major_road_length_km' => 'Najviše mapiranih glavnih puteva',
+                    'waterway_length_km' => 'Najviše mapiranih vodotoka',
+                    'distance_to_municipality_centre_km' => 'Najudaljenija od opštinskog centra (pravolinijski)',
+                    default => 'Najudaljenija od glavnog puta (pravolinijski)',
+                },
+                $code === 'distance_to_nearest_major_road_km' ? 'Najbliža glavnom putu (pravolinijski)' : $label.' — manje vrijednosti');
+        }
         $indexed = [];
         foreach ($metrics as $metric) {
             $indexed[$metric->code] = $metric;

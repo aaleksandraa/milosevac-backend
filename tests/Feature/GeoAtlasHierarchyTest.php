@@ -275,7 +275,9 @@ class GeoAtlasHierarchyTest extends TestCase
 
     public function test_atlas_migrations_roll_back_and_can_be_reapplied(): void
     {
-        $this->artisan('migrate:rollback', ['--step' => 17])->assertSuccessful();
+        $this->artisan('migrate:rollback', ['--step' => 18])->assertSuccessful();
+        $this->assertFalse(Schema::hasTable('settlement_proximities'));
+        $this->assertFalse(Schema::hasTable('geo_transport_segments'));
 
         $this->assertFalse(Schema::hasTable('settlement_land_cover_classes'));
         $this->assertFalse(Schema::hasTable('settlement_surface_profiles'));

@@ -225,6 +225,7 @@ final class AtlasQueryService
                 $query->whereNotIn('quality_flag', ['unavailable', 'insufficient_source', 'no_boundary'])
                     ->with(['source', 'monthly', 'extremes']);
             },
+            'transportProfiles', 'hydroProfiles', 'proximities',
             'surfaceProfiles' => function (HasMany $query) {
                 $query->whereIn('quality_flag', ['ok', 'high_nodata'])
                     ->with(['source', 'classes']);

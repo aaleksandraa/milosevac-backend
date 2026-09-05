@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\GeoCompareController;
 use App\Http\Controllers\Api\GeoMapController;
 use App\Http\Controllers\Api\GeoMunicipalityController;
+use App\Http\Controllers\Api\GeoNetworkController;
 use App\Http\Controllers\Api\GeoPlaceController;
 use App\Http\Controllers\Api\GeoRankingController;
 use App\Http\Controllers\Api\GeoSettlementController;
@@ -19,6 +20,7 @@ Route::get('/fk-posavina', [PublicPortalController::class, 'apiFkPosavina'])->na
 Route::get('/fk-posavina/matches/{match:slug}', [PublicPortalController::class, 'apiShowMatch'])->name('matches.show');
 
 Route::get('/geo/map/settlements', [GeoMapController::class, 'settlements'])->name('geo.map.settlements');
+Route::get('/geo/map/{layer}', [GeoNetworkController::class, 'show'])->where('layer', 'roads|hydrography');
 Route::get('/geo/map/places', [GeoMapController::class, 'places'])->name('geo.map.places');
 Route::get('/geo/metrics', [GeoRankingController::class, 'metrics'])->name('geo.metrics.index');
 Route::get('/geo/rankings', [GeoRankingController::class, 'index'])->name('geo.rankings.index');

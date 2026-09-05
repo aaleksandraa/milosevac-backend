@@ -95,4 +95,19 @@ class GeoSettlement extends Model
     {
         return $this->hasMany(SettlementCensusMapping::class, 'settlement_id');
     }
+
+    public function transportProfiles(): HasMany
+    {
+        return $this->hasMany(SettlementTransportProfile::class, 'settlement_id');
+    }
+
+    public function hydroProfiles(): HasMany
+    {
+        return $this->hasMany(SettlementHydroProfile::class, 'settlement_id');
+    }
+
+    public function proximities(): HasMany
+    {
+        return $this->hasMany(SettlementProximity::class, 'settlement_id');
+    }
 }

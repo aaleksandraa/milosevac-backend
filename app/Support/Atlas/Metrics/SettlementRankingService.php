@@ -124,6 +124,7 @@ final class SettlementRankingService
                 'boundaries',
                 'terrainStats',
                 'climateProfiles',
+                'transportProfiles', 'hydroProfiles', 'proximities',
                 'surfaceProfiles',
                 'places' => function (HasMany $query) {
                     $query->where('is_active', true)->with('placeType:id,family,code,name,singular_label');

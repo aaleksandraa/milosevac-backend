@@ -7,6 +7,7 @@ use App\Models\SettlementBoundary;
 use App\Support\Atlas\ClimatePresenter;
 use App\Support\Atlas\LandCoverPresenter;
 use App\Support\Atlas\Metrics\SettlementRankingService;
+use App\Support\Atlas\Network\NetworkPresenter;
 use App\Support\Atlas\PopulationPresenter;
 use App\Support\Atlas\PopulationSelector;
 use App\Support\Atlas\SettlementIndexability;
@@ -55,6 +56,7 @@ class GeoSettlementResource extends JsonResource
             'geography' => $this->geography(),
             'climate' => $this->climate(),
             'land_cover' => $this->landCover(),
+            ...(new NetworkPresenter)->present($this->resource),
             'relative_facts' => $this->relativeFacts(),
             'neighbors' => $siblings,
             'source' => $latest && $latest->relationLoaded('source') && $latest->source

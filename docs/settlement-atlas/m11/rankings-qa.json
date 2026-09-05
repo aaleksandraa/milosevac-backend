@@ -1,0 +1,38 @@
+{
+  "mapped_road_length_km": {
+    "eligible": 37,
+    "missing": 8,
+    "latency_ms": 692.0,
+    "universe": 45
+  },
+  "mapped_road_density_km_per_km2": {
+    "eligible": 37,
+    "missing": 8,
+    "latency_ms": 605.7,
+    "universe": 45
+  },
+  "major_road_length_km": {
+    "eligible": 37,
+    "missing": 8,
+    "latency_ms": 628.1,
+    "universe": 45
+  },
+  "waterway_length_km": {
+    "eligible": 37,
+    "missing": 8,
+    "latency_ms": 607.5,
+    "universe": 45
+  },
+  "distance_to_municipality_centre_km": {
+    "eligible": 37,
+    "missing": 8,
+    "latency_ms": 637.6,
+    "universe": 45
+  },
+  "distance_to_nearest_major_road_km": {
+    "eligible": 37,
+    "missing": 8,
+    "latency_ms": 649.0,
+    "universe": 45
+  }
+}

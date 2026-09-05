@@ -4,6 +4,7 @@ namespace App\Support\Atlas\Metrics;
 
 use App\Enums\CensusComparability;
 use App\Models\GeoSettlement;
+use App\Support\Atlas\Network\NetworkRegistry;
 use Illuminate\Support\Collection;
 
 final class SettlementComparisonService
@@ -68,6 +69,15 @@ final class SettlementComparisonService
 
         $caveat = $this->caveat($left, $right, $metric);
         $comparable = $leftValue !== null && $rightValue !== null;
+        $network = NetworkRegistry::METRICS[$metric->code] ?? null;
+        if ($network && $network[2] === 'proximity') {
+            $a = $left->proximities->firstWhere('metric_code', $network[3]);
+            $b = $right->proximities->firstWhere('metric_code', $network[3]);
+            if ($a && $b && ($a->method !== $b->method || $a->origin_type !== $b->origin_type)) {
+                $comparable = false;
+                $caveat = 'Različita metodologija udaljenosti ili tip referentne tačke; direktna razlika nije prikazana.';
+            }
+        }
         if ($metric->code === 'population_change_1991_2013_pct') {
             $leftComp = $this->extractor->changeComparability($left);
             $rightComp = $this->extractor->changeComparability($right);
@@ -117,6 +127,9 @@ final class SettlementComparisonService
 
     private function caveat(GeoSettlement $left, GeoSettlement $right, MetricDefinition $metric): ?string
     {
+        if ($metric->sourceFamily === 'network') {
+            return NetworkRegistry::CAVEAT;
+        }
         if (! str_starts_with($metric->code, 'population')) {
             return null;
         }

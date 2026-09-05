@@ -8,9 +8,13 @@ use App\Models\GeoPlace;
 use App\Models\GeoSettlement;
 use App\Models\SettlementBoundary;
 use App\Models\SettlementClimateProfile;
+use App\Models\SettlementHydroProfile;
 use App\Models\SettlementPopulation;
+use App\Models\SettlementProximity;
 use App\Models\SettlementSurfaceProfile;
 use App\Models\SettlementTerrainStat;
+use App\Models\SettlementTransportProfile;
+use App\Support\Atlas\Network\NetworkSnapshot;
 use Illuminate\Support\Collection;
 
 final class RankingDatasetVersion
@@ -34,6 +38,7 @@ final class RankingDatasetVersion
             $this->forFamily('climate'),
             $this->forFamily('poi'),
             $this->forFamily('landcover'),
+            $this->forFamily('network'),
         ]));
     }
 
@@ -62,6 +67,12 @@ final class RankingDatasetVersion
             'poi' => [
                 (string) GeoPlace::query()->max('updated_at'),
                 (string) GeoPlace::query()->where('is_active', true)->count(),
+            ],
+            'network' => [
+                hash('sha256', SettlementTransportProfile::orderBy('id')->get()->toJson()),
+                hash('sha256', SettlementHydroProfile::orderBy('id')->get()->toJson()),
+                hash('sha256', SettlementProximity::orderBy('id')->get()->toJson()),
+                (new NetworkSnapshot)->payload()['dependency_hash'],
             ],
             'landcover' => [
                 (string) SettlementSurfaceProfile::query()->max('updated_at'),

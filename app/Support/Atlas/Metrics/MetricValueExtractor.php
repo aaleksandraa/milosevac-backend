@@ -11,6 +11,8 @@ use App\Models\SettlementBoundary;
 use App\Models\SettlementClimateProfile;
 use App\Models\SettlementSurfaceProfile;
 use App\Models\SettlementTerrainStat;
+use App\Support\Atlas\Network\NetworkPresenter;
+use App\Support\Atlas\Network\NetworkRegistry;
 use App\Support\Atlas\PopulationChangeCalculator;
 use App\Support\Atlas\PopulationSelector;
 
@@ -50,7 +52,7 @@ final class MetricValueExtractor
             'landcover_water_pct' => $this->surfaceSummary($settlement, 'clc2018', 'landcover_water_pct'),
             'tree_cover_mean_pct' => $this->surfaceSummary($settlement, 'hrl_tcd_2018', 'tree_cover_mean_pct'),
             'imperviousness_mean_pct' => $this->surfaceSummary($settlement, 'hrl_imd_2018', 'imperviousness_mean_pct'),
-            default => null,
+            default => $this->networkValue($settlement, $metric->code),
         };
     }
 
@@ -271,5 +273,18 @@ final class MetricValueExtractor
             ->filter(fn (SettlementSurfaceProfile $row) => $row->product_code === $product && $row->isPubliclyUsable())
             ->sortByDesc(fn (SettlementSurfaceProfile $row) => $row->calculated_at?->timestamp ?? 0)
             ->first();
+    }
+
+    private function networkValue(GeoSettlement $s, string $code): ?float
+    {
+        $definition = NetworkRegistry::METRICS[$code] ?? null;
+        if (! $definition) {
+            return null;
+        }
+        [, , $block, $field] = $definition;
+        $data = (new NetworkPresenter)->present($s);
+        $value = $block === 'proximity' ? ($data[$block][$field]['distance_straight_m'] ?? null) : ($data[$block][$field] ?? null);
+
+        return $value === null ? null : (float) $value / ($block === 'proximity' ? 1000 : 1);
     }
 }

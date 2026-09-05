@@ -1,0 +1,34 @@
+[
+  {
+    "layer": "roads",
+    "municipality": "modrica",
+    "bytes": 64564,
+    "gzip_bytes": 18205,
+    "feature_count": 69,
+    "latency_ms": 291.0
+  },
+  {
+    "layer": "roads",
+    "municipality": "samac",
+    "bytes": 46250,
+    "gzip_bytes": 13254,
+    "feature_count": 51,
+    "latency_ms": 189.0
+  },
+  {
+    "layer": "hydrography",
+    "municipality": "modrica",
+    "bytes": 204171,
+    "gzip_bytes": 61487,
+    "feature_count": 76,
+    "latency_ms": 216.6
+  },
+  {
+    "layer": "hydrography",
+    "municipality": "samac",
+    "bytes": 200269,
+    "gzip_bytes": 61127,
+    "feature_count": 80,
+    "latency_ms": 213.7
+  }
+]

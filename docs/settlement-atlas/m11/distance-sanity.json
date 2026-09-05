@@ -1,0 +1,58 @@
+[
+  {
+    "settlement": "milosevac",
+    "metric": "nearest_pharmacy",
+    "geodesic_m": 8298.841,
+    "spherical_sanity_m": 8277.831,
+    "relative_difference": 0.0025316979859200056
+  },
+  {
+    "settlement": "milosevac",
+    "metric": "nearest_school",
+    "geodesic_m": 5460.269,
+    "spherical_sanity_m": 5458.728,
+    "relative_difference": 0.0002821884796094273
+  },
+  {
+    "settlement": "modrica",
+    "metric": "nearest_pharmacy",
+    "geodesic_m": 77.689,
+    "spherical_sanity_m": 77.481,
+    "relative_difference": 0.002684212652413878
+  },
+  {
+    "settlement": "modrica",
+    "metric": "nearest_school",
+    "geodesic_m": 514.705,
+    "spherical_sanity_m": 514.33,
+    "relative_difference": 0.0007297398432108761
+  },
+  {
+    "settlement": "samac",
+    "metric": "nearest_pharmacy",
+    "geodesic_m": 9537.493,
+    "spherical_sanity_m": 9510.875,
+    "relative_difference": 0.00279095349492065
+  },
+  {
+    "settlement": "samac",
+    "metric": "nearest_school",
+    "geodesic_m": 600.988,
+    "spherical_sanity_m": 599.633,
+    "relative_difference": 0.002254601253389938
+  },
+  {
+    "settlement": "koprivna",
+    "metric": "nearest_pharmacy",
+    "geodesic_m": 8114.708,
+    "spherical_sanity_m": 8109.666,
+    "relative_difference": 0.0006213093569037684
+  },
+  {
+    "settlement": "koprivna",
+    "metric": "nearest_school",
+    "geodesic_m": 2919.463,
+    "spherical_sanity_m": 2918.867,
+    "relative_difference": 0.00020403911711197267
+  }
+]
