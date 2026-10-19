@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Category;
+use App\Models\FootballMatch;
 use App\Models\GeoMunicipality;
 use App\Models\GeoSettlement;
 use App\Models\Post;
@@ -35,7 +36,10 @@ class Seo
         $canonical = self::absoluteUrl($canonical ?: URL::current());
         $title = Str::of($title)->contains($site['name']) ? (string) $title : "{$title} | {$site['name']}";
         $description = Str::limit(trim(html_entity_decode(strip_tags((string) ($description ?: $site['description'])))), 160, '');
-        $image = self::absoluteUrl($image ?: self::frontendUrl('logo.webp'));
+        $image = self::absoluteUrl($image ?: self::defaultShareImage());
+        if (self::isBlockedShareImage($image)) {
+            $image = self::defaultShareImage();
+        }
         $imageType = match (strtolower(pathinfo(parse_url($image, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION))) {
             'jpg', 'jpeg' => 'image/jpeg',
             'png' => 'image/png',
@@ -95,6 +99,36 @@ class Seo
         return $seo;
     }
 
+    public static function footballMatch(FootballMatch $match): array
+    {
+        $seo = self::page(
+            $match->meta_title ?: $match->title,
+            $match->meta_description ?: $match->excerpt,
+            self::frontendUrl('fk-posavina/utakmica/'.$match->slug),
+            self::matchShareImage($match),
+            [
+                '@context' => 'https://schema.org',
+                '@type' => 'NewsArticle',
+                'headline' => $match->title,
+                'description' => $match->meta_description ?: $match->excerpt,
+                'datePublished' => optional($match->published_at)->toIso8601String(),
+                'dateModified' => $match->updated_at->toIso8601String(),
+                'author' => ['@type' => 'Person', 'name' => $match->author?->name ?: self::site()['name']],
+                'publisher' => [
+                    '@type' => 'Organization',
+                    'name' => self::site()['name'],
+                ],
+                'mainEntityOfPage' => self::frontendUrl('fk-posavina/utakmica/'.$match->slug),
+            ],
+            'article'
+        );
+        $seo['image_alt'] = $match->title;
+        $seo['published_at'] = optional($match->published_at)->toIso8601String();
+        $seo['modified_at'] = $match->updated_at->toIso8601String();
+
+        return $seo;
+    }
+
     public static function absoluteUrl(?string $url): ?string
     {
         if (! $url) {
@@ -137,6 +171,30 @@ class Seo
         }
 
         return self::storageImage($post->og_image ?: $post->featured_image);
+    }
+
+    private static function matchShareImage(FootballMatch $match): ?string
+    {
+        $path = $match->cover_image ?: $match->media()->value('path');
+        if (! $path || self::isBlockedShareImage($path)) {
+            return null;
+        }
+
+        $social = app(ImagePipeline::class)->socialImage($path);
+
+        return self::storageImage($social ?: $path);
+    }
+
+    private static function defaultShareImage(): string
+    {
+        return self::frontendUrl('og.jpg');
+    }
+
+    private static function isBlockedShareImage(?string $path): bool
+    {
+        $name = strtolower(basename((string) (parse_url((string) $path, PHP_URL_PATH) ?: $path)));
+
+        return in_array($name, ['logo.webp', 'logo.jpg', 'logo.png', 'logo.jpeg'], true);
     }
 
     private static function postShareUrl(Post $post): string

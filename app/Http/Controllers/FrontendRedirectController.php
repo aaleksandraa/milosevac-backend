@@ -104,12 +104,7 @@ class FrontendRedirectController extends Controller
 
         $footballMatch = FootballMatch::published()->where('slug', $match)->firstOrFail();
 
-        return $this->preview(Seo::page(
-            $footballMatch->meta_title ?: $footballMatch->title,
-            $footballMatch->meta_description ?: $footballMatch->excerpt,
-            Seo::frontendUrl('fk-posavina/utakmica/'.$footballMatch->slug),
-            Seo::storageImage($footballMatch->cover_image)
-        ));
+        return $this->preview(Seo::footballMatch($footballMatch));
     }
 
     public function weather(Request $request): RedirectResponse|Response

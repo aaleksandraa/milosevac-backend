@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\FootballMatch;
+use App\Models\Media;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -87,7 +89,67 @@ class FrontendRedirectTest extends TestCase
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Kontakt | Miloševac">', false)
             ->assertSee('Pošaljite vijest, fotografiju, obavještenje ili prijedlog', false)
-            ->assertSee('<meta property="og:image" content="http://localhost:8080/logo.webp">', false);
+            ->assertSee('<meta property="og:image" content="http://localhost:8080/og.jpg">', false)
+            ->assertDontSee('logo.webp', false);
+    }
+
+    public function test_match_share_preview_uses_a_gallery_photo_instead_of_the_sponsor_logo(): void
+    {
+        $this->seed();
+        $author = User::query()->firstOrFail();
+        $match = FootballMatch::query()->create([
+            'author_id' => $author->id,
+            'title' => 'Posavina savladala Slogu',
+            'slug' => 'posavina-savladala-slogu',
+            'home_team' => 'FK Posavina',
+            'away_team' => 'Sloga',
+            'excerpt' => 'Posavina je slavila 3:1.',
+            'content' => '<p>Izvještaj.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinute(),
+        ]);
+        $photo = Media::query()->create([
+            'user_id' => $author->id,
+            'disk' => 'public',
+            'path' => 'matches/galleries/gol.webp',
+            'filename' => 'gol.webp',
+            'mime_type' => 'image/webp',
+            'size' => 10,
+            'alt_text' => 'Gol',
+        ]);
+        $match->media()->attach($photo->id, ['sort_order' => 1]);
+
+        $this->withHeader('User-Agent', 'facebookexternalhit/1.1')
+            ->get('/fk-posavina/utakmica/'.$match->slug)
+            ->assertOk()
+            ->assertSee('<meta property="og:url" content="http://localhost:8080/fk-posavina/utakmica/posavina-savladala-slogu">', false)
+            ->assertSee('<meta property="og:image" content="http://localhost/storage/matches/galleries/gol.webp">', false)
+            ->assertDontSee('logo.webp', false)
+            ->assertDontSee('api.milosevac.com', false);
+    }
+
+    public function test_match_without_photos_uses_the_site_card_not_the_sponsor_logo(): void
+    {
+        $this->seed();
+        $author = User::query()->firstOrFail();
+        FootballMatch::query()->create([
+            'author_id' => $author->id,
+            'title' => 'Najava derbija',
+            'slug' => 'najava-derbija',
+            'home_team' => 'FK Posavina',
+            'away_team' => 'Modrica',
+            'excerpt' => 'Derbi je u subotu.',
+            'content' => '<p>Najava.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinute(),
+            'cover_image' => 'logo.webp',
+        ]);
+
+        $this->withHeader('X-Social-Preview', '1')
+            ->get('/fk-posavina/utakmica/najava-derbija')
+            ->assertOk()
+            ->assertSee('<meta property="og:image" content="http://localhost:8080/og.jpg">', false)
+            ->assertDontSee('logo.webp', false);
     }
 
     public function test_content_api_exposes_published_cms_articles(): void
