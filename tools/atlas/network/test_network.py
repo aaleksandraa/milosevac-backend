@@ -1,7 +1,7 @@
 import unittest
 from shapely.geometry import box, LineString, MultiPolygon, mapping
 from shapely.ops import transform
-from core import normalize, relation_and_clip, geodesic, nearest_point, process, PROJECT, road_class
+from core import normalize, relation_and_clip, geodesic, nearest_point, process, country_polygon, PROJECT, road_class
 
 
 class NetworkTests(unittest.TestCase):
@@ -90,6 +90,26 @@ class NetworkTests(unittest.TestCase):
             self.assertEqual(rows[0]['proximity'][-3]['distance_straight_m'],0)
             rows,_=process({'jobs':[dict(j,geometry=None,boundary_id=None)],'pois':[]},[])
             self.assertIsNone(rows[0]['transport'])
+
+    def test_cross_border_target_is_flagged_but_distance_kept(self):
+        j={'settlement_id':1,'settlement_slug':'test','settlement_name':'Test','municipality_slug':'test','boundary_id':None,'origin_type':'geographic_centroid','lat':45,'lng':18,'geometry':None}
+        pois=[{'id':7,'code':'pharmacy','name':'Abroad','lat':45,'lng':18.2,'source_id':3}]
+        road={'osm_type':'way','osm_id':1,'kind':'road','feature_type':'primary','group':'major','name':None,'source_properties':{},'geometry':mapping(LineString([(18,45),(18.01,45)]))}
+        country=transform(PROJECT, box(17.9,44.9,18.1,45.1))
+        flagged={p['metric_code']:p for p in process({'jobs':[j],'pois':pois},[road],country)[0][0]['proximity']}
+        plain={p['metric_code']:p for p in process({'jobs':[j],'pois':pois},[road])[0][0]['proximity']}
+        self.assertIs(flagged['nearest_pharmacy']['target_in_country'],False)
+        self.assertEqual(flagged['nearest_pharmacy']['distance_straight_m'],plain['nearest_pharmacy']['distance_straight_m'])
+        self.assertIs(flagged['nearest_major_road']['target_in_country'],True)
+        self.assertIsNone(flagged['nearest_hospital']['target_in_country'])
+        self.assertIsNone(plain['nearest_pharmacy']['target_in_country'])
+
+    def test_country_polygon_from_relation_members(self):
+        west=[{'lon':0,'lat':0},{'lon':0,'lat':1},{'lon':1,'lat':1}]
+        east=[{'lon':1,'lat':1},{'lon':1,'lat':0},{'lon':0,'lat':0}]
+        rel={'type':'relation','id':9,'tags':{'admin_level':'2'},'members':[{'type':'way','ref':1,'role':'outer','geometry':west},{'type':'way','ref':2,'role':'outer','geometry':east}]}
+        self.assertTrue(country_polygon([rel]).covers(transform(PROJECT, box(0.4,0.4,0.6,0.6))))
+        with self.assertRaises(ValueError): country_polygon([])
 
 
 if __name__=='__main__': unittest.main()

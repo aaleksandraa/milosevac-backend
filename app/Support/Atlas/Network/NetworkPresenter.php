@@ -32,7 +32,7 @@ final class NetworkPresenter
                 }
                 $result['proximity'][$p->metric_code] = [
                     'label' => NetworkRegistry::PROXIMITIES[$p->metric_code], 'target_name' => $p->target_name,
-                    'target_type' => $p->target_type, 'target_id' => $p->target_id,
+                    'target_type' => $p->target_type, 'target_id' => $p->target_id, 'target_in_country' => $p->metadata['target_in_country'] ?? null,
                     'distance_straight_m' => $p->distance_straight_m, 'distance_route_m' => null, 'travel_time_s' => null,
                     'method' => $p->method, 'origin_type' => $p->origin_type, 'origin' => ['lat' => (float) $p->origin_lat, 'lng' => (float) $p->origin_lng],
                     'quality_flag' => $p->quality_flag, 'dataset_version' => $p->dataset_version,

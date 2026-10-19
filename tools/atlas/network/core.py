@@ -5,7 +5,7 @@ from shapely.geometry import LineString, Polygon, Point, shape, mapping
 from shapely.ops import transform, polygonize, unary_union, nearest_points
 from pyproj import Transformer, Geod
 
-ALGORITHM = 'm11.1'
+ALGORITHM = 'm11.2'
 PROJECT = Transformer.from_crs(4326, 3035, always_xy=True).transform
 GEOD = Geod(ellps='WGS84')
 MAJOR = {'motorway', 'trunk', 'primary', 'secondary'}
@@ -40,6 +40,22 @@ def coordinates(geometry):
     return [(p['lon'], p['lat']) for p in geometry]
 
 
+def relation_polygon(relation):
+    rings = {}
+    for role in ['outer', 'inner']:
+        lines = [LineString(coordinates(m['geometry'])) for m in relation.get('members', []) if m['type'] == 'way' and m.get('role', 'outer') in ([role, ''] if role == 'outer' else [role])]
+        rings[role] = unary_union(list(polygonize(unary_union(lines))))
+    return rings['outer'].difference(rings['inner'])
+
+
+def country_polygon(elements):
+    relations = [e for e in elements if e['type'] == 'relation' and e.get('tags', {}).get('admin_level') == '2']
+    if len(relations) != 1: raise ValueError('Expected exactly one national boundary relation')
+    geom = relation_polygon(relations[0])
+    if geom.is_empty or not geom.is_valid or geom.geom_type not in {'Polygon', 'MultiPolygon'}: raise ValueError('Invalid national boundary')
+    return transform(PROJECT, geom)
+
+
 def normalize(elements):
     unique = {}
     for e in elements:
@@ -62,11 +78,7 @@ def normalize(elements):
         if area and not linear and e['type'] == 'way' and e['id'] in area_members: continue
         try:
             if e['type'] == 'relation':
-                rings = {}
-                for role in ['outer', 'inner']:
-                    lines = [LineString(coordinates(m['geometry'])) for m in e.get('members', []) if m['type'] == 'way' and m.get('role', 'outer') in ([role, ''] if role == 'outer' else [role])]
-                    rings[role] = unary_union(list(polygonize(unary_union(lines))))
-                geom = rings['outer'].difference(rings['inner'])
+                geom = relation_polygon(e)
             else:
                 pts = coordinates(e['geometry'])
                 if area and not linear and not road:
@@ -106,7 +118,11 @@ def nearest_point(origin, targets):
     return min(((geodesic(origin, t), t) for t in eligible), key=lambda pair: (round(pair[0], 6), str(pair[1]['id'])))
 
 
-def process(jobs, objects):
+def in_country(country, point):
+    return None if country is None else bool(country.covers(point))
+
+
+def process(jobs, objects, country=None):
     projected = [(o, transform(PROJECT, shape(o['geometry']))) for o in objects]
     rows, links = [], []
     centres = {j['municipality_slug']: dict(j, id=j['settlement_id'], name=j['settlement_name']) for j in jobs['jobs'] if j['settlement_slug'] == j['municipality_slug'] and valid_point(j)}
@@ -146,10 +162,12 @@ def process(jobs, objects):
             targets['municipality_centre'] = [centres[j['municipality_slug']]] if j['municipality_slug'] in centres else []
             for code, candidates in targets.items():
                 hit = nearest_point(j, candidates)
-                row['proximity'].append({'metric_code': code, 'target_type': 'settlement' if code == 'municipality_centre' else 'geo_place', 'target_id': hit[1]['id'] if hit else None, 'target_name': hit[1].get('name') if hit else None, 'distance_straight_m': hit[0] if hit else None, 'method': 'WGS84_geodesic', 'quality_flag': j['origin_type'] if hit else 'no_target', 'target_source_id': hit[1].get('source_id') if hit else None})
+                row['proximity'].append({'metric_code': code, 'target_type': 'settlement' if code == 'municipality_centre' else 'geo_place', 'target_id': hit[1]['id'] if hit else None, 'target_name': hit[1].get('name') if hit else None, 'distance_straight_m': hit[0] if hit else None, 'method': 'WGS84_geodesic', 'quality_flag': j['origin_type'] if hit else 'no_target', 'target_source_id': hit[1].get('source_id') if hit else None,
+                                         'target_in_country': in_country(country, transform(PROJECT, Point(float(hit[1]['lng']), float(hit[1]['lat'])))) if hit else None})
             point = transform(PROJECT, Point(float(j['lng']), float(j['lat'])))
             for code, candidates in [('nearest_major_road', [(o,g) for o,g in projected if o['kind']=='road' and o['feature_type'] in MAJOR]), ('nearest_named_watercourse', [(o,g) for o,g in projected if o['kind']=='hydro' and o['name'] and o['feature_type'] in LINE_WATER])]:
-                hit = min(((point.distance(g), o) for o,g in candidates), key=lambda p: (round(p[0],6), p[1]['osm_type'], p[1]['osm_id']), default=None)
-                row['proximity'].append({'metric_code': code, 'target_type': 'road' if code == 'nearest_major_road' else 'hydro', 'target_id': str(hit[1]['osm_id']) if hit else None, 'target_osm_type': hit[1]['osm_type'] if hit else None, 'target_name': hit[1]['name'] if hit else None, 'distance_straight_m': hit[0] if hit else None, 'method': 'EPSG3035_point_to_geometry', 'quality_flag': j['origin_type'] if hit else 'no_target'})
+                hit = min(((point.distance(g), o, g) for o,g in candidates), key=lambda p: (round(p[0],6), p[1]['osm_type'], p[1]['osm_id']), default=None)
+                row['proximity'].append({'metric_code': code, 'target_type': 'road' if code == 'nearest_major_road' else 'hydro', 'target_id': str(hit[1]['osm_id']) if hit else None, 'target_osm_type': hit[1]['osm_type'] if hit else None, 'target_name': hit[1]['name'] if hit else None, 'distance_straight_m': hit[0] if hit else None, 'method': 'EPSG3035_point_to_geometry', 'quality_flag': j['origin_type'] if hit else 'no_target',
+                                         'target_in_country': in_country(country, nearest_points(point, hit[2])[1]) if hit else None})
         rows.append(row)
     return rows, links

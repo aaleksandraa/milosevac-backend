@@ -1,6 +1,6 @@
 # M11 — Hydrography, roads, accessibility and proximity
 
-Implementation and actual pilot import are available. **Acceptance remains open: desktop/mobile page QA passed on 2026-10-19, but basemap comparison of the road/hydro layers and browser render-time measurement still need a regular browser.** M12 has not started. No merge or push.
+Implementation and actual pilot import are available. **Acceptance QA passed on 2026-10-19:** desktop/mobile page QA, road/hydro layers against the basemap and desktop render timing. Only render time on a real mobile device is unmeasured. M12 has not started. No merge or push.
 
 ## Scope and source
 
@@ -24,7 +24,7 @@ Exact query, bbox, licensing, counts, class inventory and QA values are in [m11/
 
 ## Geometry and classifications
 
-Algorithm `m11.1`, Python Shapely + pyproj. EPSG:4326 inputs are transformed to **EPSG:3035, always_xy=True** before intersection, length, area and point-to-line distance. No degree-based measurements. The normalized artifact retains original geometry and relevant source tags, OSM type/id/version/timestamp. Duplicate same-version conflicting identities fail; the newest OSM version wins deterministically otherwise.
+Algorithm `m11.2` (adds the cross-border target flag to `m11.1`), Python Shapely + pyproj. EPSG:4326 inputs are transformed to **EPSG:3035, always_xy=True** before intersection, length, area and point-to-line distance. No degree-based measurements. The normalized artifact retains original geometry and relevant source tags, OSM type/id/version/timestamp. Duplicate same-version conflicting identities fail; the newest OSM version wins deterministically otherwise.
 
 Road classes are centralized in `network/core.py`: motorway, trunk, primary, secondary, tertiary, residential, unclassified, service, track, path, pedestrian, cycleway, footway, living_street, other. `_link` classes join their parent controlled class; the original `highway` remains in `source_properties`. Public groups: major (motorway/trunk/primary/secondary), local (tertiary/unclassified), residential (including living_street), service, track, paths, other. Hierarchy does not imply quality, access permission or maintenance.
 
@@ -46,6 +46,8 @@ Own municipality centre is the canonical settlement whose slug equals its munici
 
 M6 targets come from active `geo_places` with valid coordinates, regardless of settlement assignment. The existing regional target inventory has **761 POIs**, including neighboring/cross-border objects. Nearest means **nearest in the imported dataset**, not guaranteed nearest in reality or easiest to reach. Assignment is not used as a geographic filter. No M6 redownload.
 
+Cross-border targets keep their value and are flagged. Each hit stores `target_in_country`: `true`/`false` when the target point (or, for roads/water, the nearest point on the geometry) is covered by the OSM BiH national boundary, `null` without a hit. The boundary is relation **2528142** (`admin_level=2`, `ISO3166-1=BA`, version 655), fetched once by `fetch_country.py` from `overpass-api.de` on 2026-10-19 (OSM timestamp 2026-10-19T09:36:02Z, 1,506,500 bytes, SHA-256 `321f53e2…3df078`), assembled from its outer/inner member ways and tested in EPSG:3035. Its manifest is stored in the network source metadata as `country_boundary`; import requires it. M6 municipality assignment is not used for this, because it is bounding-box based and can place Slavonski Šamac objects in Šamac municipality. The API exposes `target_in_country`; the UI adds "Cilj se nalazi izvan Bosne i Hercegovine" without changing the distance.
+
 Controlled targets: pharmacy, hospital, health (hospital/clinic/doctors), school (primary/secondary/unspecified-level school), fuel station, bus station, railway station, municipality centre, major road, named linear watercourse. Kindergarten/university are excluded from school. Unspecified-level schools are not presented as confirmed primary/secondary schools. No emergency availability, opening-hours, response-time or road-condition claim.
 
 - Points: WGS84 ellipsoidal geodesic with `pyproj.Geod.inv`, stored in metres.
@@ -61,7 +63,7 @@ Dependency SHA-256 includes pilot origins, selected boundary geometry/area and t
 - `settlement_transport_profiles`, `settlement_hydro_profiles`: one current row per settlement, boundary/source/version/algorithm/quality/dependency, compact JSON summary/metadata; no duplicated source geometry.
 - `settlement_proximities`: one current row per settlement/metric, origin coordinates/type, target, explicit method, distinct distance fields, quality/version/dependency. Target M6 source is retained independently of processing/network source.
 - `settlement_network_relations`: stable source identity plus settlement, relation and clipped measurement. Identity is preserved on repeat import.
-- Import is transactional and SQLite compatible. Exact repeat: **0 inserted, 0 updated, 20,978 unchanged** source/profile rows; 3,777 relationship rows retain identity.
+- Import is transactional and SQLite compatible. Exact repeat: **0 inserted, 0 updated, 20,978 unchanged** source/profile rows; 3,777 relationship rows retain identity. Re-importing the `m11.2` artifact over `m11.1` updated 444 rows (370 proximities plus 74 profiles whose algorithm version changed); the repeat after that was again 0 / 0 / 20,978.
 - Detail endpoints add optional `transport`, `hydrography`, `proximity`; source attribution and available source timestamp are exposed. Missing/no-target proximity is omitted, zero retained. API hydro zero profiles remain useful to rankings even when the UI hides empty sections.
 - `GET /api/geo/map/roads?municipality=modrica|samac`: major roads only.
 - `GET /api/geo/map/hydrography?municipality=modrica|samac`: hydro lines/polygons.
@@ -76,7 +78,8 @@ Run from backend root (existing Python GIS requirements and Laravel dependencies
 php artisan migrate --force
 php artisan atlas:export-network-jobs --pilot
 python tools/atlas/network/fetch_network.py --jobs storage/app/private/atlas/network/jobs-pilot.json --output storage/app/private/atlas/network/osm-pilot.json --endpoint https://overpass.kumi.systems/api/interpreter
-python tools/atlas/network/process_network.py --jobs storage/app/private/atlas/network/jobs-pilot.json --raw storage/app/private/atlas/network/osm-pilot.json --output storage/app/private/atlas/network/accessibility-pilot.json
+python tools/atlas/network/fetch_country.py --output storage/app/private/atlas/network/osm-country-ba.json
+python tools/atlas/network/process_network.py --jobs storage/app/private/atlas/network/jobs-pilot.json --raw storage/app/private/atlas/network/osm-pilot.json --country storage/app/private/atlas/network/osm-country-ba.json --output storage/app/private/atlas/network/accessibility-pilot.json
 php artisan atlas:import-accessibility --pilot --from-file=storage/app/private/atlas/network/accessibility-pilot.json
 php artisan atlas:import-accessibility --pilot --from-file=storage/app/private/atlas/network/accessibility-pilot.json
 php artisan atlas:report-accessibility --pilot
@@ -87,7 +90,7 @@ composer test
 php vendor/bin/pint --dirty
 ```
 
-Fetch refuses to overwrite an existing raw file. Reuse the checked raw cache for reproduction; use a new output path for a fresh acquisition. No visitor API calls Overpass, Nominatim, OSM API, OSRM, a geocoder or any remote GIS source.
+Both fetch scripts refuse to overwrite an existing raw file. `fetch_country.py` uses a 90 s Overpass query timeout and retries 429/502/503/504 with exponential backoff, because busy public servers reject longer timeouts immediately. Reuse the checked raw cache for reproduction; use a new output path for a fresh acquisition. No visitor API calls Overpass, Nominatim, OSM API, OSRM, a geocoder or any remote GIS source.
 
 ## Actual settlement QA
 
@@ -124,23 +127,23 @@ Additional API inspection: Koprivna 74.720201 km roads / 20.436857 km water; Jas
 
 Measurements are local Laravel development-server requests, not production/mobile benchmarks. Representative detail requests were 444–766 ms; cold M11 rankings 606–692 ms. Source artifact is 30.3 MB; normalized result approximately 14.93 MB / 3.16 MB gzip. Normalized DB: 20,534 source objects + 74 profiles + 370 proximities + 3,777 relationships = **24,755 rows**, excluding one source row. See machine-readable performance report. Full network is never initially sent to visitors.
 
-Decision **B: municipality-scoped/lazy GeoJSON only**. Measured optional network payloads do not justify PMTiles now. Browser render time and mobile behavior are **unmeasured** because browser discovery returned no available browsers; this part of the decision remains subject to acceptance QA.
+Decision **B: municipality-scoped/lazy GeoJSON only**. Measured optional network payloads do not justify PMTiles now. Desktop browser render (2026-10-19, dev server, Šamac): roads 441 ms / 46,250 B, hydro 307 ms / 200,269 B, map idle about 2.3 s after zoom. Mobile-device render time is not measured.
 
 For national scale: acquire a licensed, timestamped Geofabrik BiH/regional PBF once, normalize source identity once, index projected geometries spatially and intersect many settlements in batches. Replace the pilot's linear candidate scan and whole-pilot freshness hash with STRtree/batched processing and partitioned dependencies. Preserve original identities and include a sufficient cross-border halo. Measure payload again before adopting PMTiles/vector tiles. No thousands of per-municipality Overpass calls; no national settlement import or routing service in M11.
 
-## Validation and open gate
+## Validation
 
-Backend regression: **189 passed, 1 skipped** in the final regression run; M11 feature tests cover models, idempotency, zero/missing, API blocks, scoped map, M9, stale origin/POI dependencies and import rejection. GIS: **18 network tests + 40 existing tests**, no live OSM in tests. Pint applied to changed PHP. Eight independent spherical distance sanity checks for Miloševac, Modriča, Šamac and Koprivna agree within 0.5% with the ellipsoidal calculation (the spherical values are QA only, never the public measurement).
+Backend regression: **191 passed, 1 skipped** in the final regression run; M11 feature tests cover models, idempotency, zero/missing, API blocks, scoped map, M9, stale origin/POI dependencies, cross-border flag and import rejection (including artifacts without the country boundary or the flag). GIS: **20 network tests + 40 existing tests**, no live OSM in tests. Pint applied to changed PHP. Eight independent spherical distance sanity checks for Miloševac, Modriča, Šamac and Koprivna agree within 0.5% with the ellipsoidal calculation (the spherical values are QA only, never the public measurement).
 
 The real regional artifact exposed quadratic whole-artifact Laravel wildcard validation and exhausted the 512 MB PHP limit. Validation now handles the small header and individual network objects separately. The real import and repeat import were rerun successfully under the existing limit; targeted importer tests passed again.
 
-Frontend: **52 tests pass**, lint zero errors with the existing button fast-refresh warning, production build passes. Additional `tsc --noEmit` reports existing errors in `useOutages.test.ts`, `atlas-map-engine.ts` and `atlas-ranking.ts`; the new network files introduce no remaining reported type error.
+Frontend: **55 tests pass**, lint zero errors with the existing button fast-refresh warning, production build passes. Additional `tsc --noEmit` reports existing errors in `useOutages.test.ts`, `atlas-map-engine.ts` and `atlas-ranking.ts`; the new network files introduce no remaining reported type error.
 
-**Browser QA 2026-10-19** (local servers, Cursor embedded browser): settlement pages, compare, rankings and 390 px mobile layout pass; details in the frontend M11 document. Re-run on the same day: PHPUnit 189 passed / 1 skipped, Python 40 + 18 passed.
+**Browser QA 2026-10-19** (local servers, Cursor embedded browser): settlement pages, compare, rankings and 390 px mobile layout pass; details in the frontend M11 document.
 
-**Not completed:** road/basemap visual alignment, watercourse visual inspection and render duration. The embedded browser does not execute MapLibre web workers (a minimal one-point GeoJSON map never fires `load`), so no atlas layer can be drawn there. Verify both network layers in a regular browser before marking the milestone accepted.
+**Map layers:** the first QA pass showed a blank map. The cause was a frontend bug, not the browser: MapLibre 6 loads its worker from `./maplibre-gl-worker.mjs` next to its own module, a file that does not exist once Vite relocates the bundle, so the worker received the HTML page (`SyntaxError: Unexpected token '<'`) and no map ever loaded. The frontend now passes Vite's `?worker&url` asset to `setWorkerUrl`. After the fix, Šamac's Sava/Bosna water layers and major roads line up with the basemap, and in Miloševac the Bosna follows the western boundary, consistent with 458 m clipped. The production build emits the worker as a hashed asset, and it starts cleanly.
 
-**Data-quality warnings from QA:** M6 contains a single `railway_station` (Slavonski Šamac, Croatia), so every pilot settlement's nearest station is cross-border (Jasenica 29.0 km). Šamac town's nearest pharmacy is "Ljekarna Vukić" at 9.5 km, and Miloševac's nearest health target is Dom zdravlja Odžak, because OSM has no closer mapped object. Values are correct for the imported dataset but should not be read as local service availability.
+**Data-quality warnings from QA:** M6 contains a single `railway_station`, Slavonski Šamac, which the national-boundary check places 739 m outside BiH. Every pilot settlement's nearest station is therefore cross-border (37 flagged rows; Jasenica 29.0 km). The only other flagged target is Ordinacija Slavonski Šamac (nearest health target for one settlement, 555 m outside BiH). Šamac town's nearest pharmacy "Ljekarna Vukić" (9.5 km) lies 1.2 km inside BiH, so it is not cross-border. Miloševac's nearest health target is Dom zdravlja Odžak because OSM has no closer mapped object. Values are correct for the imported dataset but should not be read as local service availability.
 
 ## Git and file inventory
 

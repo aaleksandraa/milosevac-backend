@@ -21,8 +21,9 @@ final class NetworkImportService
         $header['object_count'] = is_array($data['objects'] ?? null) ? count($data['objects']) : null;
         $header['links'] = is_array($data['links'] ?? null) ? [] : null;
         Validator::make($header, [
-            'algorithm_version' => 'required|in:m11.1', 'dependency_hash' => 'required|string|size:64',
+            'algorithm_version' => 'required|in:m11.2', 'dependency_hash' => 'required|string|size:64',
             'source.raw_sha256' => 'required|string|size:64', 'source.osm_timestamp' => 'required|date',
+            'source.country_boundary.raw_sha256' => 'required|string|size:64', 'source.country_boundary.osm_relation_id' => 'required|integer|min:1',
             'source.retrieved_at' => 'required|date', 'source.endpoint' => 'required|url',
             'source.query_sha256' => 'required|string|size:64', 'object_count' => 'required|integer|min:1',
             'records' => 'required|array', 'links' => 'present|array',
@@ -30,6 +31,7 @@ final class NetworkImportService
             'records.*.proximity' => 'present|array',
             'records.*.proximity.*.metric_code' => 'required|string',
             'records.*.proximity.*.distance_straight_m' => 'nullable|numeric|min:0',
+            'records.*.proximity.*.target_in_country' => 'present|nullable|boolean',
         ])->validate();
         // Validate objects independently: expanding nested wildcard rules over an
         // entire regional geometry artifact produces quadratic validation work.
@@ -117,7 +119,7 @@ final class NetworkImportService
                         'origin_type' => $row['origin_type'], 'origin_lat' => $row['lat'], 'origin_lng' => $row['lng'],
                         'target_type' => $p['target_type'], 'target_id' => $p['target_id'], 'target_name' => $p['target_name'],
                         'distance_straight_m' => $p['distance_straight_m'] === null ? null : round((float) $p['distance_straight_m'], 3), 'distance_route_m' => null, 'travel_time_s' => null,
-                        'method' => $p['method'], 'quality_flag' => $p['quality_flag'], 'metadata' => ['target_source_id' => $p['target_source_id'] ?? null, 'target_osm_type' => $p['target_osm_type'] ?? null],
+                        'method' => $p['method'], 'quality_flag' => $p['quality_flag'], 'metadata' => ['target_source_id' => $p['target_source_id'] ?? null, 'target_osm_type' => $p['target_osm_type'] ?? null, 'target_in_country' => $p['target_in_country']],
                     ]);
                 }
                 SettlementProximity::where('settlement_id', $s->id)->whereNotIn('metric_code', $codes)->delete();

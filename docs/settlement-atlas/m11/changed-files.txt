@@ -34,6 +34,7 @@ routes/api.php
 tests/Feature/AtlasNetworkTest.php
 tests/Feature/GeoAtlasHierarchyTest.php
 tools/atlas/network/core.py
+tools/atlas/network/fetch_country.py
 tools/atlas/network/fetch_network.py
 tools/atlas/network/process_network.py
 tools/atlas/network/test_network.py

@@ -27,13 +27,14 @@ class AtlasNetworkTest extends TestCase
         $s->update(['geographic_centroid_lat' => 45, 'geographic_centroid_lng' => 18]);
         $b = SettlementBoundary::factory()->create(['settlement_id' => $s->id, 'geometry_valid' => true]);
 
-        return ['algorithm_version' => 'm11.1', 'dependency_hash' => (new NetworkSnapshot)->payload()['dependency_hash'],
-            'source' => ['raw_sha256' => str_repeat('a', 64), 'query_sha256' => str_repeat('b', 64), 'osm_timestamp' => '2026-05-06T00:00:00Z', 'retrieved_at' => '2026-09-05T00:00:00Z', 'endpoint' => 'https://example.org/osm'],
+        return ['algorithm_version' => 'm11.2', 'dependency_hash' => (new NetworkSnapshot)->payload()['dependency_hash'],
+            'source' => ['raw_sha256' => str_repeat('a', 64), 'query_sha256' => str_repeat('b', 64), 'osm_timestamp' => '2026-05-06T00:00:00Z', 'retrieved_at' => '2026-09-05T00:00:00Z', 'endpoint' => 'https://example.org/osm',
+                'country_boundary' => ['raw_sha256' => str_repeat('c', 64), 'osm_relation_id' => 2528142, 'iso3166_1' => 'BA']],
             'objects' => array_map(fn ($kind) => ['kind' => $kind, 'osm_type' => 'way', 'osm_id' => 1, 'feature_type' => $kind === 'road' ? 'primary' : 'river', 'name' => null, 'source_properties' => ['bridge' => 'yes'], 'geometry' => ['type' => 'LineString', 'coordinates' => [[18, 45], [18.01, 45]]], 'osm_version' => 2, 'osm_timestamp' => '2026-05-05T00:00:00Z'], ['road', 'hydro']),
             'records' => [['settlement_id' => $s->id, 'settlement_slug' => $s->slug, 'municipality_slug' => 'modrica', 'boundary_id' => $b->id, 'origin_type' => 'geographic_centroid', 'lat' => '45.0000000', 'lng' => '18.0000000',
                 'transport' => ['mapped_road_length_km' => 0, 'major_road_length_km' => 0, 'mapped_road_density_km_per_km2' => 0],
                 'hydrography' => ['waterway_length_km' => 0, 'mapped_water_area_km2' => 0, 'named_features' => []],
-                'proximity' => [['metric_code' => 'nearest_major_road', 'target_type' => 'road', 'target_id' => 1, 'target_name' => null, 'distance_straight_m' => 0, 'method' => 'EPSG3035_point_to_geometry', 'quality_flag' => 'geographic_centroid']]]],
+                'proximity' => [['metric_code' => 'nearest_major_road', 'target_type' => 'road', 'target_id' => 1, 'target_name' => null, 'distance_straight_m' => 0, 'method' => 'EPSG3035_point_to_geometry', 'quality_flag' => 'geographic_centroid', 'target_in_country' => true]]]],
             'links' => [['settlement_id' => $s->id, 'kind' => 'road', 'osm_type' => 'way', 'osm_id' => 1, 'relation' => 'touches_boundary', 'length_km' => 0, 'area_km2' => 0]],
         ];
     }
@@ -93,6 +94,35 @@ class AtlasNetworkTest extends TestCase
         (new NetworkImportService)->import($data);
         $poi->update(['lat' => 46]);
         $this->getJson('/api/geo/municipalities/modrica/settlements/milosevac')->assertOk()->assertJsonMissingPath('settlement.proximity');
+    }
+
+    public function test_cross_border_target_keeps_distance_and_is_flagged(): void
+    {
+        $data = $this->artifact();
+        $data['records'][0]['proximity'][0] = ['metric_code' => 'nearest_railway_station', 'target_type' => 'geo_place', 'target_id' => 9, 'target_name' => 'Slavonski Šamac',
+            'distance_straight_m' => 11000.5, 'method' => 'WGS84_geodesic', 'quality_flag' => 'geographic_centroid', 'target_in_country' => false];
+        (new NetworkImportService)->import($data);
+        $this->getJson('/api/geo/municipalities/modrica/settlements/milosevac')->assertOk()
+            ->assertJsonPath('settlement.proximity.nearest_railway_station.distance_straight_m', 11000.5)
+            ->assertJsonPath('settlement.proximity.nearest_railway_station.target_in_country', false);
+    }
+
+    public function test_artifact_without_country_boundary_or_flag_is_rejected(): void
+    {
+        foreach ([fn (&$d) => $d['algorithm_version'] = 'm11.1', function (&$d) {
+            unset($d['source']['country_boundary']);
+        }, function (&$d) {
+            unset($d['records'][0]['proximity'][0]['target_in_country']);
+        }] as $mutate) {
+            $data = $this->artifact();
+            $mutate($data);
+            try {
+                (new NetworkImportService)->import($data);
+                $this->fail('Artifact should be rejected');
+            } catch (ValidationException) {
+                $this->assertDatabaseCount('settlement_proximities', 0);
+            }
+        }
     }
 
     public function test_negative_distance_and_duplicate_identity_rejected(): void

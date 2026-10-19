@@ -69,11 +69,11 @@ See [M3_PUBLIC_ATLAS.md](M3_PUBLIC_ATLAS.md).
 - Public `land_cover` block; compact map properties; ranking denominators 37 eligible / 8 missing
 - See [M10_LAND_COVER.md](M10_LAND_COVER.md)
 
-## M11 implementation (acceptance open)
+## M11 implementation (acceptance QA passed)
 
 - Actual regional OSM acquisition, offline GIS processing and idempotent pilot DB import.
 - 37 road/hydro profiles; 37 settlements with proximity; M9 ranking/compare integration.
 - Optional municipality-scoped network GeoJSON; settlement transport/hydro/proximity sections.
-- Automated validation and API measurements completed; desktop/mobile page QA passed 2026-10-19. Visual map-layer inspection and render timing remain open (embedded browser cannot run MapLibre workers).
+- Automated validation and API measurements completed; desktop/mobile page QA, map-layer inspection and desktop render timing passed 2026-10-19 after fixing the frontend MapLibre worker URL. Proximity targets outside the OSM BiH boundary are flagged (`m11.2`).
 - See [M11_NETWORK_ACCESSIBILITY.md](M11_NETWORK_ACCESSIBILITY.md).
 - M12 has NOT started.
