@@ -1,6 +1,6 @@
 (function () {
     const CONCURRENCY = 2;
-    const MAX_ATTEMPTS = 3;
+    const MAX_ATTEMPTS = 8;
 
     document.querySelectorAll('[data-gallery-upload]').forEach((root) => {
         if (root.dataset.galleryBound === '1') {
@@ -27,15 +27,24 @@
         const context = root.dataset.galleryContext || 'match';
         const maxBytes = Number(root.dataset.maxBytes || 8 * 1024 * 1024);
         const token = form.querySelector('input[name="_token"]')?.value || '';
-        const saveButton = form.querySelector('button.btn[type="submit"]');
-        if (saveButton && !saveButton.dataset.galleryLabel) {
-            saveButton.dataset.galleryLabel = saveButton.textContent.trim();
+        const saveButtons = () => [...form.querySelectorAll('button.btn[type="submit"]')];
+        const primarySave = saveButtons().find((button) => !button.hasAttribute('data-gallery-save'));
+        const barSave = root.querySelector('[data-gallery-save]');
+        const saveNote = root.querySelector('[data-gallery-save-note]');
+        if (primarySave && barSave) {
+            barSave.textContent = primarySave.textContent.trim();
         }
+        saveButtons().forEach((button) => {
+            if (!button.dataset.galleryLabel) {
+                button.dataset.galleryLabel = button.textContent.trim();
+            }
+        });
 
         const queue = [];
         let active = 0;
         const idleWaiters = [];
         const files = new WeakMap();
+        const skippedNames = [];
 
         const refreshVisibility = () => {
             gallery.classList.toggle('has-items', gallery.querySelector('[data-gallery-item]') !== null);
@@ -74,8 +83,8 @@
             const percent = overallPercent();
             const busy = uploading > 0 || queue.length > 0 || active > 0;
 
-            panel.hidden = total === 0;
-            panel.classList.toggle('is-error', failed > 0);
+            panel.hidden = total === 0 && skippedNames.length === 0;
+            panel.classList.toggle('is-error', failed > 0 || (total === 0 && skippedNames.length > 0));
             panel.classList.toggle('is-done', total > 0 && !busy && failed === 0);
             if (count) {
                 count.textContent = total === 0 ? '' : `${staged} / ${total}`;
@@ -84,12 +93,15 @@
                 bar.style.width = `${percent}%`;
             }
 
+            const skipNote = skippedNames.length
+                ? ` Preskočeno ${skippedNames.length} (nisu JPG, PNG ili WebP, ili su prevelike).`
+                : '';
             let message = '';
-            let buttonLabel = saveButton?.dataset.galleryLabel || '';
+            let buttonLabel = '';
             let lockSave = false;
 
             if (failed > 0) {
-                message = `Učitano ${staged} od ${total}. ${failed === 1 ? '1 fotografija nije učitana' : `${failed} fotografije nisu učitane`}. Pokušajte ponovo ili ih uklonite.`;
+                message = `Učitano ${staged} od ${total}. ${failed === 1 ? '1 fotografija nije učitana' : `${failed} fotografije nisu učitane`}. Pokušajte ponovo ili ih uklonite.${skipNote}`;
                 buttonLabel = 'Ispravite fotografije';
                 lockSave = true;
             } else if (busy) {
@@ -99,16 +111,21 @@
                 buttonLabel = `Učitavanje ${staged}/${total}…`;
                 lockSave = true;
             } else if (total > 0) {
-                message = `Sve fotografije su učitane (${staged}). Sada možete sačuvati utakmicu.`;
+                message = `Učitano ${staged} fotografija. Ako ste birali više, dodajte ostatak ili cijeli folder — ove ostaju.${skipNote}`;
+            } else if (skippedNames.length > 0) {
+                message = `Nijedna fotografija nije dodata.${skipNote}`;
             }
 
             if (status) {
                 status.textContent = message;
             }
-            if (saveButton) {
-                saveButton.disabled = lockSave;
-                saveButton.textContent = buttonLabel;
+            if (saveNote) {
+                saveNote.textContent = message || 'Dodajte fotografije. One se učitavaju odmah, a snimate kad traka dođe do kraja.';
             }
+            saveButtons().forEach((button) => {
+                button.disabled = lockSave;
+                button.textContent = lockSave ? buttonLabel : (button.dataset.galleryLabel || button.textContent);
+            });
         };
 
         const notifyIdle = () => {
@@ -164,8 +181,11 @@
 
             const image = figure.querySelector('img') || document.createElement('img');
             image.alt = payload.name || image.alt || '';
-            if (payload.url) {
-                image.src = payload.url;
+            const preview = payload.thumb || payload.url;
+            if (preview) {
+                image.src = preview;
+                image.loading = 'lazy';
+                image.decoding = 'async';
             }
             if (!image.parentNode) {
                 figure.prepend(image);
@@ -254,7 +274,7 @@
                 }
             });
 
-            const fail = (message, canRetry) => {
+            const fail = (message, canRetry, statusCode = 0) => {
                 if (figure.dataset.removed === '1') {
                     resolve();
                     return;
@@ -262,9 +282,10 @@
 
                 if (canRetry && attempt < MAX_ATTEMPTS) {
                     setCardProgress(figure, Number(figure.dataset.progress || 0), 'Ponovni pokušaj…');
+                    const wait = statusCode === 429 ? 2500 * attempt : 800 * attempt;
                     window.setTimeout(() => {
                         uploadFile(file, figure, attempt + 1).then(resolve);
-                    }, 800 * attempt);
+                    }, wait);
                     return;
                 }
 
@@ -297,7 +318,7 @@
                     message = xhr.status === 413 ? 'Fotografija je prevelika.' : message;
                 }
 
-                fail(message, xhr.status >= 500 || xhr.status === 429);
+                fail(message, xhr.status >= 500 || xhr.status === 429, xhr.status);
             });
 
             xhr.addEventListener('error', () => fail('Veza je prekinuta. Pokušajte ponovo.', true));
@@ -320,20 +341,28 @@
             notifyIdle();
         };
 
-        const enqueue = (file) => {
-            if (!file.type.startsWith('image/')) {
-                status.textContent = `"${file.name}" nije fotografija. Dozvoljene su JPG, PNG i WebP.`;
-                panel.hidden = false;
-                panel.classList.add('is-error');
-                return;
+        const isAllowedImage = (file) => {
+            const type = String(file.type || '').toLowerCase();
+            if (type === 'image/jpeg' || type === 'image/jpg' || type === 'image/pjpeg' || type === 'image/png' || type === 'image/webp') {
+                return true;
+            }
+
+            if (type.startsWith('image/')) {
+                return false;
+            }
+
+            return /\.(jpe?g|png|webp)$/i.test(file.name || '');
+        };
+
+        const enqueue = (file, fragment) => {
+            if (!isAllowedImage(file)) {
+                skippedNames.push(file.name || 'datoteka');
+                return false;
             }
 
             if (file.size > maxBytes) {
-                const mb = Math.round(maxBytes / (1024 * 1024));
-                status.textContent = `"${file.name}" je veća od ${mb} MB.`;
-                panel.hidden = false;
-                panel.classList.add('is-error');
-                return;
+                skippedNames.push(file.name || 'datoteka');
+                return false;
             }
 
             const figure = document.createElement('figure');
@@ -371,13 +400,76 @@
             actions.append(remove);
             caption.append(actions);
             figure.append(name, overlay, caption);
-            gallery.append(figure);
-            refreshVisibility();
+            fragment.append(figure);
 
             queue.push(() => uploadFile(file, figure));
+            return true;
+        };
+
+        const addFiles = (list) => {
+            const selected = Array.from(list || []);
+            if (selected.length === 0) {
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            let accepted = 0;
+            selected.forEach((file) => {
+                if (enqueue(file, fragment)) {
+                    accepted += 1;
+                }
+            });
+            gallery.append(fragment);
+            refreshVisibility();
+
+            panel.hidden = false;
+            panel.classList.remove('is-error', 'is-done');
+            if (status) {
+                const handed = selected.length === 1 ? '1 datoteku' : `${selected.length} datoteka`;
+                status.textContent = accepted > 0
+                    ? `Preglednik je predao ${handed}. Učitava se ${accepted}.`
+                    : `Preglednik je predao ${handed}, ali nijedna nije JPG, PNG ili WebP.`;
+            }
+            panel.scrollIntoView({ block: 'nearest' });
             renderStatus();
             pump();
         };
+
+        const bindPicker = (picker) => {
+            picker?.addEventListener('change', () => {
+                const selected = Array.from(picker.files || []);
+                picker.value = '';
+                addFiles(selected);
+            });
+        };
+
+        bindPicker(input);
+        bindPicker(root.querySelector('[data-gallery-folder]'));
+
+        root.addEventListener('dragover', (event) => {
+            if (!event.dataTransfer || ![...event.dataTransfer.types].includes('Files')) {
+                return;
+            }
+
+            event.preventDefault();
+            root.classList.add('is-drop');
+        });
+
+        root.addEventListener('dragleave', (event) => {
+            if (!root.contains(event.relatedTarget)) {
+                root.classList.remove('is-drop');
+            }
+        });
+
+        root.addEventListener('drop', (event) => {
+            if (!event.dataTransfer) {
+                return;
+            }
+
+            event.preventDefault();
+            root.classList.remove('is-drop');
+            addFiles(event.dataTransfer.files);
+        });
 
         const removeCard = (figure) => {
             figure.dataset.removed = '1';
@@ -419,20 +511,6 @@
 
             removeCard(figure);
         };
-
-        input.addEventListener('change', () => {
-            const selected = Array.from(input.files || []);
-            input.value = '';
-            if (selected.length === 0) {
-                return;
-            }
-
-            panel.hidden = false;
-            panel.classList.remove('is-error', 'is-done');
-            status.textContent = `Priprema ${selected.length} ${selected.length === 1 ? 'fotografije' : 'fotografija'}…`;
-            panel.scrollIntoView({ block: 'nearest' });
-            selected.forEach(enqueue);
-        });
 
         root.addEventListener('click', (event) => {
             const retry = event.target.closest('[data-gallery-retry]');

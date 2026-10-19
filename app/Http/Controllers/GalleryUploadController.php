@@ -50,9 +50,15 @@ class GalleryUploadController extends Controller
             'media_type' => $context === 'match' ? StagedGallery::MATCH : StagedGallery::POST,
         ]);
 
+        $paths = $media->responsive_paths;
+        $variants = collect(is_array($paths) ? ($paths['variants'] ?? []) : []);
+        $thumb = $variants->firstWhere('width', 480);
+        $thumbPath = is_array($thumb) ? ($thumb['path'] ?? $media->path) : $media->path;
+
         return response()->json([
             'id' => $media->id,
             'url' => asset('storage/'.$media->path),
+            'thumb' => asset('storage/'.$thumbPath),
             'name' => $media->alt_text,
         ]);
     }
