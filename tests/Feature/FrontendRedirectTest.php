@@ -152,6 +152,58 @@ class FrontendRedirectTest extends TestCase
             ->assertDontSee('logo.webp', false);
     }
 
+    public function test_public_match_list_leads_with_the_newest_published_match_even_without_photos(): void
+    {
+        $this->seed();
+        $author = User::query()->firstOrFail();
+        $older = FootballMatch::query()->create([
+            'author_id' => $author->id,
+            'title' => 'Starija utakmica',
+            'slug' => 'starija-utakmica',
+            'home_team' => 'FK Posavina',
+            'away_team' => 'Odžak',
+            'status' => 'published',
+            'published_at' => now()->subDays(3),
+            'played_at' => now()->subDays(3),
+        ]);
+        $photo = Media::query()->create([
+            'user_id' => $author->id,
+            'disk' => 'public',
+            'path' => 'matches/galleries/stara.webp',
+            'filename' => 'stara.webp',
+            'mime_type' => 'image/webp',
+            'size' => 10,
+            'alt_text' => 'Stara',
+        ]);
+        $older->media()->attach($photo->id, ['sort_order' => 1]);
+
+        FootballMatch::query()->create([
+            'author_id' => $author->id,
+            'title' => 'Nova utakmica',
+            'slug' => 'nova-utakmica',
+            'home_team' => 'FK Posavina',
+            'away_team' => 'Modriča',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        FootballMatch::query()->create([
+            'author_id' => $author->id,
+            'title' => 'Skica utakmice',
+            'slug' => 'skica-utakmice',
+            'home_team' => 'FK Posavina',
+            'away_team' => 'Šamac',
+            'status' => 'draft',
+        ]);
+
+        $this->get('/api/fk-posavina')
+            ->assertOk()
+            ->assertJsonPath('matches.0.slug', 'nova-utakmica')
+            ->assertJsonPath('matches.1.slug', 'starija-utakmica')
+            ->assertJsonPath('galleryMatches.0.slug', 'starija-utakmica')
+            ->assertJsonCount(2, 'matches')
+            ->assertJsonCount(1, 'galleryMatches');
+    }
+
     public function test_content_api_exposes_published_cms_articles(): void
     {
         $this->seed();

@@ -22,11 +22,11 @@
         </section>
         <aside class="panel">
             <div class="field"><label>Status</label><select name="status">
-                <option value="draft" @selected(old('status', $match->status) === 'draft')>draft</option>
-                <option value="pending_review" @selected(old('status', $match->status) === 'pending_review')>pending review</option>
+                <option value="draft" @selected(old('status', $match->status) === 'draft')>Skica</option>
+                <option value="pending_review" @selected(old('status', $match->status) === 'pending_review')>Na pregledu</option>
                 @if(auth()->user()->canPublishDirectly())
-                    <option value="published" @selected(old('status', $match->status) === 'published')>published</option>
-                    <option value="scheduled" @selected(old('status', $match->status) === 'scheduled')>scheduled</option>
+                    <option value="published" @selected(old('status', $match->status) === 'published')>Objavljeno</option>
+                    <option value="scheduled" @selected(old('status', $match->status) === 'scheduled')>Zakazano</option>
                 @endif
             </select></div>
             <div class="field"><label>Domaćin</label><input name="home_team" value="{{ old('home_team', $match->home_team ?: 'FK Posavina') }}" required></div>

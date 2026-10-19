@@ -24,8 +24,8 @@
 
         <aside class="panel">
             <div class="field"><label>Status</label><select name="status">
-                @foreach(['draft','pending_review','published','scheduled','archived'] as $status)
-                    <option value="{{ $status }}" @selected(old('status', $match->status) === $status)>{{ str_replace('_', ' ', $status) }}</option>
+                @foreach(['draft' => 'Skica', 'pending_review' => 'Na pregledu', 'published' => 'Objavljeno', 'scheduled' => 'Zakazano', 'archived' => 'Arhiva'] as $status => $label)
+                    <option value="{{ $status }}" @selected(old('status', $match->status ?: 'published') === $status)>{{ $label }}</option>
                 @endforeach
             </select></div>
             <div class="field"><label>Autor</label><select name="author_id">@foreach($authors as $author)<option value="{{ $author->id }}" @selected(old('author_id', $match->author_id) == $author->id)>{{ $author->name }}</option>@endforeach</select></div>

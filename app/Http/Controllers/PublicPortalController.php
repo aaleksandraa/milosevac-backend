@@ -21,7 +21,8 @@ class PublicPortalController extends Controller
     {
         $matches = FootballMatch::published()
             ->with(['author', 'media'])
-            ->latest('played_at')
+            ->orderByRaw('COALESCE(played_at, published_at) DESC')
+            ->orderByDesc('id')
             ->take(24)
             ->get();
 

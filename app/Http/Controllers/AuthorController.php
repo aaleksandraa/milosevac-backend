@@ -61,7 +61,7 @@ class AuthorController extends Controller
     public function createMatch()
     {
         return view('author.matches.form', $this->matchFormData(new FootballMatch([
-            'status' => 'draft',
+            'status' => auth()->user()?->canPublishDirectly() ? 'published' : 'pending_review',
             'home_team' => 'FK Posavina',
         ])));
     }

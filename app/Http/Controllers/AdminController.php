@@ -78,7 +78,7 @@ class AdminController extends Controller
     public function createMatch()
     {
         return view('admin.matches.form', $this->matchFormData(new FootballMatch([
-            'status' => 'draft',
+            'status' => 'published',
             'home_team' => 'FK Posavina',
         ])));
     }
