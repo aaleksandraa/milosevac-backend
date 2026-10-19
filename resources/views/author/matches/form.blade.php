@@ -11,30 +11,14 @@
             <div class="field"><label>Slug</label><input name="slug" value="{{ old('slug', $match->slug) }}"></div>
             <div class="field"><label>Kratak tekst</label><textarea name="excerpt" rows="3">{{ old('excerpt', $match->excerpt) }}</textarea></div>
             <div class="field"><label>Izvještaj utakmice</label><textarea name="content" rows="12" data-rich-editor>{{ old('content', $match->content) }}</textarea></div>
-            <div class="field"><label>Dodaj galeriju</label><input type="file" name="gallery_images[]" accept="image/png,image/jpeg,image/webp" multiple></div>
-            @if($match->exists && $match->media->isNotEmpty())
-                <div class="admin-gallery-preview is-sortable" data-gallery-sortable>
-                    @foreach($match->media as $media)
-                        <figure class="admin-gallery-item" draggable="true" data-gallery-item>
-                            <input type="hidden" name="gallery_order[]" value="{{ $media->id }}" data-gallery-order>
-                            <img src="{{ asset('storage/'.$media->path) }}" alt="{{ $media->alt_text }}">
-                            <figcaption>
-                                <label class="gallery-caption-field">
-                                    Opis
-                                    <input name="gallery_captions[{{ $media->id }}]" value="{{ old('gallery_captions.'.$media->id, $media->pivot->caption !== $media->alt_text ? $media->pivot->caption : '') }}" placeholder="Opis fotografije">
-                                </label>
-                                <span class="gallery-item-actions">
-                                    <button class="gallery-drag-handle" type="button" data-gallery-handle aria-label="Pomjeri sliku">Pomjeri</button>
-                                    <label class="gallery-delete-control">
-                                        <input type="checkbox" name="delete_gallery[]" value="{{ $media->id }}" data-gallery-delete>
-                                        Obrisi
-                                    </label>
-                                </span>
-                            </figcaption>
-                        </figure>
-                    @endforeach
-                </div>
-            @endif
+            <h2>Galerija</h2>
+            <x-gallery-uploader
+                context="match"
+                :upload-url="route('author.gallery-uploads.store')"
+                :discard-template="route('author.gallery-uploads.destroy', ['media' => '__MEDIA__'])"
+                :items="$match->exists ? $match->media : collect()"
+                :max-kb="8192"
+            />
         </section>
         <aside class="panel">
             <div class="field"><label>Status</label><select name="status">

@@ -1,4 +1,5 @@
 import './bootstrap';
+import './gallery-upload';
 
 document.addEventListener('click', (event) => {
     const toggle = event.target.closest('[data-mobile-toggle]');
@@ -205,7 +206,7 @@ document.querySelectorAll('[data-gallery-sortable]').forEach((gallery) => {
 
     gallery.addEventListener('dragstart', (event) => {
         const item = event.target.closest('[data-gallery-item]');
-        if (!item || item.classList.contains('is-marked-delete')) {
+        if (!item || item.classList.contains('is-marked-delete') || event.target.closest('button, input, label, a')) {
             event.preventDefault();
             return;
         }

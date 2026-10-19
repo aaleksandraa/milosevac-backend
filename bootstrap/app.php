@@ -19,6 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ->between('08:00', '15:00')
             ->timezone('Europe/Sarajevo')
             ->withoutOverlapping();
+
+        $schedule->command('gallery:prune-staged')
+            ->dailyAt('03:20')
+            ->timezone('Europe/Sarajevo')
+            ->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([

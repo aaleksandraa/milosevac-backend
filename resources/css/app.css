@@ -420,8 +420,14 @@ button, input, textarea, select { font: inherit; }
 .image-lightbox-prev { left: 16px; }
 .image-lightbox-next { right: 16px; }
 .image-lightbox-nav:hover, .image-lightbox-nav:focus-visible { background: #fff; color: #111827; }
+.gallery-upload-status { margin: 0 0 8px; font-size: 13px; font-weight: 800; }
+.gallery-upload-status.is-error { color: var(--brand); }
 .admin-gallery-preview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
-.admin-gallery-preview figure { margin: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+.admin-gallery-preview:not(.has-items) { display: none; }
+.admin-gallery-preview figure { position: relative; margin: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+.gallery-upload-overlay { position: absolute; inset: 0; display: grid; place-items: end center; padding: 10px; background: linear-gradient(transparent, rgba(32, 24, 24, .72)); color: #fff; font-size: 12px; font-weight: 900; text-align: center; }
+.admin-gallery-item.is-upload-error { border-color: var(--brand); }
+button.gallery-delete-control { border: 0; background: none; padding: 0; }
 .admin-gallery-preview img { width: 100%; aspect-ratio: 1; object-fit: cover; }
 .admin-gallery-preview figcaption { padding: 6px 8px; font-size: 12px; color: var(--muted); }
 .gallery-caption-field { display: grid; gap: 4px; font-size: 11px; font-weight: 900; color: var(--muted); }

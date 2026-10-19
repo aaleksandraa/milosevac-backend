@@ -13,31 +13,13 @@
             <div class="field"><label>Izvještaj utakmice</label><textarea name="content" rows="12" data-rich-editor>{{ old('content', $match->content) }}</textarea></div>
 
             <h2>Galerija</h2>
-            <div class="field"><label>Dodaj slike utakmice</label><input type="file" name="gallery_images[]" accept="image/png,image/jpeg,image/webp" multiple></div>
-            <small>Svaka nova slika se obrađuje u WebP varijante i dobija aktivni watermark ako je podešen.</small>
-            @if($match->exists && $match->media->isNotEmpty())
-                <div class="admin-gallery-preview is-sortable" data-gallery-sortable>
-                    @foreach($match->media as $media)
-                        <figure class="admin-gallery-item" draggable="true" data-gallery-item>
-                            <input type="hidden" name="gallery_order[]" value="{{ $media->id }}" data-gallery-order>
-                            <img src="{{ asset('storage/'.$media->path) }}" alt="{{ $media->alt_text }}">
-                            <figcaption>
-                                <label class="gallery-caption-field">
-                                    Opis
-                                    <input name="gallery_captions[{{ $media->id }}]" value="{{ old('gallery_captions.'.$media->id, $media->pivot->caption !== $media->alt_text ? $media->pivot->caption : '') }}" placeholder="Opis fotografije">
-                                </label>
-                                <span class="gallery-item-actions">
-                                    <button class="gallery-drag-handle" type="button" data-gallery-handle aria-label="Pomjeri sliku">Pomjeri</button>
-                                    <label class="gallery-delete-control">
-                                        <input type="checkbox" name="delete_gallery[]" value="{{ $media->id }}" data-gallery-delete>
-                                        Obrisi
-                                    </label>
-                                </span>
-                            </figcaption>
-                        </figure>
-                    @endforeach
-                </div>
-            @endif
+            <x-gallery-uploader
+                context="match"
+                :upload-url="route('admin.gallery-uploads.store')"
+                :discard-template="route('admin.gallery-uploads.destroy', ['media' => '__MEDIA__'])"
+                :items="$match->exists ? $match->media : collect()"
+                :max-kb="8192"
+            />
         </section>
 
         <aside class="panel">

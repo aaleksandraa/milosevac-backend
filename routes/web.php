@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\FrontendRedirectController;
+use App\Http\Controllers\GalleryUploadController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,8 @@ Route::middleware(['auth', 'role:super_admin,admin,editor'])->prefix('admin')->n
     Route::post('/matches', [AdminController::class, 'storeMatch'])->name('matches.store');
     Route::get('/matches/{match}/edit', [AdminController::class, 'editMatch'])->name('matches.edit');
     Route::put('/matches/{match}', [AdminController::class, 'updateMatch'])->name('matches.update');
+    Route::post('/gallery-uploads', [GalleryUploadController::class, 'store'])->middleware('throttle:180,1')->name('gallery-uploads.store');
+    Route::delete('/gallery-uploads/{media}', [GalleryUploadController::class, 'destroy'])->name('gallery-uploads.destroy');
     Route::post('/watermark', [AdminController::class, 'updateWatermark'])->name('watermark.update');
     Route::get('/ads', [AdminController::class, 'ads'])->name('ads.index');
     Route::post('/ads', [AdminController::class, 'updateAds'])->name('ads.update');
@@ -81,4 +84,6 @@ Route::middleware(['auth', 'role:super_admin,admin,editor,author,contributor'])-
     Route::post('/matches', [AuthorController::class, 'storeMatch'])->name('matches.store');
     Route::get('/matches/{match}/edit', [AuthorController::class, 'editMatch'])->name('matches.edit');
     Route::put('/matches/{match}', [AuthorController::class, 'updateMatch'])->name('matches.update');
+    Route::post('/gallery-uploads', [GalleryUploadController::class, 'store'])->middleware('throttle:180,1')->name('gallery-uploads.store');
+    Route::delete('/gallery-uploads/{media}', [GalleryUploadController::class, 'destroy'])->name('gallery-uploads.destroy');
 });

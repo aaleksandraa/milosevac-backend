@@ -24,14 +24,22 @@ class MatchMediaManager
             'gallery_captions.*' => ['nullable', 'string', 'max:255'],
             'delete_gallery' => ['array'],
             'delete_gallery.*' => ['integer', 'exists:media,id'],
-            'gallery_images' => ['array'],
+            'gallery_images' => ['array', 'max:24'],
             'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', "max:{$maxUploadKb}"],
-        ];
+        ] + StagedGallery::validationRules();
+    }
+
+    public static function validationMessages(): array
+    {
+        return StagedGallery::validationMessages();
     }
 
     public function syncGallery(Request $request, FootballMatch $match): void
     {
+        $staged = app(StagedGallery::class);
+        $staged->discardMarked($request, StagedGallery::MATCH);
         $this->detachDeleted($request, $match);
+        $staged->attachToMatch($request, $match);
 
         $attachedIds = $match->media()
             ->pluck('media.id')

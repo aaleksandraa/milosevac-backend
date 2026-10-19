@@ -45,6 +45,9 @@ class PostMediaManager
 
     public function syncGallery(Request $request, Post $post): void
     {
+        $staged = app(StagedGallery::class);
+        $staged->discardMarked($request, StagedGallery::POST);
+
         $deleteIds = collect($request->input('delete_gallery', []))
             ->map(fn ($id) => (int) $id)
             ->filter()
@@ -57,6 +60,8 @@ class PostMediaManager
                 ->get()
                 ->each(fn (Media $media) => $this->deleteMedia($media));
         }
+
+        $staged->attachToPost($request, $post);
 
         $attachedIds = $post->galleryMedia()
             ->pluck('id')

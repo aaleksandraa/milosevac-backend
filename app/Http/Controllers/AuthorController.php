@@ -13,6 +13,7 @@ use App\Support\ImagePipeline;
 use App\Support\MatchMediaManager;
 use App\Support\PostMediaManager;
 use App\Support\PostTaxonomyManager;
+use App\Support\StagedGallery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -133,16 +134,17 @@ class AuthorController extends Controller
             'gallery_captions.*' => ['nullable', 'string', 'max:255'],
             'delete_gallery' => ['array'],
             'delete_gallery.*' => ['integer', 'exists:media,id'],
-            'gallery_images' => ['array'],
+            'gallery_images' => ['array', 'max:24'],
             'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:12288'],
             'tags_text' => ['nullable', 'string'],
-        ]);
+        ] + StagedGallery::validationRules(), StagedGallery::validationMessages());
 
         $data['content'] = app(HtmlSanitizer::class)->clean($data['content']);
         $categoryIds = $data['categories'];
         $tagsText = $data['tags_text'] ?? '';
         $data['category_id'] = (int) $categoryIds[0];
-        unset($data['categories'], $data['tags_text'], $data['content_images'], $data['gallery_order'], $data['gallery_captions'], $data['delete_gallery'], $data['gallery_images']);
+        unset($data['categories'], $data['tags_text'], $data['content_images'], $data['gallery_order'], $data['gallery_captions'], $data['delete_gallery'], $data['gallery_images'], $data['staged_gallery']);
+        app(StagedGallery::class)->assertClaimable($request, StagedGallery::POST);
 
         $processedImagePaths = [];
         if ($request->hasFile('featured_image')) {
@@ -187,13 +189,14 @@ class AuthorController extends Controller
             'content' => ['nullable', 'string'],
             'status' => ['required', Rule::in($allowedStatus)],
             'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
-        ] + MatchMediaManager::validationRules());
+        ] + MatchMediaManager::validationRules(), MatchMediaManager::validationMessages());
 
         $data['content'] = app(HtmlSanitizer::class)->clean((string) ($data['content'] ?? ''));
         $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
         $data['author_id'] = $match->author_id ?: $request->user()->id;
         $data['published_at'] = $data['status'] === 'published' ? now() : $match->published_at;
-        unset($data['gallery_order'], $data['gallery_captions'], $data['delete_gallery'], $data['gallery_images']);
+        unset($data['gallery_order'], $data['gallery_captions'], $data['delete_gallery'], $data['gallery_images'], $data['staged_gallery']);
+        app(StagedGallery::class)->assertClaimable($request, StagedGallery::MATCH);
 
         if ($request->hasFile('cover_image')) {
             $imagePipeline = app(ImagePipeline::class);
