@@ -1,6 +1,6 @@
 # M11 — Hydrography, roads, accessibility and proximity
 
-Implementation and actual pilot import are available. **Acceptance remains open: desktop/mobile browser inspection, basemap comparison and browser render-time measurement could not run because this session has no connected browser.** M12 has not started. No merge or push.
+Implementation and actual pilot import are available. **Acceptance remains open: desktop/mobile page QA passed on 2026-10-19, but basemap comparison of the road/hydro layers and browser render-time measurement still need a regular browser.** M12 has not started. No merge or push.
 
 ## Scope and source
 
@@ -136,7 +136,11 @@ The real regional artifact exposed quadratic whole-artifact Laravel wildcard val
 
 Frontend: **52 tests pass**, lint zero errors with the existing button fast-refresh warning, production build passes. Additional `tsc --noEmit` reports existing errors in `useOutages.test.ts`, `atlas-map-engine.ts` and `atlas-ranking.ts`; the new network files introduce no remaining reported type error.
 
-**Not completed:** manual desktop/mobile browser QA, road/basemap visual alignment, watercourse visual inspection in browser, browser render duration. Browser runtime setup succeeded but selection reported no browser and discovery returned `[]`; user was asked to connect a browser. This is not synthetic-only work: the actual regional fetch/process/import, repeat import, all-pilot DB report, API inspection and payload measurements ran. Nevertheless, do not mark the milestone fully accepted until the browser gate is finished.
+**Browser QA 2026-10-19** (local servers, Cursor embedded browser): settlement pages, compare, rankings and 390 px mobile layout pass; details in the frontend M11 document. Re-run on the same day: PHPUnit 189 passed / 1 skipped, Python 40 + 18 passed.
+
+**Not completed:** road/basemap visual alignment, watercourse visual inspection and render duration. The embedded browser does not execute MapLibre web workers (a minimal one-point GeoJSON map never fires `load`), so no atlas layer can be drawn there. Verify both network layers in a regular browser before marking the milestone accepted.
+
+**Data-quality warnings from QA:** M6 contains a single `railway_station` (Slavonski Šamac, Croatia), so every pilot settlement's nearest station is cross-border (Jasenica 29.0 km). Šamac town's nearest pharmacy is "Ljekarna Vukić" at 9.5 km, and Miloševac's nearest health target is Dom zdravlja Odžak, because OSM has no closer mapped object. Values are correct for the imported dataset but should not be read as local service availability.
 
 ## Git and file inventory
 
