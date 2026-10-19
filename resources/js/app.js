@@ -1,5 +1,4 @@
 import './bootstrap';
-import './gallery-upload';
 
 document.addEventListener('click', (event) => {
     const toggle = event.target.closest('[data-mobile-toggle]');

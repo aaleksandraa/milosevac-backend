@@ -27,6 +27,8 @@ class StagedGalleryUploadTest extends TestCase
             ->assertOk()
             ->assertSee('data-gallery-upload', false)
             ->assertSee('Fotografije se učitavaju odmah', false)
+            ->assertSee('js/gallery-upload.js', false)
+            ->assertDontSee('name="gallery_images[]"', false)
             ->assertSee(route('admin.gallery-uploads.store'), false);
 
         $first = $this->stagedPhoto($admin, StagedGallery::MATCH, 'matches/galleries/first.webp');

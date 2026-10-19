@@ -44,10 +44,17 @@
 >
     <div class="field">
         <label>Dodaj fotografije</label>
-        <input type="file" name="gallery_images[]" data-gallery-input accept="image/png,image/jpeg,image/webp" multiple>
-        <small>Fotografije se učitavaju odmah, jedna po jedna (najviše {{ $maxMb }} MB). Možete dodati i nekoliko stotina — sačekajte da sve stignu, pa tek onda sačuvajte.@if($context === 'match') Svaka fotografija utakmice dobija aktivni watermark ako je podešen.@endif</small>
+        <input type="file" data-gallery-input accept="image/png,image/jpeg,image/webp" multiple>
+        <small>Fotografije se učitavaju odmah, čim ih odaberete (najviše {{ $maxMb }} MB po slici). Sačekajte da traka dođe do 100%, pa tek onda sačuvajte.@if($context === 'match') Svaka fotografija utakmice dobija aktivni watermark ako je podešen.@endif</small>
     </div>
-    <p class="gallery-upload-status" data-gallery-status hidden></p>
+    <p class="gallery-upload-fallback" data-gallery-fallback>Učitavanje fotografija nije spremno. Osvježite stranicu. Ako poruka ostane, fotografije se ne smiju slati zajedno sa utakmicom.</p>
+    <div class="gallery-upload-panel" data-gallery-panel hidden>
+        <div class="gallery-upload-panel-row">
+            <strong data-gallery-status>Priprema fotografija…</strong>
+            <span data-gallery-count>0 / 0</span>
+        </div>
+        <div class="gallery-upload-track" aria-hidden="true"><span data-gallery-bar></span></div>
+    </div>
     <div class="admin-gallery-preview is-sortable {{ $cards->isNotEmpty() ? 'has-items' : '' }}" data-gallery-sortable>
         @foreach($cards as $media)
             @php
@@ -84,3 +91,26 @@
         @endforeach
     </div>
 </div>
+@once
+    <style>
+        .gallery-upload-fallback { margin: 0 0 10px; padding: 10px 12px; border-radius: 8px; background: #fff4f4; color: #9f1d1d; font-size: 14px; font-weight: 800; }
+        .gallery-uploader.is-ready .gallery-upload-fallback { display: none; }
+        .gallery-upload-panel { margin: 0 0 12px; padding: 12px 14px; border: 1px solid #eadfdf; border-radius: 10px; background: #fff; }
+        .gallery-upload-panel.is-error { border-color: #9f1d1d; background: #fff4f4; }
+        .gallery-upload-panel.is-done { border-color: #b8e8c7; background: #f3fbf6; }
+        .gallery-upload-panel-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 8px; }
+        .gallery-upload-panel-row strong { font-size: 15px; }
+        .gallery-upload-panel-row span { font-size: 13px; font-weight: 900; color: #6e6464; }
+        .gallery-upload-track, .gallery-upload-mini { height: 10px; border-radius: 999px; background: #eadfdf; overflow: hidden; }
+        .gallery-upload-track > span, .gallery-upload-mini > span { display: block; height: 100%; width: 0; background: #9f1d1d; }
+        .gallery-upload-overlay { position: absolute; inset: auto 0 0; display: grid; gap: 6px; padding: 8px; background: rgba(32, 24, 24, .78); color: #fff; font-size: 12px; font-weight: 900; }
+        .gallery-upload-name { display: block; padding: 8px; font-size: 12px; font-weight: 800; word-break: break-word; }
+        .gallery-uploader .admin-gallery-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .gallery-uploader .admin-gallery-preview:not(.has-items) { display: none; }
+        .gallery-uploader .admin-gallery-item { position: relative; }
+        .gallery-uploader .admin-gallery-item.is-uploading img[src=""] { display: none; }
+    </style>
+    @push('scripts')
+        <script src="{{ asset('js/gallery-upload.js') }}?v={{ filemtime(public_path('js/gallery-upload.js')) }}"></script>
+    @endpush
+@endonce
